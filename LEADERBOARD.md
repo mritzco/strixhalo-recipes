@@ -1,6 +1,6 @@
 # Strix Halo AI Recipe Registry — results board
 
-_Generated 2026-09-07 19:49 UTC by tools/leaderboard.py — do not hand-edit._
+_Generated 2026-09-07 19:50 UTC by tools/leaderboard.py — do not hand-edit._
 
 ## What is this
 
@@ -14,7 +14,7 @@ A registry of reproducible, evidence-backed serving recipes for local LLMs on un
 
 ## Models
 
-_6 models · 7 result records · latest activity first_
+_6 models · 8 result records · latest activity first_
 
 | id | model | variants | quant(s) | size | T M V | PP t/s | TG t/s | wit | backend | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -31,6 +31,7 @@ _T=confirmed tool calling, M=confirmed MCP, V=confirmed vision. `validated*` = �
 
 | when (UTC) | model | test | result | PP t/s | TG t/s | who |
 |---|---|---|---|---|---|---|
+| 20260907 1250 | [qwen3-coder](models/qwen3-coder.md) | `harness-tool-use` | pass | - | - | itzco |
 | 20260907 1217 | [qwen3-coder](models/qwen3-coder.md) | `agent-coding` | pass | - | - | itzco |
 | 20260907 1158 | [qwen3-coder](models/qwen3-coder.md) | `throughput` | pass | 75317.8 | 49.3 | itzco |
 | 20260907 1158 | [qwen3-coder](models/qwen3-coder.md) | `throughput` | pass | 74791.3 | 49.3 | itzco |

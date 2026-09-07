@@ -1,0 +1,50 @@
+{
+  "recipe_id": "qwen3-coder",
+  "recipe_version": "0.1.0",
+  "content_hash": "sha256:8b452dd97af8d7f1dffca91d73dfde85644fd45bcf0fd2d7f93e831d4a547747",
+  "run_id": "20260907T125002Z-5aacbd75",
+  "contributor_id": "itzco",
+  "quant": "UD-Q4_K_XL",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-09-07T12:50:02Z",
+    "family": "arch",
+    "distro": "CachyOS",
+    "kernel": "7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)",
+    "mem": {
+      "total_gb": 124.9,
+      "gtt_gib": 110.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S Graphics",
+      "driver": "radv",
+      "vulkan_version": "1.4.357",
+      "free_mib": 81740.0
+    },
+    "backend": {
+      "version_string": "version: 0.4.0-dev (build 10809, commit 5266f24da7)",
+      "build": "10809",
+      "commit": "5266f24da7",
+      "binary": "/usr/bin/llama-server",
+      "install_method": "distro-package",
+      "pkg_version": "0.4.0-1.1"
+    },
+    "rocm_version": null,
+    "llama_swap_config": "/home/itzco/.config/llama-swap/config.yaml",
+    "raw_hash": "sha256:88d55a8893e03db7a61916290ee915be99fd3f3119e1015f6d11745b684799a4"
+  },
+  "tests": [
+    {
+      "id": "harness-tool-use",
+      "result": "pass",
+      "observations": [
+        "harness exit=0",
+        "output contains '42': True"
+      ]
+    }
+  ],
+  "metrics": {},
+  "notes": "pi harness one-shot (pi -p, provider local -> llama-swap qwen3-coder): tool loop through a real agent harness; result 42 observed. First harness-level evidence in the battery.",
+  "tool_version": "submit_result.py@2.0.0"
+}
