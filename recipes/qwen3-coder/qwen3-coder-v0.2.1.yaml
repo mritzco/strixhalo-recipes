@@ -94,4 +94,6 @@ tests:
   expect: pass
 - id: tool-roundtrip
   expect: pass
+- id: agent-coding
+  expect: pass
 failure_notes: null

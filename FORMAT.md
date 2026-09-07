@@ -201,6 +201,32 @@ string are assumed equivalent; keep fork commit strings distinct.
 `collect.py` drafts carry `upstream: null, patches: []` for you to fill
 on custom builds.
 
+## Measurement guidance (why toy tests lie)
+
+Evidence quality depends on the workload being representative:
+
+- **Prompt-processing timing is sub-second noise below ~2k prompt
+  tokens.** A phantom +84% PP "win" at ~500 tokens vanished at 1.4k and
+  11k tokens (measured, committed as a refuted experiment). Measure PP
+  at >= 8192 prompt tokens, ideally a realistic agent prompt: system
+  prompt + tool schemas + repo/file content.
+- **Chat Q&A proves none of the agent capability surface.** "Capital of
+  France" throughput does not predict coding, tool loops, or
+  large-context retention. Prefer `agent-coding` (multi-round local-tool
+  loop with ground truth) and `context-recall` at the recipe's real
+  context size.
+- **One server at a time.** Two models resident on the same iGPU
+  contaminate each other's numbers (observed TG collapse 60 -> 2 t/s).
+- **Ground truth over self-report.** A runner should verify the actual
+  artifact (file content, exit code, output) rather than trusting the
+  model's summary.
+- **Single-sample deltas are hypotheses.** Repeat, then treat a
+  cross-config delta as real only if it survives at representative
+  workload size.
+
+When the battery lacks a test for your workload, propose one with your
+experiment (see SKILL.md — tests/definitions PR, admin-reviewed).
+
 ## License & contribution warranty
 
 Records under `recipes/`/`results/` and generated aggregates are CC0;

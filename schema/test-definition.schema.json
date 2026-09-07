@@ -9,7 +9,7 @@
     "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.\\-]*$"},
     "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
     "capability": {
-      "enum": ["tools", "mcp", "vision", "context", "throughput", "stability", "startup", "quality", "other"]
+      "enum": ["tools", "mcp", "vision", "context", "throughput", "stability", "startup", "quality", "agent-task", "other"]
     },
     "description": {"type": "string"},
     "harness": {

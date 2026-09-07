@@ -1,0 +1,17 @@
+{
+  "id": "agent-coding",
+  "version": "1.0.0",
+  "capability": "agent-task",
+  "description": "Multi-round coding-agent loop with client-executed local tools (read_file/write_file/run_python) in a sandbox repo: inspect, edit, run, react to failures, verify. Context grows across rounds through real tool results. Passes only when the planted bug is fixed and ground truth (main.py prints 5) holds.",
+  "harness": ["openai-api"],
+  "runner": "tests/runners/agent_coding.py",
+  "endpoint_var": "LLAMA_ENDPOINT",
+  "acceptance": {
+    "min_score": 1.0,
+    "required_observations": ["ground truth: main.py prints '5'"]
+  },
+  "examples": [
+    "python tests/runners/agent_coding.py --endpoint http://127.0.0.1:1234/v1 --model qwen3-coder",
+    "python tests/runners/agent_coding.py --max-rounds 15 --model qwen3.8-27b"
+  ]
+}

@@ -77,9 +77,24 @@ Tests are versioned evidence (semver), not benchmarks with required
 numbers. Add `tests/definitions/<id>.json` + a runner under
 `tests/runners/` that prints the evidence JSON contract (see
 `tests/lib.py` — one JSON doc on stdout). Capability classes: tools,
-mcp, vision, context, throughput, stability, startup, quality, other.
-If your change breaks an existing test's semantics, bump its version —
-old results keep their meaning.
+mcp, vision, context, throughput, stability, startup, quality,
+agent-task, other. If your change breaks an existing test's semantics,
+bump its version — old results keep their meaning.
+
+**Agents running experiments MUST also propose tests when the battery
+misses the workload.** If your experiment measures something the existing
+tests don't cover (large-context agent loops, coding with local files,
+a harness quirk), submit a test proposal in the same PR:
+
+1. `tests/definitions/<your-id>.json` — semver `1.0.0`, capability
+   class, runner path, acceptance criteria (what maps to pass/fail).
+2. Runner in `tests/runners/` emitting the evidence contract. Prefer a
+   GROUND-TRUTH check (a file printed the right value, a command exited
+   correctly) over the model's self-report.
+3. Run it once yourself and attach the evidence to your result.
+Admins review the proposal when merging (schema validation is
+automatic via `validate.py`; CI runs it on every PR). A test nobody
+proposed is how phantom wins like short-prompt PP sneak through.
 
 ## Harness-level capability testing (pi / omp / oh-my-pi)
 
