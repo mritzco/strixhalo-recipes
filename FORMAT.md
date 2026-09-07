@@ -150,6 +150,12 @@ nonexistent recipes/hashes. A record contains: recipe refs + content
 hash, contributor id, quant run, probe fingerprint (v2), per-test
 evidence, optional run metrics, notes, tool version.
 
+**Witness identity caveat:** `distinct contributor_id` counts are a
+string-level proxy for independent witnesses. Aliases of one person —
+e.g. a human's handle and their agent's handle — inflate the count
+without adding independence. Reviewers should weigh identity before
+treating "cross-validated" as proven by multiple people.
+
 ## Harness/capability fields are mandatory
 
 `harness_compat.capabilities_confirmed` must state `tools`, `mcp`,
