@@ -24,8 +24,8 @@
   },
   {
     "id": "qwen3-coder",
-    "version": "0.1.0",
-    "content_hash": "sha256:8b452dd97af8d7f1dffca91d73dfde85644fd45bcf0fd2d7f93e831d4a547747",
+    "version": "0.2.0",
+    "content_hash": "sha256:10a6b27c4692fecfb31f72d60c82872b956495e783491d5b8f1afaf5e79d2585",
     "status": "experimental",
     "quant": "UD-Q4_K_XL",
     "model_name": "Qwen3-Coder-30B-A3B-Instruct",
@@ -33,17 +33,19 @@
     "size_gb": 16.5,
     "vision": false,
     "tool_calling": true,
-    "objectives_primary": [],
+    "objectives_primary": [
+      "throughput"
+    ],
     "hardware_target": "strix-halo-128gb-unified",
     "engine": "llama.cpp",
     "os_family": "arch",
     "capabilities_confirmed": {
-      "tools": false,
+      "tools": true,
       "mcp": false,
       "vision": false
     },
-    "distinct_witnesses": 0,
-    "path": "recipes/qwen3-coder/qwen3-coder-v0.1.0.yaml"
+    "distinct_witnesses": 1,
+    "path": "recipes/qwen3-coder/qwen3-coder-v0.2.0.yaml"
   },
   {
     "id": "qwen3-instruct",
