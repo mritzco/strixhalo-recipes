@@ -101,10 +101,25 @@ proposed is how phantom wins like short-prompt PP sneak through.
 Server-level tool parsing is proven by `tool-roundtrip`; the full
 harness<->model loop is `harness-tool-use` (needs
 `--harness-cmd`/`$HARNESS_CMD`, else it honestly reports `not_run`).
+Pi is installed on the reference box (`pi`, config models.json → the
+llama-swap `local` provider); one-shot harness runs look like:
+`HARNESS_CMD='pi -p' python tests/runners/harness_tool_use.py --model qwen3-coder`
+with llama-swap up on 127.0.0.1:1234. Same contract works for omp
+wrappers. MCP-via-harness is the same path with an MCP-bearing prompt —
+no runner change needed, just the definition (propose one).
 Known reality on this box: Qwen coder/instruct are reliable agents;
 GLM-4.5-Air breaks omp tool-calling (never returns — stream parse
 failure) though it is fine in plain chat. A recipe that only proves chat
 works is an incomplete recipe.
+
+## Reading the results board
+
+`python tools/leaderboard.py` rewrites `LEADERBOARD.md` (landing:
+Models by latest activity — not a ranking — plus Latest tests) and
+`models/<id>.md` per-model pages (variants, runs, sources). Queries for
+stdout: `--sort tg|pp|witnesses|name --reverse --engine vulkan|rocm
+--cap tools|mcp|vision --min-witnesses N --json`. Personal (never
+committed): `--next` prints what *you* should run next on this machine.
 
 ## Adding support for a distro this repo doesn't cover
 

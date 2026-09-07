@@ -227,6 +227,25 @@ Evidence quality depends on the workload being representative:
 When the battery lacks a test for your workload, propose one with your
 experiment (see SKILL.md — tests/definitions PR, admin-reviewed).
 
+## Profiling & engine portability
+
+- **What the battery measures:** end-to-end serving throughput through
+  the OpenAI-compatible API (`tests/runners/throughput.py`), i.e. what a
+  client actually experiences (includes proxy/serialization overhead,
+  excludes model load). For raw kernel numbers use the backend's own
+  tools: `llama-bench` (needs a local GGUF path + backend flags) or
+  llama-server's Prometheus `/metrics` (start with `--metrics`). Both
+  are complementary — record which instrument you used in the test notes.
+- **Portability:** all runners speak OpenAI `/v1/chat/completions`, so
+  the battery works against llama.cpp servers, llama-swap, ollama, and
+  LM Studio's OpenAI endpoints. Caveats: `-ub`/`--cache-type-*`/
+  MTP/`--mmproj` are llama.cpp(-family) flags — recipes pin their engine
+  (`backend.engine`: llama.cpp | ollama | lemonade | other) so flag
+  semantics never leak across engines; image input (vision tests)
+  depends on the engine's multimodal support. If you run ollama or
+  lemonade, probe/collect may not auto-detect the backend yet — record
+  engine + version by hand in the recipe.
+
 ## License & contribution warranty
 
 Records under `recipes/`/`results/` and generated aggregates are CC0;
