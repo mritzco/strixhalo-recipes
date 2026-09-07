@@ -233,8 +233,8 @@
     },
     {
       "id": "qwen3.8-flash-next",
-      "version": "0.1.0",
-      "content_hash": "sha256:5ad6730ad596da3c9ebe28040f17c3216f6a714fca748de75537cc2dc29ab5cb",
+      "version": "0.2.0",
+      "content_hash": "sha256:e992773347c4dd2ec8bf7873918bfb460ddfc39d979af8c706271644068d82b8",
       "status": "experimental",
       "model_name": "Qwen3.8 Flash Next",
       "arch": "qwen4exp",
@@ -253,8 +253,8 @@
       "tool_model": true,
       "vision_model": false,
       "objectives_primary": [
-        "agent_capability",
-        "throughput"
+        "throughput",
+        "agent_capability"
       ],
       "capabilities_confirmed": {
         "tools": true,
@@ -263,13 +263,13 @@
       },
       "witnesses": 1,
       "distinct_witnesses": 1,
-      "pp": 1468.8,
-      "tg": 10.6,
+      "pp": 1798.1,
+      "tg": 18.0,
       "results": 1,
-      "n_variants": 1,
-      "last_run": "20260907T145347Z-f861271b",
+      "n_variants": 2,
+      "last_run": "20260907T153604Z-58c0cc83",
       "cross_validated": false,
-      "path": "recipes/qwen3.8-flash-next/qwen3.8-flash-next-v0.1.0.yaml"
+      "path": "recipes/qwen3.8-flash-next/qwen3.8-flash-next-v0.2.0.yaml"
     }
   ]
 }
