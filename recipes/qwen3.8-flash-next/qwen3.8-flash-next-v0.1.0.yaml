@@ -1,0 +1,151 @@
+id: qwen3.8-flash-next
+version: 0.1.0
+content_hash: sha256:5ad6730ad596da3c9ebe28040f17c3216f6a714fca748de75537cc2dc29ab5cb
+status: experimental
+created: '2026-09-07'
+author: mritzco
+license: CC0
+quant: UD-IQ4_XS
+lineage:
+  parents: []
+  rationale: "Root recipe for Qwen3.8-Flash-Next (125B-A6B MoE) intake on this box; no parent deployment exists in the registry."
+objectives:
+  primary:
+  - agent_capability
+  - throughput
+  secondary: []
+  not_optimized: []
+constraints:
+- fits_in_available_memory
+tradeoffs:
+- "UD-IQ4_XS (~87.25 GB, 3 shards) is the receipts' quant: 4-bit-ish MoE that is decode-bandwidth-friendly (A6B active) versus dense Q8_0 27B on this unified-memory box."
+- "Reasoning flags cap thinking-token burn: per the source post, without --reasoning-effort/--reasoning-budget this model spends its whole output budget on reasoning and emits nothing (finish=length); the budget is a guardrail, not a quality knob."
+- "Mainline engine without MTP: headline receipts (40 t/s decode) were measured on Nathan's strix-halo-vulkan fork + native MTP Q8_0 sidecar; this record is stock b10809 — expect lower decode, comparable prefill."
+model:
+  name: Qwen3.8 Flash Next
+  arch: qwen4exp
+  source: /home/itzco/models/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS
+  file_sha256: null
+  size_gb: 87.25
+  mtp: false
+  vision: false
+  tool_calling: true
+hardware:
+  target: strix-halo-128gb-unified
+  gpu_mem_split_gb: null
+  min_ram_gb: 124
+  mem_total_gb: 124.9
+  gtt_gib: 110.0
+  vram_mib: 512.0
+backend:
+  engine: llama.cpp
+  commit: 5266f24da7
+  build: '10809'
+  upstream: null
+  patches: []
+  install_method: distro-package
+  pkg_version: 0.4.0-1.1
+  build_flags: []
+  os_family: arch
+  kernel: 7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)
+  vulkan_version: 1.4.357
+  rocm_version: null
+launch:
+  command: /usr/bin/llama-server --model /home/itzco/models/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+    --alias qwen3.8-flash-next -ngl 999 --jinja -fa on -c 32768 --cache-type-k q8_0
+    --cache-type-v q8_0 -b 8192 -ub 2048 -np 1 --reasoning-effort medium --reasoning-budget
+    2048 --host 127.0.0.1 --port 8097
+  serving:
+    fronted_by: direct llama-server (no llama-swap)
+    endpoint: http://127.0.0.1:8097/v1
+    note: 'One GPU rule: single llama-server on 127.0.0.1:8097 for this intake run; llama-swap (127.0.0.1:1234) not involved.'
+parameters:
+  ctx_size:
+    value: 32768
+    annotations:
+    - type: recommendation
+      text: "Intake ctx 32k covers the test battery (context-recall@4096, throughput PP ~8192). Source post ran 65536 default (131k allocates fine on 128GB) for agent sessions that inject large prompts; this record's 32k keeps KV modest while weights (87.25GB) + cache fit GTT (~110 GiB). https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
+  cache_type_k:
+    value: q8_0
+    annotations:
+    - type: quality
+      text: "Q8_0 K-cache preserves long-context quality; same choice as the source post's fork config and the mainline commenter's flags (-fa 1 --cache-type-k q8_0 --cache-type-v q8_0). https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
+  cache_type_v:
+    value: q8_0
+    annotations:
+    - type: quality
+      text: "Q8_0 V-cache mirrors K (source post: 'q8_0 both'); memory cost is acceptable at 32k ctx. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
+  ngl:
+    value: '999'
+    annotations:
+    - type: recommendation
+      text: "Full layer offload to the unified GTT heap (~110 GiB) — required for a 87GB+ model on this box; Vulkan/radv only (no ROCm)."
+  flash_attn:
+    value: true
+    annotations:
+    - type: required
+      text: "-fa on for Flash Attention; the mainline commenter on the same model used -fa 1. FA keeps attention memory/bandwidth sane at long ctx on Vulkan. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
+  jinja:
+    value: true
+    annotations:
+    - type: required
+      text: "--jinja parses structured tool_calls; without it tool syntax leaks into chat and harness tool use (tool-roundtrip/agent-coding) breaks."
+  batch_size:
+    value: 8192
+    annotations:
+    - type: performance
+      text: "-b 8192 logical batch (mainline commenter's flags) for fast prompt processing on Vulkan. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
+  ubatch_size:
+    value: 2048
+    annotations:
+    - type: performance
+      text: "-ub 2048 physical max batch — the mainline commenter's prefill-speed setting (-b 8192 -ub 2048); default is 512. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
+  parallel:
+    value: 1
+    annotations:
+    - type: recommendation
+      text: "-np 1 single slot: one client at a time on this intake; avoids splitting KV across slots and matches the commenter's --parallel 1."
+  reasoning_effort:
+    value: medium
+    annotations:
+    - type: required
+      text: "THE load-bearing flag per source post: '--reasoning-effort medium --reasoning-budget 2048. Without them, this model burns its entire output budget on reasoning and emits nothing, 8.5k chars of thinking, zero content, finish=length.' Server-native, template-independent. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
+  reasoning_budget:
+    value: 2048
+    annotations:
+    - type: required
+      text: "Guardrail against reasoning burn-out (see reasoning_effort). Source A/B: 8x the budget scored worse and never touched the cap — budget is not a quality knob. Enforced per-request unless clients override. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
+annotations:
+- type: experimental
+  text: "First intake record for Qwen3.8-Flash-Next (2026-09-07, mainline llama.cpp b10809 distro package, Vulkan/radv). capabilities_confirmed set only from the tests that actually ran this session."
+- type: warning
+  text: "ENGINE CAVEAT — headline receipts (40 t/s sustained decode, 353 t/s prefill aggregate, MTP draft acceptance ~74%) were measured on Nathan's strix-halo-vulkan FORK built from source, with the native MTP head as a Q8_0 sidecar (~4GB, fixed n4), NOT on mainline. This record runs stock b10809 without MTP: an honest mainline baseline, not a reproduction of the fork numbers. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
+- type: compatibility
+  text: "Flag-support finding on THIS build (b10809, commit 5266f24da7, 2026-09-07): --reasoning-effort/--reasoning-budget/--reasoning-format present; --load-mode/--lazy-mode/--ctx-checkpoints/--cache-ram/-fa/-ctk/-ctv/-ub/-np present. MTP: --spec-type advertises draft-mtp and unsloth/Qwen3.8-Flash-Next-GGUF ships an MTP head (MTP/mtp-Qwen3.8-Flash-Next-Q8_0.gguf, 4.14GB) — but an empirical load attempt (main model + -md <Q8_0 head> --spec-type draft-mtp --spec-draft-n-max 4) FAILED on mainline b10809: 'check_tensor_dims: tensor output_hc_norm.weight not found' for both the main-model MTP check and the standalone head. Mainline draft-mtp expects MTP tensors integrated in the model file; the standalone-head arrangement only works on Nathan's fork. Per the MTP thread, mainline MTP waited on unmerged PR #28243 (ROCm additionally #27836/#28097/#28118). This record therefore runs WITHOUT MTP. https://www.reddit.com/r/StrixHalo/comments/1w6t58a/"
+- type: recommendation
+  text: "Quant pinned at HF revision 38bb39ee97821de2c9009abb7e93950eec396e66 of unsloth/Qwen3.8-Flash-Next-GGUF (repo lastModified 2026-09-02): UD-IQ4_XS, 3 shards, ~93.7e9 bytes (~87.25 GiB). Source post warns the author re-uploads under the same names — pin the revision (this intake downloaded with --revision <sha> to ~/models/Qwen3.8-Flash-Next-GGUF/). https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
+- type: evidence
+  text: "Sanity probe before battery: identity + short-task prompt answered coherently as Qwen with no identity leak / no malformed control tokens (source post warns wrong GGUF/template can leak e.g. 'KDiff by Moonshot AI'). https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
+harness_compat:
+  tested_with:
+  - openai-api
+  exposes_as: OpenAI-compatible /v1 on http://127.0.0.1:8097 (direct llama-server, --alias qwen3.8-flash-next)
+  capabilities_confirmed:
+    tools: true
+    mcp: false
+    vision: false
+tests:
+- id: tool-roundtrip
+  expect: pass
+- id: agent-coding
+  expect: pass
+  args:
+    max_rounds: 8
+- id: throughput
+  expect: pass
+- id: context-recall
+  expect:
+    min_score: 1.0
+  args:
+    ctx: 4096
+failure_notes: null

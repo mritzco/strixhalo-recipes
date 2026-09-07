@@ -230,6 +230,46 @@
       "last_run": "20260907T101808Z-208ff830",
       "cross_validated": false,
       "path": "recipes/qwen3.8-27b-vl/qwen3.8-27b-vl-v0.1.0.yaml"
+    },
+    {
+      "id": "qwen3.8-flash-next",
+      "version": "0.1.0",
+      "content_hash": "sha256:5ad6730ad596da3c9ebe28040f17c3216f6a714fca748de75537cc2dc29ab5cb",
+      "status": "experimental",
+      "model_name": "Qwen3.8 Flash Next",
+      "arch": "qwen4exp",
+      "source": "/home/itzco/models/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS",
+      "engine": "llama.cpp",
+      "backend": "vulkan",
+      "os_family": "arch",
+      "hardware_target": "strix-halo-128gb-unified",
+      "size_gb": 87.25,
+      "quant": "UD-IQ4_XS",
+      "quants": [
+        "UD-IQ4_XS"
+      ],
+      "vision": false,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": false,
+      "objectives_primary": [
+        "agent_capability",
+        "throughput"
+      ],
+      "capabilities_confirmed": {
+        "tools": true,
+        "mcp": false,
+        "vision": false
+      },
+      "witnesses": 1,
+      "distinct_witnesses": 1,
+      "pp": 1468.8,
+      "tg": 10.6,
+      "results": 1,
+      "n_variants": 1,
+      "last_run": "20260907T145347Z-f861271b",
+      "cross_validated": false,
+      "path": "recipes/qwen3.8-flash-next/qwen3.8-flash-next-v0.1.0.yaml"
     }
   ]
 }

@@ -2,6 +2,41 @@
   "store_version": 1,
   "runs": [
     {
+      "run_id": "20260907T145347Z-f861271b",
+      "ts": "20260907T1453",
+      "contributor_id": "flash-pilot",
+      "recipe_version": "0.1.0",
+      "quant": "UD-IQ4_XS",
+      "content_hash": "sha256:5ad6730ad596da3c9ebe28040f17c3216f6a714fca748de75537cc2dc29ab5cb",
+      "hash": "5ad673",
+      "pp": 1468.8,
+      "tg": 10.6,
+      "tests": [
+        {
+          "id": "tool-roundtrip",
+          "result": "pass",
+          "score": null
+        },
+        {
+          "id": "agent-coding",
+          "result": "pass",
+          "score": null
+        },
+        {
+          "id": "throughput",
+          "result": "pass",
+          "score": null
+        },
+        {
+          "id": "context-recall",
+          "result": "pass",
+          "score": null
+        }
+      ],
+      "notes": "mainline llama.cpp b10809 Vulkan distro pkg (commit 5266f24da7) UD-IQ4_XS 87.25GB @ HF rev 38bb39ee; NO MTP sidecar, NO Nathan fork. Receipt headline 40 t/s decode was fork+MTP; this run: server-side steady decode ~20-22 t/s (llama-server eval timing), runner TG mean 10.6 t/s contaminated by one cold-PP round (37.4s); cold prompt eval 10947 tok = 320 t/s (llama-server timing); runner tokens_per_sec_pp=1468.8 is a prefix-cache artifact (identical sys prompt warmed in slot; not cold PP). Reasoning flags active (effort medium, budget 2048): at 64-token cap completions burn on reasoning (finish=length) \u2014 reasoning-flag effect on short outputs; agent sessions with content budget unaffected. Compare honestly vs reddit 1w6cf5t fork numbers.",
+      "model_id": "qwen3.8-flash-next"
+    },
+    {
       "run_id": "20260907T125002Z-5aacbd75",
       "ts": "20260907T1250",
       "contributor_id": "itzco",
