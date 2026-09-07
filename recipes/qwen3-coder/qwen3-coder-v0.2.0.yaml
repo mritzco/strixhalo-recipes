@@ -77,11 +77,7 @@ parameters:
       evidence:
         runs:
         - 20260907T113818Z-606aff40
-annotations:
-- type: experimental
-  text: Auto-collected draft (2026-09-07); capabilities_confirmed are all false until
-    real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs,
-    and evidence refs per the v0.3 data model.
+annotations: []
 harness_compat:
   tested_with:
   - openai-api

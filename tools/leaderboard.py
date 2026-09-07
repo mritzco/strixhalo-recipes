@@ -106,11 +106,21 @@ def main():
                 lines.append(f"  - test `{tid}`: {passed}/{total} passed"
                              + (f" ({extra})" if extra else ""))
 
-        # dimension medians
-        tg = [res.get("metrics", {}).get("tokens_per_sec_tg")
-              for res in results if res.get("metrics", {}).get("tokens_per_sec_tg")]
-        pp = [res.get("metrics", {}).get("tokens_per_sec_pp")
-              for res in results if res.get("metrics", {}).get("tokens_per_sec_pp")]
+        # dimension medians: run-level metrics, plus test-level metrics
+        # from throughput evidence entries (single source of truth)
+        tg, pp = [], []
+        for res in results:
+            rm = res.get("metrics") or {}
+            if rm.get("tokens_per_sec_tg"):
+                tg.append(rm["tokens_per_sec_tg"])
+            if rm.get("tokens_per_sec_pp"):
+                pp.append(rm["tokens_per_sec_pp"])
+            for t in res.get("tests", []):
+                tm = t.get("metrics") or {}
+                if tm.get("tokens_per_sec_tg"):
+                    tg.append(tm["tokens_per_sec_tg"])
+                if tm.get("tokens_per_sec_pp"):
+                    pp.append(tm["tokens_per_sec_pp"])
         qs = sorted({res.get("quant") for res in results} - {None})
         dims = []
         if median(pp) is not None:
