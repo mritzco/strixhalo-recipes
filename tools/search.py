@@ -37,7 +37,8 @@ def main():
     if not INDEX_PATH.exists():
         raise SystemExit("index.json not found — run tools/build_index.py first.")
     with open(INDEX_PATH) as f:
-        entries = json.load(f)
+        doc = json.load(f)
+    entries = doc.get("models") if isinstance(doc, dict) else doc
 
     def hay(e):
         return f"{e.get('model_name','')} {e.get('id','')}"

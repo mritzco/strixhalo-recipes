@@ -1,0 +1,330 @@
+{
+  "store_version": 1,
+  "model": {
+    "id": "qwen3-coder",
+    "recipe": {
+      "id": "qwen3-coder",
+      "version": "0.2.1",
+      "content_hash": "sha256:10a6b27c4692fecfb31f72d60c82872b956495e783491d5b8f1afaf5e79d2585",
+      "status": "experimental",
+      "created": "2026-09-07",
+      "author": "itzco",
+      "license": "CC0",
+      "quant": "UD-Q4_K_XL",
+      "lineage": {
+        "parents": [
+          {
+            "id": "qwen3-coder",
+            "version": "0.1.0",
+            "contribution": "MoE ubatch tuning: -ub 2048 per Strix Halo community fork guidance for faster PP"
+          }
+        ],
+        "rationale": "Variant of qwen3-coder draft: raise ubatch per community MoE guidance; follow-up at 11k prompt tokens shows no PP effect on Vulkan/radv (fork kernels are ROCm-targeted) \u2014 flag retained as neutral variant."
+      },
+      "objectives": {
+        "primary": [
+          "throughput"
+        ],
+        "secondary": [],
+        "not_optimized": []
+      },
+      "constraints": [],
+      "tradeoffs": [],
+      "model": {
+        "name": "Qwen3-Coder-30B-A3B-Instruct",
+        "arch": "qwen3moe",
+        "source": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF",
+        "file_sha256": null,
+        "size_gb": 16.5,
+        "mtp": false,
+        "vision": false,
+        "tool_calling": true
+      },
+      "hardware": {
+        "target": "strix-halo-128gb-unified",
+        "gpu_mem_split_gb": null,
+        "min_ram_gb": 124,
+        "mem_total_gb": 124.9,
+        "gtt_gib": 110.0,
+        "vram_mib": 512.0
+      },
+      "backend": {
+        "engine": "llama.cpp",
+        "commit": "5266f24da7",
+        "build": "10809",
+        "build_flags": [],
+        "os_family": "arch",
+        "kernel": "7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)",
+        "vulkan_version": "1.4.357",
+        "rocm_version": null
+      },
+      "launch": {
+        "command": "/usr/bin/llama-server -hf unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:UD-Q4_K_XL -ngl 999 --jinja -c 131072 -fa on -ub 2048 --port ${PORT}",
+        "serving": {
+          "fronted_by": "llama-swap",
+          "endpoint": "http://127.0.0.1:1234/v1",
+          "note": "llama-swap substitutes ${PORT} per child server; each config entry needs proxy: http://127.0.0.1:${PORT} (llama-server binds IPv4 only). ttl=1800"
+        }
+      },
+      "parameters": {
+        "ctx_size": {
+          "value": 131072,
+          "annotations": []
+        },
+        "ngl": {
+          "value": "999",
+          "annotations": []
+        },
+        "flash_attn": {
+          "value": true,
+          "annotations": []
+        },
+        "jinja": {
+          "value": true,
+          "annotations": []
+        },
+        "ubatch": {
+          "value": 2048,
+          "annotations": [
+            {
+              "type": "evidence",
+              "text": "-ub 2048 per Strix Halo community fork guidance (reddit 1w82ztz; github.com/halo-box/strix-llama.cpp pull-18). Matched runs on THIS box (Vulkan/radv, b10809): no measurable PP difference vs default ubatch at ~1.4k or ~11k prompt tokens (75.3k vs 74.8k tok/s). The fork's kernel wins are ROCm-only; revisit under ROCm.",
+              "evidence": {
+                "runs": [
+                  "20260907T113818Z-606aff40",
+                  "20260907T115825Z-95cb6c77"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "annotations": [],
+      "harness_compat": {
+        "tested_with": [
+          "openai-api"
+        ],
+        "exposes_as": "OpenAI-compatible /v1 (llama-server direct on 127.0.0.1)",
+        "capabilities_confirmed": {
+          "tools": true,
+          "mcp": false,
+          "vision": false
+        }
+      },
+      "tests": [
+        {
+          "id": "throughput",
+          "expect": "pass"
+        },
+        {
+          "id": "tool-roundtrip",
+          "expect": "pass"
+        },
+        {
+          "id": "agent-coding",
+          "expect": "pass"
+        }
+      ],
+      "failure_notes": null
+    },
+    "variants": [
+      {
+        "content_hash": "sha256:10a6b27c4692fecfb31f72d60c82872b956495e783491d5b8f1afaf5e79d2585",
+        "hash": "10a6b2",
+        "version": "0.2.1",
+        "quant": [
+          "UD-Q4_K_XL"
+        ],
+        "results": 3,
+        "witnesses": 2,
+        "witness_ids": [
+          "itzco",
+          "pilot-itzco"
+        ],
+        "pp": 41023.2,
+        "tg": 58.1,
+        "tests": {
+          "agent-coding": {
+            "pass": 1
+          },
+          "throughput": {
+            "pass": 2
+          },
+          "tool-roundtrip": {
+            "pass": 1
+          }
+        },
+        "declared": [
+          "agent-coding",
+          "throughput",
+          "tool-roundtrip"
+        ]
+      },
+      {
+        "content_hash": "sha256:8b452dd97af8d7f1dffca91d73dfde85644fd45bcf0fd2d7f93e831d4a547747",
+        "hash": "8b452d",
+        "version": "0.1.0",
+        "quant": [
+          "UD-Q4_K_XL"
+        ],
+        "results": 3,
+        "witnesses": 2,
+        "witness_ids": [
+          "itzco",
+          "pilot-itzco"
+        ],
+        "pp": 39223.4,
+        "tg": 56.9,
+        "tests": {
+          "harness-tool-use": {
+            "pass": 1
+          },
+          "throughput": {
+            "pass": 2
+          },
+          "tool-roundtrip": {
+            "pass": 1
+          }
+        },
+        "declared": []
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "20260907T113728Z-69dd3c5b",
+        "ts": "20260907T1137",
+        "contributor_id": "pilot-itzco",
+        "recipe_version": "0.1.0",
+        "quant": "UD-Q4_K_XL",
+        "content_hash": "sha256:8b452dd97af8d7f1dffca91d73dfde85644fd45bcf0fd2d7f93e831d4a547747",
+        "hash": "8b452d",
+        "pp": 3655.5,
+        "tg": 64.4,
+        "tests": [
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "tool-roundtrip",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "baseline default ubatch on Vulkan; source post: reddit 1w82ztz",
+        "model_id": "qwen3-coder"
+      },
+      {
+        "run_id": "20260907T113818Z-606aff40",
+        "ts": "20260907T1138",
+        "contributor_id": "pilot-itzco",
+        "recipe_version": "0.2.0",
+        "quant": "UD-Q4_K_XL",
+        "content_hash": "sha256:10a6b27c4692fecfb31f72d60c82872b956495e783491d5b8f1afaf5e79d2585",
+        "hash": "10a6b2",
+        "pp": 6728.7,
+        "tg": 66.9,
+        "tests": [
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "tool-roundtrip",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "-ub 2048; PP delta vs baseline reported in commit message; source post reddit 1w82ztz",
+        "model_id": "qwen3-coder"
+      },
+      {
+        "run_id": "20260907T115824Z-1a9cd9cc",
+        "ts": "20260907T1158",
+        "contributor_id": "itzco",
+        "recipe_version": "0.1.0",
+        "quant": "UD-Q4_K_XL",
+        "content_hash": "sha256:8b452dd97af8d7f1dffca91d73dfde85644fd45bcf0fd2d7f93e831d4a547747",
+        "hash": "8b452d",
+        "pp": 74791.3,
+        "tg": 49.3,
+        "tests": [
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "long-context follow-up (11k tokens PP): default ubatch; matches -ub 2048 within noise on Vulkan",
+        "model_id": "qwen3-coder"
+      },
+      {
+        "run_id": "20260907T115825Z-95cb6c77",
+        "ts": "20260907T1158",
+        "contributor_id": "itzco",
+        "recipe_version": "0.2.0",
+        "quant": "UD-Q4_K_XL",
+        "content_hash": "sha256:10a6b27c4692fecfb31f72d60c82872b956495e783491d5b8f1afaf5e79d2585",
+        "hash": "10a6b2",
+        "pp": 75317.8,
+        "tg": 49.3,
+        "tests": [
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "long-context follow-up (11k tokens PP): -ub 2048 shows no PP gain over default on Vulkan/radv (fork kernels are ROCm-targeted)",
+        "model_id": "qwen3-coder"
+      },
+      {
+        "run_id": "20260907T121730Z-64aa0e84",
+        "ts": "20260907T1217",
+        "contributor_id": "itzco",
+        "recipe_version": "0.2.1",
+        "quant": "UD-Q4_K_XL",
+        "content_hash": "sha256:10a6b27c4692fecfb31f72d60c82872b956495e783491d5b8f1afaf5e79d2585",
+        "hash": "10a6b2",
+        "pp": null,
+        "tg": null,
+        "tests": [
+          {
+            "id": "agent-coding",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "agent-coding: multi-round file edit + run loop; sandbox bug fixed, ground truth verified (main.py -> 5)",
+        "model_id": "qwen3-coder"
+      },
+      {
+        "run_id": "20260907T125002Z-5aacbd75",
+        "ts": "20260907T1250",
+        "contributor_id": "itzco",
+        "recipe_version": "0.1.0",
+        "quant": "UD-Q4_K_XL",
+        "content_hash": "sha256:8b452dd97af8d7f1dffca91d73dfde85644fd45bcf0fd2d7f93e831d4a547747",
+        "hash": "8b452d",
+        "pp": null,
+        "tg": null,
+        "tests": [
+          {
+            "id": "harness-tool-use",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "pi harness one-shot (pi -p, provider local -> llama-swap qwen3-coder): tool loop through a real agent harness; result 42 observed. First harness-level evidence in the battery.",
+        "model_id": "qwen3-coder"
+      }
+    ],
+    "counts": {
+      "results": 6,
+      "witnesses": 2,
+      "cross_validated": true
+    }
+  }
+}

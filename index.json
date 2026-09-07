@@ -1,148 +1,235 @@
-[
-  {
-    "id": "glm-4.5-air",
-    "version": "0.1.0",
-    "content_hash": "sha256:64526052067adf9fcec8e000c9220cf765c8532f3a855f4896687d458f192508",
-    "status": "experimental",
-    "quant": "UD-Q4_K_XL",
-    "model_name": "Glm-4.5-Air",
-    "arch": "glm4moe",
-    "size_gb": 46.2,
-    "vision": false,
-    "tool_calling": true,
-    "objectives_primary": [],
-    "hardware_target": "strix-halo-128gb-unified",
-    "engine": "llama.cpp",
-    "os_family": "arch",
-    "capabilities_confirmed": {
-      "tools": false,
-      "mcp": false,
-      "vision": false
+{
+  "store_version": 1,
+  "models": [
+    {
+      "id": "glm-4.5-air",
+      "version": "0.1.0",
+      "content_hash": "sha256:64526052067adf9fcec8e000c9220cf765c8532f3a855f4896687d458f192508",
+      "status": "experimental",
+      "model_name": "Glm-4.5-Air",
+      "arch": "glm4moe",
+      "source": "unsloth/GLM-4.5-Air-GGUF",
+      "engine": "llama.cpp",
+      "backend": "vulkan",
+      "os_family": "arch",
+      "hardware_target": "strix-halo-128gb-unified",
+      "size_gb": 46.2,
+      "quant": "UD-Q4_K_XL",
+      "quants": [
+        "UD-Q4_K_XL"
+      ],
+      "vision": false,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": false,
+      "objectives_primary": [],
+      "capabilities_confirmed": {
+        "tools": false,
+        "mcp": false,
+        "vision": false
+      },
+      "witnesses": 0,
+      "distinct_witnesses": 0,
+      "pp": null,
+      "tg": null,
+      "results": 0,
+      "n_variants": 1,
+      "last_run": "",
+      "cross_validated": false,
+      "path": "recipes/glm-4.5-air/glm-4.5-air-v0.1.0.yaml"
     },
-    "distinct_witnesses": 0,
-    "path": "recipes/glm-4.5-air/glm-4.5-air-v0.1.0.yaml"
-  },
-  {
-    "id": "qwen3-coder",
-    "version": "0.2.1",
-    "content_hash": "sha256:10a6b27c4692fecfb31f72d60c82872b956495e783491d5b8f1afaf5e79d2585",
-    "status": "experimental",
-    "quant": "UD-Q4_K_XL",
-    "model_name": "Qwen3-Coder-30B-A3B-Instruct",
-    "arch": "qwen3moe",
-    "size_gb": 16.5,
-    "vision": false,
-    "tool_calling": true,
-    "objectives_primary": [
-      "throughput"
-    ],
-    "hardware_target": "strix-halo-128gb-unified",
-    "engine": "llama.cpp",
-    "os_family": "arch",
-    "capabilities_confirmed": {
-      "tools": true,
-      "mcp": false,
-      "vision": false
+    {
+      "id": "qwen3-coder",
+      "version": "0.2.1",
+      "content_hash": "sha256:10a6b27c4692fecfb31f72d60c82872b956495e783491d5b8f1afaf5e79d2585",
+      "status": "experimental",
+      "model_name": "Qwen3-Coder-30B-A3B-Instruct",
+      "arch": "qwen3moe",
+      "source": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF",
+      "engine": "llama.cpp",
+      "backend": "vulkan",
+      "os_family": "arch",
+      "hardware_target": "strix-halo-128gb-unified",
+      "size_gb": 16.5,
+      "quant": "UD-Q4_K_XL",
+      "quants": [
+        "UD-Q4_K_XL"
+      ],
+      "vision": false,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": false,
+      "objectives_primary": [
+        "throughput"
+      ],
+      "capabilities_confirmed": {
+        "tools": true,
+        "mcp": false,
+        "vision": false
+      },
+      "witnesses": 2,
+      "distinct_witnesses": 2,
+      "pp": 41023.2,
+      "tg": 58.1,
+      "results": 3,
+      "n_variants": 2,
+      "last_run": "20260907T125002Z-5aacbd75",
+      "cross_validated": true,
+      "path": "recipes/qwen3-coder/qwen3-coder-v0.2.1.yaml"
     },
-    "distinct_witnesses": 2,
-    "path": "recipes/qwen3-coder/qwen3-coder-v0.2.1.yaml"
-  },
-  {
-    "id": "qwen3-instruct",
-    "version": "0.1.0",
-    "content_hash": "sha256:103ea9ab2ac4035a5bb2b5eace2648618b5bc47053b43620d07b8543e59a2c5a",
-    "status": "experimental",
-    "quant": "UD-Q4_K_XL",
-    "model_name": "Qwen3-30B-A3B-Instruct-2507",
-    "arch": "qwen3moe",
-    "size_gb": 16.5,
-    "vision": false,
-    "tool_calling": true,
-    "objectives_primary": [],
-    "hardware_target": "strix-halo-128gb-unified",
-    "engine": "llama.cpp",
-    "os_family": "arch",
-    "capabilities_confirmed": {
-      "tools": false,
-      "mcp": false,
-      "vision": false
+    {
+      "id": "qwen3-instruct",
+      "version": "0.1.0",
+      "content_hash": "sha256:103ea9ab2ac4035a5bb2b5eace2648618b5bc47053b43620d07b8543e59a2c5a",
+      "status": "experimental",
+      "model_name": "Qwen3-30B-A3B-Instruct-2507",
+      "arch": "qwen3moe",
+      "source": "unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF",
+      "engine": "llama.cpp",
+      "backend": "vulkan",
+      "os_family": "arch",
+      "hardware_target": "strix-halo-128gb-unified",
+      "size_gb": 16.5,
+      "quant": "UD-Q4_K_XL",
+      "quants": [
+        "UD-Q4_K_XL"
+      ],
+      "vision": false,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": false,
+      "objectives_primary": [],
+      "capabilities_confirmed": {
+        "tools": false,
+        "mcp": false,
+        "vision": false
+      },
+      "witnesses": 0,
+      "distinct_witnesses": 0,
+      "pp": null,
+      "tg": null,
+      "results": 0,
+      "n_variants": 1,
+      "last_run": "",
+      "cross_validated": false,
+      "path": "recipes/qwen3-instruct/qwen3-instruct-v0.1.0.yaml"
     },
-    "distinct_witnesses": 0,
-    "path": "recipes/qwen3-instruct/qwen3-instruct-v0.1.0.yaml"
-  },
-  {
-    "id": "qwen3-vl",
-    "version": "0.1.0",
-    "content_hash": "sha256:2bb42ddd78be743b6cbab0227e361100b5fe92fdecc3147fc32471f7825f3b43",
-    "status": "experimental",
-    "quant": "UD-Q4_K_XL",
-    "model_name": "Qwen3-Vl-30B-A3B-Instruct",
-    "arch": "qwen3vlmoe",
-    "size_gb": 16.5,
-    "vision": true,
-    "tool_calling": true,
-    "objectives_primary": [],
-    "hardware_target": "strix-halo-128gb-unified",
-    "engine": "llama.cpp",
-    "os_family": "arch",
-    "capabilities_confirmed": {
-      "tools": false,
-      "mcp": false,
-      "vision": false
+    {
+      "id": "qwen3-vl",
+      "version": "0.1.0",
+      "content_hash": "sha256:2bb42ddd78be743b6cbab0227e361100b5fe92fdecc3147fc32471f7825f3b43",
+      "status": "experimental",
+      "model_name": "Qwen3-Vl-30B-A3B-Instruct",
+      "arch": "qwen3vlmoe",
+      "source": "unsloth/Qwen3-VL-30B-A3B-Instruct-GGUF",
+      "engine": "llama.cpp",
+      "backend": "vulkan",
+      "os_family": "arch",
+      "hardware_target": "strix-halo-128gb-unified",
+      "size_gb": 16.5,
+      "quant": "UD-Q4_K_XL",
+      "quants": [
+        "UD-Q4_K_XL"
+      ],
+      "vision": true,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": true,
+      "objectives_primary": [],
+      "capabilities_confirmed": {
+        "tools": false,
+        "mcp": false,
+        "vision": false
+      },
+      "witnesses": 0,
+      "distinct_witnesses": 0,
+      "pp": null,
+      "tg": null,
+      "results": 0,
+      "n_variants": 1,
+      "last_run": "",
+      "cross_validated": false,
+      "path": "recipes/qwen3-vl/qwen3-vl-v0.1.0.yaml"
     },
-    "distinct_witnesses": 0,
-    "path": "recipes/qwen3-vl/qwen3-vl-v0.1.0.yaml"
-  },
-  {
-    "id": "qwen3.8-27b",
-    "version": "0.1.0",
-    "content_hash": "sha256:9a8be2430a2451c519b0a2fb5993d85bdd22be771d1924f037ba713211b056c3",
-    "status": "experimental",
-    "quant": "Q8_0",
-    "model_name": "Qwen3.8-27B",
-    "arch": "qwen35",
-    "size_gb": 27.1,
-    "vision": false,
-    "tool_calling": true,
-    "objectives_primary": [
-      "agent_capability",
-      "context_reliability"
-    ],
-    "hardware_target": "strix-halo-128gb-unified",
-    "engine": "llama.cpp",
-    "os_family": "arch",
-    "capabilities_confirmed": {
-      "tools": true,
-      "mcp": false,
-      "vision": false
+    {
+      "id": "qwen3.8-27b",
+      "version": "0.1.0",
+      "content_hash": "sha256:9a8be2430a2451c519b0a2fb5993d85bdd22be771d1924f037ba713211b056c3",
+      "status": "experimental",
+      "model_name": "Qwen3.8-27B",
+      "arch": "qwen35",
+      "source": "/home/itzco/models/Qwen3.8-27B-GGUF",
+      "engine": "llama.cpp",
+      "backend": "vulkan",
+      "os_family": "arch",
+      "hardware_target": "strix-halo-128gb-unified",
+      "size_gb": 27.1,
+      "quant": "Q8_0",
+      "quants": [
+        "Q8_0"
+      ],
+      "vision": false,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": false,
+      "objectives_primary": [
+        "agent_capability",
+        "context_reliability"
+      ],
+      "capabilities_confirmed": {
+        "tools": true,
+        "mcp": false,
+        "vision": false
+      },
+      "witnesses": 1,
+      "distinct_witnesses": 1,
+      "pp": null,
+      "tg": 7.3,
+      "results": 1,
+      "n_variants": 1,
+      "last_run": "20260907T101808Z-7a56d591",
+      "cross_validated": false,
+      "path": "recipes/qwen3.8-27b/qwen3.8-27b-v0.1.0.yaml"
     },
-    "distinct_witnesses": 1,
-    "path": "recipes/qwen3.8-27b/qwen3.8-27b-v0.1.0.yaml"
-  },
-  {
-    "id": "qwen3.8-27b-vl",
-    "version": "0.1.0",
-    "content_hash": "sha256:ec321c183c0d6489eff9d7cc09d27d2357df5ddd2335d946301cf24e536723ac",
-    "status": "experimental",
-    "quant": "Q8_0",
-    "model_name": "Qwen3.8-27B",
-    "arch": "qwen35",
-    "size_gb": 27.1,
-    "vision": true,
-    "tool_calling": true,
-    "objectives_primary": [
-      "vision",
-      "agent_capability"
-    ],
-    "hardware_target": "strix-halo-128gb-unified",
-    "engine": "llama.cpp",
-    "os_family": "arch",
-    "capabilities_confirmed": {
-      "tools": true,
-      "mcp": false,
-      "vision": true
-    },
-    "distinct_witnesses": 1,
-    "path": "recipes/qwen3.8-27b-vl/qwen3.8-27b-vl-v0.1.0.yaml"
-  }
-]
+    {
+      "id": "qwen3.8-27b-vl",
+      "version": "0.1.0",
+      "content_hash": "sha256:ec321c183c0d6489eff9d7cc09d27d2357df5ddd2335d946301cf24e536723ac",
+      "status": "experimental",
+      "model_name": "Qwen3.8-27B",
+      "arch": "qwen35",
+      "source": "/home/itzco/models/Qwen3.8-27B-GGUF",
+      "engine": "llama.cpp",
+      "backend": "vulkan",
+      "os_family": "arch",
+      "hardware_target": "strix-halo-128gb-unified",
+      "size_gb": 27.1,
+      "quant": "Q8_0",
+      "quants": [
+        "Q8_0"
+      ],
+      "vision": true,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": true,
+      "objectives_primary": [
+        "vision",
+        "agent_capability"
+      ],
+      "capabilities_confirmed": {
+        "tools": true,
+        "mcp": false,
+        "vision": true
+      },
+      "witnesses": 1,
+      "distinct_witnesses": 1,
+      "pp": null,
+      "tg": null,
+      "results": 1,
+      "n_variants": 1,
+      "last_run": "20260907T101808Z-208ff830",
+      "cross_validated": false,
+      "path": "recipes/qwen3.8-27b-vl/qwen3.8-27b-vl-v0.1.0.yaml"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Pre-commit: validate the registry and keep generated stores/board fresh.
+# A recipe/result cannot be committed if it fails validation or leaves
+# index.json / runs.json / models/ / LEADERBOARD.md stale.
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+if [ -x /tmp/recvenv/bin/python ]; then
+  PY=/tmp/recvenv/bin/python
+else
+  PY=python3
+fi
+
+echo "[hooks] validate.py --strict"
+$PY tools/validate.py --strict
+
+echo "[hooks] build_index.py (json stores)"
+$PY tools/build_index.py
+
+echo "[hooks] leaderboard.py (markdown board)"
+$PY tools/leaderboard.py >/dev/null
+
+GENERATED="index.json runs.json models/ LEADERBOARD.md"
+if ! git diff --quiet --exit-code -- $GENERATED; then
+  echo "::error:: generated files are stale after your change:"
+  git diff --stat -- $GENERATED
+  echo "Run: python tools/build_index.py && python tools/leaderboard.py"
+  echo "and commit the regenerated files."
+  exit 1
+fi
+echo "[hooks] ok"

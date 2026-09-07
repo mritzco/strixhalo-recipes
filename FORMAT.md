@@ -246,6 +246,27 @@ experiment (see SKILL.md — tests/definitions PR, admin-reviewed).
   lemonade, probe/collect may not auto-detect the backend yet — record
   engine + version by hand in the recipe.
 
+## Data layer (generated JSON stores)
+
+Three generated stores serve queries and the board (single compute in
+`tools/registry.py`, written by `tools/build_index.py`, never hand-
+edited; the pre-commit hook and CI fail on staleness):
+
+- `index.json` — one flat, sortable row per model (latest version):
+  quants, confirmed capabilities, PP/TG medians, witnesses, backend
+  class, last activity. This is the `model.find(...)` table.
+- `runs.json` — every result record as a summary, newest first
+  (cross-model "Latest tests").
+- `models/<id>.json` — per-model document: full recipe, variants
+  (per content-hash configuration: quants, medians, witnesses, test
+  tallies), run history with sources/notes.
+
+Relations: **Model → Index row (latest) → variants (content hashes) →
+run records (results/<id>/<hash>/<run_id>.json, the immutable source of
+truth).** Query with the `registry.Store` class or the CLI tools; write
+only through `collect.py` / `submit_result.py` / PRs — text edits bypass
+format enforcement.
+
 ## License & contribution warranty
 
 Records under `recipes/`/`results/` and generated aggregates are CC0;

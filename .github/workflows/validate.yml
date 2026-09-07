@@ -9,6 +9,9 @@ on:
       - "tests/**"
       - "tools/**"
       - "index.json"
+      - "runs.json"
+      - "models/**"
+      - "LEADERBOARD.md"
   push:
     branches: [main]
 
@@ -25,10 +28,11 @@ jobs:
         run: python tools/validate.py --strict
       - name: Admin derived-status check
         run: python tools/admin.py check
-      - name: Rebuild index (fails PR if committed index.json is stale)
+      - name: Rebuild stores (fails PR if generated files are stale)
         run: |
           python tools/build_index.py
-          git diff --exit-code index.json || \
-            (echo "::error::index.json is stale — run tools/build_index.py and commit the result." && exit 1)
-      - name: Rebuild leaderboard (informational, not blocking)
-        run: python tools/leaderboard.py || true
+          python tools/leaderboard.py
+          git diff --exit-code index.json runs.json models LEADERBOARD.md || \
+            (echo "::error::generated files stale — run tools/build_index.py + tools/leaderboard.py and commit the result." && exit 1)
+      - name: Rebuild leaderboard sanity (informational, not blocking)
+        run: python tools/leaderboard.py --next || true

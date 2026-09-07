@@ -58,9 +58,12 @@ tools/              probe.sh (+ probe.d/<family>.sh), collect.py, gguf_lite.py,
                     leaderboard.py, admin.py
 tests/definitions/  Semver'd test definitions (evidence contracts)
 tests/runners/      Test runners emitting the evidence JSON contract
-index.json          Generated — flat recipe search index (CC0)
+index.json          Generated JSON store — flat model rows (CC0)
+runs.json           Generated JSON store — every result, newest first (CC0)
+models/<id>.md      Generated — per-model pages (variants, runs, sources) (CC0)
+models/<id>.json    Generated JSON store — per-model documents (CC0)
 LEADERBOARD.md      Generated — landing: Models, Latest tests, how-to (CC0)
-models/<id>.md      Generated — per-model pages: variants, runs, sources (CC0)
+.githooks/          Pre-commit hook (validate + generated-file freshness)
 LICENSE / LICENSE-DATA / LICENSE-DOCS   Apache-2.0 / CC0-1.0 / CC BY 4.0
 ```
 

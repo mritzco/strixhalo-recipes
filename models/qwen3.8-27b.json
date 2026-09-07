@@ -1,0 +1,219 @@
+{
+  "store_version": 1,
+  "model": {
+    "id": "qwen3.8-27b",
+    "recipe": {
+      "id": "qwen3.8-27b",
+      "version": "0.1.0",
+      "content_hash": "sha256:9a8be2430a2451c519b0a2fb5993d85bdd22be771d1924f037ba713211b056c3",
+      "status": "experimental",
+      "created": "2026-09-07",
+      "author": "itzco",
+      "license": "CC0",
+      "quant": "Q8_0",
+      "lineage": {
+        "parents": [],
+        "rationale": "Auto-collected draft \u2014 fill in if this descends from another recipe."
+      },
+      "objectives": {
+        "primary": [
+          "agent_capability",
+          "context_reliability"
+        ],
+        "secondary": [
+          "throughput"
+        ],
+        "not_optimized": []
+      },
+      "constraints": [],
+      "tradeoffs": [
+        "Q8_0 is dense and bandwidth-bound: ~7 tok/s generation on this box (MoE models are ~10x faster).",
+        "ctx 32k verified in tests; recipe launches at 131072 (agents overflowed 32K into compaction loops)."
+      ],
+      "model": {
+        "name": "Qwen3.8-27B",
+        "arch": "qwen35",
+        "source": "/home/itzco/models/Qwen3.8-27B-GGUF",
+        "file_sha256": null,
+        "size_gb": 27.1,
+        "mtp": false,
+        "vision": false,
+        "tool_calling": true
+      },
+      "hardware": {
+        "target": "strix-halo-128gb-unified",
+        "gpu_mem_split_gb": null,
+        "min_ram_gb": 124,
+        "mem_total_gb": 124.9,
+        "gtt_gib": 110.0,
+        "vram_mib": 512.0
+      },
+      "backend": {
+        "engine": "llama.cpp",
+        "commit": "5266f24da7",
+        "build": "10809",
+        "build_flags": [],
+        "os_family": "arch",
+        "kernel": "7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)",
+        "vulkan_version": "1.4.357",
+        "rocm_version": null
+      },
+      "launch": {
+        "command": "/usr/bin/llama-server --model /home/itzco/models/Qwen3.8-27B-GGUF/Qwen3.8-27B-Q8_0.gguf -ngl 999 --jinja -c 131072 -fa on --alias qwen3.8-27b --port ${PORT}",
+        "serving": {
+          "fronted_by": "llama-swap",
+          "endpoint": "http://127.0.0.1:1234/v1",
+          "note": "llama-swap substitutes ${PORT} per child server; each config entry needs proxy: http://127.0.0.1:${PORT} (llama-server binds IPv4 only). ttl=1800"
+        }
+      },
+      "parameters": {
+        "ctx_size": {
+          "value": 131072,
+          "annotations": [
+            {
+              "type": "recommendation",
+              "text": "131072 in the launch command; agents inject large system prompts + tool schemas \u2014 32K overflowed omp into a compaction loop."
+            }
+          ]
+        },
+        "ngl": {
+          "value": "999",
+          "annotations": []
+        },
+        "flash_attn": {
+          "value": true,
+          "annotations": []
+        },
+        "jinja": {
+          "value": true,
+          "annotations": [
+            {
+              "type": "required",
+              "text": "--jinja parses structured tool_calls; without it tool syntax leaks into chat as raw text.",
+              "evidence": {
+                "tests": [
+                  "tool-roundtrip"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "annotations": [
+        {
+          "type": "experimental",
+          "text": "Auto-collected draft (2026-09-07); capabilities_confirmed are all false until real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs, and evidence refs per the v0.3 data model."
+        }
+      ],
+      "harness_compat": {
+        "tested_with": [
+          "openai-api"
+        ],
+        "exposes_as": "OpenAI-compatible /v1 (llama-swap 127.0.0.1:1234 or direct)",
+        "capabilities_confirmed": {
+          "tools": true,
+          "mcp": false,
+          "vision": false
+        }
+      },
+      "tests": [
+        {
+          "id": "tool-roundtrip",
+          "expect": "pass"
+        },
+        {
+          "id": "throughput",
+          "expect": "pass"
+        },
+        {
+          "id": "context-recall",
+          "expect": {
+            "min_score": 1.0
+          },
+          "args": {
+            "ctx": 4096
+          }
+        }
+      ],
+      "failure_notes": null
+    },
+    "variants": [
+      {
+        "content_hash": "sha256:9a8be2430a2451c519b0a2fb5993d85bdd22be771d1924f037ba713211b056c3",
+        "hash": "9a8be2",
+        "version": "0.1.0",
+        "quant": [
+          "Q8_0"
+        ],
+        "results": 1,
+        "witnesses": 1,
+        "witness_ids": [
+          "itzco"
+        ],
+        "pp": null,
+        "tg": 7.3,
+        "tests": {
+          "context-recall": {
+            "pass": 1
+          },
+          "throughput": {
+            "pass": 1
+          },
+          "tool-roundtrip": {
+            "pass": 1
+          },
+          "vision-basic": {
+            "unsupported": 1
+          }
+        },
+        "declared": [
+          "context-recall",
+          "throughput",
+          "tool-roundtrip"
+        ]
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "20260907T101808Z-7a56d591",
+        "ts": "20260907T1018",
+        "contributor_id": "itzco",
+        "recipe_version": "0.1.0",
+        "quant": "Q8_0",
+        "content_hash": "sha256:9a8be2430a2451c519b0a2fb5993d85bdd22be771d1924f037ba713211b056c3",
+        "hash": "9a8be2",
+        "pp": null,
+        "tg": 7.3,
+        "tests": [
+          {
+            "id": "tool-roundtrip",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "context-recall",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "vision-basic",
+            "result": "unsupported",
+            "score": null
+          }
+        ],
+        "notes": "CachyOS box; direct llama-server (no llama-swap); ctx 32k; tool+context+throughput pass, vision unsupported (no mmproj in this deployment)",
+        "model_id": "qwen3.8-27b"
+      }
+    ],
+    "counts": {
+      "results": 1,
+      "witnesses": 1,
+      "cross_validated": false
+    }
+  }
+}

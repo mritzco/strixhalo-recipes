@@ -2,12 +2,12 @@
 
 - Latest version: **v0.2.1** · UD-Q4_K_XL · 16.5 GB · arch qwen3moe · engine vulkan
 - Source: unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF
-- Verdict: validated* — 6 result(s) across 2 variant(s); 2 witness(es) at the current hash: itzco, pilot-itzco
+- Verdict: validated* — 6 result(s) across 2 variant(s); 2 witness(es) at the current hash
 - Confirmed capabilities: tools=True, mcp=False, vision=False · objectives: throughput
 
 ## Variants (configurations tested)
 
-Each variant = a content hash (pinned launch configuration) with its own evidence trail. Quants are a dimension *under* a configuration — results name the quant they ran.
+Each variant = a content hash (pinned launch configuration) with its own evidence trail. Quants are a dimension under a configuration.
 
 | hash | v | quant(s) | PP t/s | TG t/s | wit | results | tests (pass/total) |
 |---|---|---|---|---|---|---|---|
@@ -18,12 +18,12 @@ Each variant = a content hash (pinned launch configuration) with its own evidenc
 
 | run (UTC) | contributor | quant | hash | PP | TG | tests |
 |---|---|---|---|---|---|---|
-| 20260907 1137 | pilot-itzco | UD-Q4_K_XL | `8b452d` | 3655.5 | 64.4 | throughput=pass; tool-roundtrip=pass |
-| 20260907 1138 | pilot-itzco | UD-Q4_K_XL | `10a6b2` | 6728.7 | 66.9 | throughput=pass; tool-roundtrip=pass |
-| 20260907 1158 | itzco | UD-Q4_K_XL | `8b452d` | 74791.3 | 49.3 | throughput=pass |
-| 20260907 1158 | itzco | UD-Q4_K_XL | `10a6b2` | 75317.8 | 49.3 | throughput=pass |
-| 20260907 1217 | itzco | UD-Q4_K_XL | `10a6b2` | - | - | agent-coding=pass |
-| 20260907 1250 | itzco | UD-Q4_K_XL | `8b452d` | - | - | harness-tool-use=pass |
+| 20260907T1137 | pilot-itzco | UD-Q4_K_XL | `8b452d` | 3655.5 | 64.4 | throughput=pass; tool-roundtrip=pass |
+| 20260907T1138 | pilot-itzco | UD-Q4_K_XL | `10a6b2` | 6728.7 | 66.9 | throughput=pass; tool-roundtrip=pass |
+| 20260907T1158 | itzco | UD-Q4_K_XL | `8b452d` | 74791.3 | 49.3 | throughput=pass |
+| 20260907T1158 | itzco | UD-Q4_K_XL | `10a6b2` | 75317.8 | 49.3 | throughput=pass |
+| 20260907T1217 | itzco | UD-Q4_K_XL | `10a6b2` | - | - | agent-coding=pass |
+| 20260907T1250 | itzco | UD-Q4_K_XL | `8b452d` | - | - | harness-tool-use=pass |
 
 ### Sources & notes
 
