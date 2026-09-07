@@ -24,6 +24,11 @@ def main():
     args = ap.parse_args()
 
     observations = []
+    if args.pp_tokens and args.pp_tokens < 2048:
+        observations.append(
+            "PP timing at <2048 prompt tokens is sub-second and noisy "
+            "(observed +84% phantom delta at ~500 tokens that vanished at "
+            "1.4k/11k); prefer --pp-tokens >= 8192 for stable numbers")
     tg_rates, latencies = [], []
 
     sys_prompt = ("You are a concise assistant. ")

@@ -24,7 +24,7 @@
   },
   {
     "id": "qwen3-coder",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "content_hash": "sha256:10a6b27c4692fecfb31f72d60c82872b956495e783491d5b8f1afaf5e79d2585",
     "status": "experimental",
     "quant": "UD-Q4_K_XL",
@@ -44,8 +44,8 @@
       "mcp": false,
       "vision": false
     },
-    "distinct_witnesses": 1,
-    "path": "recipes/qwen3-coder/qwen3-coder-v0.2.0.yaml"
+    "distinct_witnesses": 2,
+    "path": "recipes/qwen3-coder/qwen3-coder-v0.2.1.yaml"
   },
   {
     "id": "qwen3-instruct",

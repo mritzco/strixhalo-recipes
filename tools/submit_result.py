@@ -35,10 +35,20 @@ TOOL_VERSION = "submit_result.py@2.0.0"
 STATUSES = {"pass", "fail", "degraded", "unsupported", "not_run", "inconclusive"}
 
 
-def find_recipe(recipe_id):
-    """Latest version file of a recipe id: recipes/<id>/<id>-v*.yaml."""
+def find_recipe(recipe_id, version=None):
+    """Recipe file for an id: recipes/<id>/<id>-v*.yaml.
+
+    Defaults to the latest version; pass --version to pin an older one
+    (e.g. submitting a baseline run against the pre-tune recipe).
+    """
     files = sorted(glob.glob(
         os.path.join("recipes", recipe_id, f"{recipe_id}-v*.yaml")))
+    if version:
+        exact = os.path.join("recipes", recipe_id,
+                             f"{recipe_id}-v{version}.yaml")
+        if not os.path.exists(exact):
+            sys.exit(f"no recipe file {exact}")
+        return exact
     if not files:
         sys.exit(f"no recipe files found for id '{recipe_id}' under recipes/")
     return files[-1]
@@ -92,6 +102,8 @@ def main():
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--recipe", required=True)
+    ap.add_argument("--version", default=None,
+                    help="pin recipe version (default: latest file)")
     ap.add_argument("--contributor", required=True,
                     help="stable self-chosen handle (pseudonymous, not PII)")
     ap.add_argument("--probe", default=None,
@@ -109,7 +121,7 @@ def main():
     ap.add_argument("--notes", default="")
     args = ap.parse_args()
 
-    recipe_path = find_recipe(args.recipe)
+    recipe_path = find_recipe(args.recipe, version=args.version)
     recipe = load_yaml(recipe_path)
     schema = load_schema("result.schema.json")
 
