@@ -18,6 +18,7 @@ from common import INDEX_PATH
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", help="substring on model name or recipe id")
+    ap.add_argument("--hash", help="content_hash prefix (from a share block / post)")
     ap.add_argument("--arch", help="substring on GGUF architecture")
     ap.add_argument("--quant", help="substring on quant")
     ap.add_argument("--hardware", help="substring on hardware target")
@@ -45,6 +46,8 @@ def main():
 
     def matches(e):
         if args.model and args.model.lower() not in hay(e).lower():
+            return False
+        if args.hash and not (e.get("content_hash") or "").replace("sha256:", "").startswith(args.hash):
             return False
         if args.arch and args.arch.lower() not in (e.get("arch") or "").lower():
             return False

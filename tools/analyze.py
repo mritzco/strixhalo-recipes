@@ -170,15 +170,36 @@ QUICK_TESTS = [
 def cmd_test(args):
     endpoint = args.endpoint or os.environ.get("LLAMA_ENDPOINT",
                                                "http://127.0.0.1:1234/v1")
-    # resolve recipe file (latest)
+    # resolve recipe file: latest, or the variant pinned by --hash prefix
     import glob
     files = sorted(glob.glob(os.path.join("recipes", args.recipe,
-                                          f"{args.recipe}-v*.yaml")))
+                                          f"{args.recipe}-v*.yaml")),
+                   reverse=True)
     if not files:
         sys.exit(f"no recipe '{args.recipe}' — check tools/search.py --model")
-    recipe = load_yaml(files[-1])
+    recipe = None
+    if args.hash:
+        for fp in files:
+            cand = load_yaml(fp)
+            if cand.get("content_hash", "").replace("sha256:", "").startswith(args.hash):
+                recipe = cand
+                break
+        if recipe is None:
+            print(f"no variant of {args.recipe} matches hash prefix "
+                  f"'{args.hash}'; available:")
+            seen = {}
+            for fp in sorted(files):
+                c = load_yaml(fp)
+                seen.setdefault(c["content_hash"][7:13],
+                                f"v{c['version']} {c['content_hash']}")
+            for h, desc in seen.items():
+                print(f"  {h}  {desc}")
+            sys.exit(1)
+    else:
+        recipe = load_yaml(files[0])
     model = args.model or args.recipe
-    print(f"=== Testing recipe {args.recipe} (v{recipe['version']}) ===")
+    print(f"=== Testing recipe {args.recipe} "
+          f"(v{recipe['version']}) ===")
     print(f"endpoint: {endpoint}  model: {model}")
     print(f"pinned  : {recipe['content_hash']}  quant {recipe.get('quant')}")
     print(f"capabilities still false until a test passes:\n"
@@ -248,7 +269,11 @@ def main():
     p.set_defaults(fn=cmd_capture)
 
     p = sub.add_parser("test", help="run the battery against a recipe")
-    p.add_argument("--recipe", required=True)
+    p.add_argument("--recipe", required=True,
+                   help="recipe id (human name of the model deployment)")
+    p.add_argument("--hash", default=None,
+                   help="pin a variant by content_hash prefix (share-block hash); "
+                        "default: latest version file")
     p.add_argument("--endpoint", default=None)
     p.add_argument("--model", default=None)
     p.add_argument("--timeout", type=int, default=600)

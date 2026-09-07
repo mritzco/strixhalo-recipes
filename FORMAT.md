@@ -5,6 +5,26 @@ Canonical machine schemas: `schema/recipe.schema.json`,
 This doc explains the *why* and the rules; the JSON Schemas are the
 source of truth for validation.
 
+## Naming vs pinning (how to talk about a recipe)
+
+- **`id`** is the human name of a recipe lineage — a model deployment,
+  e.g. `qwen3-coder`. It does NOT encode the quant or every flag.
+- The **full specificity** lives in the recipe file: `model.source`
+  (`unsloth/...`), quant, and the exact `launch.command` flags
+  (`-ngl 999 --jinja ...`). Recipes are versioned (semver) as they
+  evolve.
+- **`content_hash`** pins one exact configuration. Editing anything
+  reproducibility-relevant (command, backend commit, model identity)
+  creates a NEW hash; doc/annotation/quant edits do not. One id can have
+  several hashes = several variants (see the board's variant tables).
+- **Share id + hash prefix**, e.g. `qwen3-coder @ 10a6b2`. That
+  identifies one exact setup. Tools support the pin everywhere it
+  matters: `search.py --hash <prefix>`, `analyze.py test --recipe <id>
+  --hash <prefix>` (default = latest version of the id).
+- **Records always reference the full `content_hash`**, never just the
+  name — results/…/run files live under `results/<id>/<hash>/`, so the
+  evidence trail is pinned even as the recipe's docs evolve.
+
 ## Two IDs, two purposes
 
 - **`version`** (semver, e.g. `2.1.0`): human-facing evolution of the

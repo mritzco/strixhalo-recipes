@@ -1,152 +1,112 @@
-# strixhalo-recipes
+# Strix Halo Recipe Registry
 
-Reproducible LLM-serving recipes for unified-memory Linux boxes (Strix
-Halo class APUs first), with lineage tracking and multi-witness trust —
-built so an AI agent can search, replicate, test, and contribute results
-with minimal token spend and without anyone having to trust a single
-person's claimed win.
+Reproducible, evidence-backed serving recipes for local LLMs on
+unified-memory Linux boxes (Strix Halo class first) — built so an agent
+**or a human** can capture a working setup in seconds, verify what
+someone else claimed in seconds, and contribute results without trusting
+a single person's word.
 
-**The vision in one paragraph:** a database of *explained* serving
-configurations — each recipe pins what to run and why every parameter
-was chosen, records what it was optimizing (throughput? agent
-capability? vision?), and proves its capability claims with real harness
-tests. Recipes apply to a model, not a quant; results are immutable
+**The vision:** a database of *explained* configurations — what to run
+*and why every parameter was chosen*, what each recipe optimizes, and
+which capabilities (tools / MCP / vision) are proven by real harness
+tests. Recipes apply to a **model**, not a quant. Results are immutable
 evidence; cross-validation is derived from independent witnesses, never
-asserted. Any model that only proves chat works is considered
-incomplete. How we built it: `ROADMAP.md` + `openspec/changes/`.
+asserted. Chat-only recipes are considered incomplete. How it's built:
+`ROADMAP.md` + `openspec/changes/`. Agent orientation: `AGENTS.md`.
+Data model & trust: `SPEC.md` / `FORMAT.md`. Contributing:
+`CONTRIBUTING.md`.
 
-Start here:
-- **`AGENTS.md`** — vision, requirements, roles, hard rules, data flow
-  (read this first if you are an agent).
-- **`SKILL.md`** — day-to-day operations: search, replicate, test,
-  submit, contribute.
-- **`FORMAT.md` / `SPEC.md`** — data model, format rationale, trust rules.
-- **`CONTRIBUTING.md`** — how humans and agents add work.
-- **`LEADERBOARD.md`** — the generated results board (landing) and
-  `models/` per-model pages.
+## What you can do
+
+| You want to… | Run this |
+|---|---|
+| Check your machine (is my setup registry-compatible?) | `python tools/analyze.py machine` — profile + probe schema check |
+| Capture a setup you already have running | `python tools/analyze.py cmd "your llama-server line" --write` → get an id + test hash to share |
+| Find existing setups | `python tools/search.py --model qwen3` · `--quant Q8_0` · `--hash 10a6b2` · `--vision` — or read `LEADERBOARD.md` / `models/` |
+| Test a model someone posted (id + hash) | `python tools/analyze.py test --recipe <id> [--hash <prefix>] --endpoint http://127.0.0.1:8080/v1` |
+| Contribute your results | add `--submit --contributor <you>` to the test command — one result = one PR |
+| Add something new | give your agent a goal + access to this repo and `SKILL.md`; it captures, tests, and commits results — **good and bad** (failures are data), one experiment per PR |
+
+**Naming:** a recipe `id` is the human name of a deployment
+(`qwen3-coder`); the exact configuration — source repo, quant, every
+flag — lives in the recipe file, versioned over time. The pin is the
+**content hash**: share `id + hash-prefix` and anyone can reproduce the
+exact setup (`analyze ... --hash`). Details: FORMAT.md → *Naming vs
+pinning*.
+
+## Tools in this repo (and how to improve them)
+
+| Tool | What it does |
+|---|---|
+| `tools/analyze.py` | One-command daily flow: `machine` / `cmd` (capture) / `test` (battery) |
+| `tools/probe.sh` + `probe.d/` | Machine fingerprint v2 (memory model, GPU, backend commit, install method) |
+| `tools/collect.py` | Batch draft recipes from llama-swap config / pid / launch command |
+| `tools/validate.py` | Schema + content-hash validation for recipes, results, test definitions |
+| `tools/submit_result.py` | Write immutable result records (append-only) |
+| `tools/registry.py` + stores | Data layer: `index.json`, `runs.json`, `models/<id>.json` + `Store` query API |
+| `tools/search.py` / `tools/leaderboard.py` / `tools/admin.py` | Search · board renderer · derived-trust admin views |
+| `tests/` | Semver'd definitions + runners emitting the evidence JSON contract |
+
+**Improving them:** agents/extensions follow `SKILL.md` + `CONTRIBUTING.md`.
+Extension points: a new distro family = `probe.d/<family>.sh` (copy
+`arch.sh`, register in `detect_family`); a new capability test = a
+`tests/definitions/` PR **proposed with the experiment that needed it**;
+a new engine (`ollama`/`lemonade`) = recipe `backend.engine` + probe
+support.
+
+## Repo's own machinery
+
+- **Hooks** — `.githooks/pre-commit`: every commit validates and fails
+  if generated files are stale (`bash tools/install-hooks.sh`); CI runs
+  the same gate.
+- **Skill** — `SKILL.md` (+ `AGENTS.md`) is the agent manual; the repo
+  *is* the skill.
+- **Validators** — `validate.py` (schema + hash recompute), `admin.py`
+  (derived trust, provenance).
+- **Indexes/stores** — one compute engine (`registry.py`) → flat index,
+  runs store, per-model documents, markdown board. Never hand-edited.
+- **Schemas** — `schema/recipe.schema.json`, `result.schema.json`,
+  `test-definition.schema.json` (source of truth for validation).
 
 ## Try it yourself (2 minutes)
 
 ```bash
 git clone <this repo> && cd <repo>
 python3 -m venv .venv && .venv/bin/pip install -r tools/requirements.txt
-.venv/bin/python tools/validate.py --strict      # everything is consistent
-.venv/bin/python tools/search.py --model qwen3   # query the registry
-.venv/bin/python tools/leaderboard.py            # regenerate + read the board
-# query the JSON data layer without parsing YAML:
+.venv/bin/python tools/analyze.py machine      # your machine profile + schema check
+.venv/bin/python tools/search.py --model qwen3  # what's in the registry
+.venv/bin/python tools/leaderboard.py           # regenerate the board
+# query the data layer:
 .venv/bin/python -c "from tools.registry import Store; print(Store().find(sort='tg', limit=5))"
-bash tools/install-hooks.sh                      # validate on every commit
-# fingerprint + prove your probe matches the schema
-.venv/bin/python tools/analyze.py machine
-
-# capture YOUR existing setup in one shot (paste your launch command):
-.venv/bin/python tools/analyze.py cmd "/usr/bin/llama-server -hf unsloth/Model-GGUF:Q4_K_M -ngl 999 --jinja -c 32768 --port 8080" --write
-
-# test what someone else published (needs their server, or yours):
-.venv/bin/python tools/analyze.py test --recipe qwen3-coder --endpoint http://127.0.0.1:1234/v1 --submit --contributor you
+bash tools/install-hooks.sh                     # validate on every commit
 ```
 
-Run tests against **your** server — point the battery anywhere that
-speaks OpenAI `/v1` (llama.cpp, llama-swap, ollama, LM Studio):
+Test any model on **your** server (any OpenAI-`/v1` endpoint — llama.cpp,
+llama-swap, ollama, LM Studio):
 
 ```bash
-export LLAMA_ENDPOINT=http://127.0.0.1:8080/v1     # your endpoint
-python3 tests/runners/tool_roundtrip.py --model your-model
-python3 tests/runners/agent_coding.py  --model your-model   # coding-agent loop
-```
-
-## Quick start
-
-```bash
-pip install -r tools/requirements.txt
-
-# see what's here
-python tools/build_index.py
-python tools/search.py --model qwen3
-
-# validate everything (recipes + results + test definitions)
-python tools/validate.py --strict
-
-# regenerate the human-readable leaderboard (derived trust lives here)
-python tools/leaderboard.py
-
-# fingerprint this machine (probe v2: mem model, GPU, backend commit)
-bash tools/probe.sh > /tmp/probe.json
-
-# draft one recipe per llama-swap system (no hand-written YAML):
-python tools/collect.py --from-llama-swap --author you --dry-run
-# drop --dry-run to write recipes/<system>/<system>-v0.1.0.yaml
-
-# run a versioned capability test against the endpoint
-python tests/runners/tool_roundtrip.py --model qwen3-coder > /tmp/tool.json
-
-# submit an immutable result record after running the recipe's tests
-python tools/submit_result.py \
-  --recipe qwen3-coder \
-  --contributor your-stable-handle \
-  --evidence tool-roundtrip=/tmp/tool.json \
-  --notes "stable 3h session"
+export LLAMA_ENDPOINT=http://127.0.0.1:8080/v1
+python3 tests/runners/tool_roundtrip.py --model your-model   # tool parsing
+python3 tests/runners/agent_coding.py  --model your-model    # coding-agent loop
+python3 tests/runners/vision_basic.py  --model your-vl-model # vision (mmproj)
 ```
 
 ## Layout
 
 ```
-schema/             JSON Schemas: recipe, result, test-definition (source of truth)
-recipes/<model>/    One YAML file per recipe version (CC0 zone)
-results/<id>/<hash>/  Append-only evidence records (CC0 zone)
-tools/              probe.sh (+ probe.d/<family>.sh), collect.py, gguf_lite.py,
-                    validate.py, submit_result.py, build_index.py, search.py,
-                    leaderboard.py, admin.py
-tests/definitions/  Semver'd test definitions (evidence contracts)
-tests/runners/      Test runners emitting the evidence JSON contract
-index.json          Generated JSON store — flat model rows (CC0)
-runs.json           Generated JSON store — every result, newest first (CC0)
-models/<id>.md      Generated — per-model pages (variants, runs, sources) (CC0)
-models/<id>.json    Generated JSON store — per-model documents (CC0)
-LEADERBOARD.md      Generated — landing: Models, Latest tests, how-to (CC0)
-.githooks/          Pre-commit hook (validate + generated-file freshness)
-LICENSE / LICENSE-DATA / LICENSE-DOCS   Apache-2.0 / CC0-1.0 / CC BY 4.0
+schema/ recipes/ results/ tests/ tools/    # source of truth (see above)
+index.json runs.json models/*.json         # generated JSON stores (CC0)
+LEADERBOARD.md models/*.md                 # generated markdown board (CC0)
+openspec/ ROADMAP.md                       # how it was built; change queue
+specs/                                     # founding reference docs
+.githooks/ .github/workflows/              # local + CI enforcement
+LICENSE LICENSE-DATA LICENSE-DOCS          # Apache-2.0 / CC0-1.0 / CC BY 4.0
 ```
 
-## Contributing an OS you use that isn't covered yet
+## Contributing
 
-See `SPEC.md` §7. Adding Debian/Fedora/whatever-else support is a single
-new file in `tools/probe.d/` (copy `arch.sh`, the verified reference
-implementation) plus a one-line registration in `detect_family()` in
-`tools/probe.sh` — no other code changes needed. Unverified modules must
-not claim support: ship only what a real box proved.
-
-## Licensing
-
-The repository is split into three license zones — see `LICENSE`
-(Apache-2.0), `LICENSE-DATA` (CC0 1.0), and `LICENSE-DOCS`
-(CC BY 4.0) for full texts:
-
-```text
-Software source code in this repository — tools/, tests/, schema/,
-.github/ and any other functional code — is licensed under the Apache
-License 2.0.
-
-Registry data, including recipes, run records, validations, test
-results, hardware records, model metadata, annotations, and generated
-indexes (recipes/, results/, index.json, LEADERBOARD.md), is dedicated
-to the public domain under CC0 1.0.
-
-Documentation is licensed under CC BY 4.0.
-```
-
-Directory-level mapping:
-
-| Path | License |
-|---|---|
-| `tools/`, `tests/`, `schema/`, `.github/` | Apache-2.0 (software & functional contracts) |
-| `recipes/`, `results/` (and `LICENSE` markers inside them) | CC0-1.0 (registry records) |
-| `index.json`, `LEADERBOARD.md` | CC0-1.0 (generated aggregates) |
-| Root `*.md`, `specs/`, `openspec/` | CC BY 4.0 (documentation & specs) |
-
-**Contribution warranty:** by contributing you warrant that you hold the
-rights to the content under the zone's license. Submitted records and
-artifacts may contain third-party material (model outputs, benchmark
-prompts, images, vendor metadata) — you cannot dedicate what you do not
-own. Reference such material from a record instead of embedding it, or
-store it under its own license and say so.
+Humans and agents — see `CONTRIBUTING.md` (what to contribute, hard
+rules, PR conventions). Short version: one experiment = one PR, results
+are append-only, capability claims require a real test, failures are
+committed as data, and you warrant you may license what you submit
+(third-party material is referenced, not embedded).
