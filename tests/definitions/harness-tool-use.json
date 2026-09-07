@@ -1,0 +1,16 @@
+{
+  "id": "harness-tool-use",
+  "version": "1.0.0",
+  "capability": "tools",
+  "description": "Tool use through a real agent harness (pi, omp/oh-my-pi): the harness<->model loop, not just the raw API. Requires --harness-cmd/$HARNESS_CMD; reports not_run when unconfigured (honest by design).",
+  "harness": ["pi", "omp", "oh-my-pi"],
+  "runner": "tests/runners/harness_tool_use.py",
+  "endpoint_var": "HARNESS_CMD",
+  "acceptance": {
+    "required_observations": ["tool result not observed"]
+  },
+  "examples": [
+    "HARNESS_CMD='pi -p' python tests/runners/harness_tool_use.py",
+    "HARNESS_CMD='omp --prompt-stdin' python tests/runners/harness_tool_use.py"
+  ]
+}

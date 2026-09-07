@@ -1,0 +1,13 @@
+{
+  "id": "throughput",
+  "version": "1.0.0",
+  "capability": "throughput",
+  "description": "Generation tokens/sec over N rounds plus optional prompt-eval timing. Leaderboard aggregates medians across witnesses.",
+  "harness": ["openai-api"],
+  "runner": "tests/runners/throughput.py",
+  "endpoint_var": "LLAMA_ENDPOINT",
+  "acceptance": {},
+  "examples": [
+    "python tests/runners/throughput.py --n 3 --out-tokens 128 --endpoint http://127.0.0.1:1234/v1 --model qwen3.8-27b"
+  ]
+}

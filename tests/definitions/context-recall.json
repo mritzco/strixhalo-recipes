@@ -1,0 +1,15 @@
+{
+  "id": "context-recall",
+  "version": "1.0.0",
+  "capability": "context",
+  "description": "Needle-in-haystack long-context retrieval over the chat API at a declared ctx size. Evidence for KV-cache quality (cache-type-k/v) decisions. Cost scales with --ctx; smoke at 4k.",
+  "harness": ["openai-api"],
+  "runner": "tests/runners/context_needle.py",
+  "endpoint_var": "LLAMA_ENDPOINT",
+  "acceptance": {
+    "required_observations": ["secret code not recovered"]
+  },
+  "examples": [
+    "python tests/runners/context_needle.py --ctx 8192 --endpoint http://127.0.0.1:1234/v1 --model qwen3.8-27b"
+  ]
+}

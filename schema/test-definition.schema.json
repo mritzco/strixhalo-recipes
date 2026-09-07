@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://strixhalo-recipes/schema/test-definition.schema.json",
+  "title": "TestDefinition",
+  "description": "A semver'd, versioned test definition under tests/definitions/<id>.json. Tests are evidence, not necessarily benchmarks: metrics optional, acceptance criteria explicit. Result statuses: pass | fail | degraded | unsupported | not_run | inconclusive.",
+  "type": "object",
+  "required": ["id", "version", "capability", "description", "runner", "acceptance"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.\\-]*$"},
+    "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+    "capability": {
+      "enum": ["tools", "mcp", "vision", "context", "throughput", "stability", "startup", "quality", "other"]
+    },
+    "description": {"type": "string"},
+    "harness": {
+      "type": "array",
+      "items": {"enum": ["openai-api", "pi", "omp", "oh-my-pi", "other"]},
+      "description": "Harness classes this test exercises."
+    },
+    "runner": {"type": "string", "description": "Path to the runner script relative to tests/."},
+    "endpoint_var": {"type": "string", "default": "LLAMA_ENDPOINT"},
+    "acceptance": {
+      "type": "object",
+      "description": "How the outcome maps to pass/fail/etc. Optional fields refine the default (exit 0 & status=pass).",
+      "properties": {
+        "min_score": {"type": "number"},
+        "required_observations": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "examples": {"type": "array", "items": {"type": "string"}}
+  }
+}

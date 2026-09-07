@@ -1,0 +1,60 @@
+{
+  "recipe_id": "qwen3.8-27b-vl",
+  "recipe_version": "0.1.0",
+  "content_hash": "sha256:ec321c183c0d6489eff9d7cc09d27d2357df5ddd2335d946301cf24e536723ac",
+  "run_id": "20260907T101808Z-208ff830",
+  "contributor_id": "itzco",
+  "quant": "Q8_0",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-09-07T10:18:08Z",
+    "family": "arch",
+    "distro": "CachyOS",
+    "kernel": "7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)",
+    "mem": {
+      "total_gb": 124.9,
+      "gtt_gib": 110.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S Graphics",
+      "driver": "radv",
+      "vulkan_version": "1.4.357",
+      "free_mib": 49728.0
+    },
+    "backend": {
+      "version_string": "version: 0.4.0-dev (build 10809, commit 5266f24da7)",
+      "build": "10809",
+      "commit": "5266f24da7"
+    },
+    "rocm_version": null,
+    "llama_swap_config": "/home/itzco/.config/llama-swap/config.yaml",
+    "raw_hash": "sha256:7493899c443fde06aee579b3df5c8364deea7be35db9ed3e51aadec7dc9e3703"
+  },
+  "tests": [
+    {
+      "id": "tool-roundtrip",
+      "result": "pass",
+      "metrics": {
+        "tool_calls": 1,
+        "latency_s": 9.87
+      },
+      "observations": [
+        "1/1 tool call(s) well-formed"
+      ]
+    },
+    {
+      "id": "vision-basic",
+      "result": "pass",
+      "metrics": {
+        "latency_s": 13.23
+      },
+      "observations": [
+        "model answer: red"
+      ]
+    }
+  ],
+  "metrics": {},
+  "notes": "same base model + mmproj-F16: vision confirmed, tools pass",
+  "tool_version": "submit_result.py@2.0.0"
+}

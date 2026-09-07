@@ -1,0 +1,76 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+context: |
+  Project: AI Recipe Registry ("strixhalo-recipes") — an open-source repo
+  of reproducible local-LLM serving recipes + knowledge for unified-memory
+  Linux boxes (Strix Halo class; 128 GB Strix Halo first, not hardcoded).
+  Repo root /home/itzco/Projects/strixhalo IS the product repo (git
+  init'd 2026-09-07): code lives at root (schema/, tools/, tests/,
+  recipes/, results/, docs); openspec/ + ROADMAP.md are committed for
+  transparency; specs/ holds founding reference docs
+  (AI_Recipe_Registry_SPEC_v0.3.md, research, prototype snapshot zip).
+  Build is driven by openspec proposals.
+
+  Source documents (not yet reconciled):
+  - specs/AI_Recipe_Registry_SPEC_v0.3.md — human+Copilot amendment:
+    parameter annotations/rationale, annotation scope ladder,
+    objectives/constraints/tradeoffs, "no universal score", tests as
+    evidence (metrics optional, observations/artifacts first-class),
+    canonical statuses pass|fail|degraded|unsupported|not_run|
+    inconclusive, evidence-backed knowledge model (declared/observed/
+    validated/generated). Must be folded in BEFORE schema freeze.
+  - SPEC.md / FORMAT.md / SKILL.md / AGENTS.md at repo root — prototype
+    build (moved here as working baseline) + orientation doc. Its schema
+    is NOT reconciled with the v0.3 amendment and bakes quant into the
+    recipe (owner requires recipe<->model, NOT quant-specific recipes).
+
+  Host facts (dev/test): CachyOS arch; Ryzen AI MAX+ 395 / Radeon 8060S
+  (gfx1151); 128 GB unified, VRAM 512M, GTT 110G; Mesa RADV Vulkan 1.4.354;
+  llama.cpp b10809 (commit 5266f24da7), --jinja required for tools;
+  llama-swap 0.4.0-dev at 127.0.0.1:1234 serving qwen3-coder,
+  qwen3-instruct, qwen3-vl, glm-4.5-air (unsloth UD-Q4_K_XL via -hf) and
+  qwen3.8-27b / qwen3.8-27b-vl (local Q8_0 + mmproj-F16). GLM-4.5-Air
+  breaks omp tool-calling; Qwen models are the reliable agents.
+  Python 3.14; deps PyYAML+jsonschema (venv /tmp/recvenv used for checks).
+
+  Agreed design constraints: statuses derived, never hand-set (>=2
+  distinct contributor ids to cross-validate); results/ append-only,
+  keyed by reproducibility hash not semver; capability claims must be
+  test-verified via real harness (pi, omp/oh-my-pi), never guessed;
+  tests are semver'd; lineage is multi-parent; one PR per experiment;
+  failures committed as data.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://strixhalo-recipes/schema/result.schema.json",
+  "title": "Result",
+  "description": "One immutable, append-only record of one attempt to run one recipe on one machine. Never edited after submission. Keyed by content_hash (reproducibility), carries its own quant.",
+  "type": "object",
+  "required": [
+    "recipe_id", "recipe_version", "content_hash", "run_id", "contributor_id",
+    "quant", "probe_output", "tests", "tool_version"
+  ],
+  "properties": {
+    "recipe_id": {"type": "string"},
+    "recipe_version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "run_id": {"type": "string", "pattern": "^\\d{8}T\\d{6}Z-[0-9a-f]{8}$"},
+    "contributor_id": {
+      "type": "string",
+      "description": "Stable self-chosen handle of the submitter. Pseudonymous, not PII."
+    },
+    "quant": {"type": ["string", "null"], "description": "Quant actually run for this result."},
+
+    "probe_output": {
+      "type": "object",
+      "description": "Machine fingerprint per the machine-probe contract (tools/probe.sh v2).",
+      "required": ["schema_version", "timestamp", "family", "distro", "kernel", "mem", "gpu", "backend"],
+      "properties": {
+        "schema_version": {"type": "integer"},
+        "timestamp": {"type": "string"},
+        "family": {"type": "string"},
+        "distro": {"type": "string"},
+        "kernel": {"type": "string"},
+        "mem": {
+          "type": "object",
+          "properties": {
+            "total_gb": {"type": "number"},
+            "gtt_gib": {"type": ["number", "null"]},
+            "vram_mib": {"type": ["number", "null"]}
+          }
+        },
+        "gpu": {
+          "type": "object",
+          "properties": {
+            "name": {"type": "string"},
+            "driver": {"type": ["string", "null"]},
+            "vulkan_version": {"type": ["string", "null"]},
+            "free_mib": {"type": ["number", "null"]}
+          }
+        },
+        "backend": {
+          "type": "object",
+          "properties": {
+            "build": {"type": ["string", "null"]},
+            "commit": {"type": ["string", "null"]},
+            "version_string": {"type": ["string", "null"]},
+            "binary": {"type": ["string", "null"]},
+            "install_method": {"type": ["string", "null"]},
+            "pkg_version": {"type": ["string", "null"]}
+          }
+        },
+        "rocm_version": {"type": ["string", "null"]},
+        "llama_swap_config": {"type": ["string", "null"]},
+        "raw_hash": {"type": "string", "description": "sha256 of the full raw probe JSON, for audit."}
+      }
+    },
+
+    "tests": {
+      "type": "array",
+      "description": "Evidence per declared test. metrics optional; observations/artifacts first-class.",
+      "items": {
+        "type": "object",
+        "required": ["id", "result"],
+        "properties": {
+          "id": {"type": "string"},
+          "version": {"type": ["string", "null"]},
+          "result": {"enum": ["pass", "fail", "degraded", "unsupported", "not_run", "inconclusive"]},
+          "score": {"type": ["number", "null"]},
+          "metrics": {"type": "object"},
+          "observations": {"type": "array", "items": {"type": "string"}},
+          "artifacts": {"type": "array", "items": {"type": "string"}},
+          "detail": {"type": ["string", "null"]}
+        }
+      }
+    },
+
+    "metrics": {
+      "type": "object",
+      "description": "Run-level measurements (optional). Free-form; discovery tooling reads known keys.",
+      "properties": {
+        "tokens_per_sec_pp": {"type": "number"},
+        "tokens_per_sec_tg": {"type": "number"},
+        "peak_memory_gib": {"type": "number"},
+        "startup_s": {"type": "number"},
+        "duration_s": {"type": "number"}
+      }
+    },
+    "notes": {"type": "string"},
+    "tool_version": {"type": "string"}
+  }
+}

@@ -1,0 +1,9 @@
+Files in this directory are dedicated to the public domain under
+CC0 1.0 Universal (see LICENSE-DATA at the repository root for the
+full legal text): run records and result artifacts authored by
+contributors are freely reusable without attribution.
+
+By submitting a result you warrant that you hold the rights to dedicate
+it under CC0. Results may *reference* third-party artifacts (model
+outputs, benchmark prompts, images, vendor metadata) rather than embed
+them; anything embedded must be yours to license.

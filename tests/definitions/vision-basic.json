@@ -1,0 +1,15 @@
+{
+  "id": "vision-basic",
+  "version": "1.0.0",
+  "capability": "vision",
+  "description": "Vision input through mmproj: generated red/white PNG, model must identify the red half. unsupported when the server rejects images (no mmproj / non-multimodal). Fixture generated in-repo, no third-party assets.",
+  "harness": ["openai-api"],
+  "runner": "tests/runners/vision_basic.py",
+  "endpoint_var": "LLAMA_ENDPOINT",
+  "acceptance": {
+    "required_observations": ["answer: red"]
+  },
+  "examples": [
+    "python tests/runners/vision_basic.py --endpoint http://127.0.0.1:1234/v1 --model qwen3.8-27b-vl"
+  ]
+}

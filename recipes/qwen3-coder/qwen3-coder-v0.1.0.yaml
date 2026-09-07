@@ -1,0 +1,77 @@
+id: qwen3-coder
+version: 0.1.0
+content_hash: sha256:8b452dd97af8d7f1dffca91d73dfde85644fd45bcf0fd2d7f93e831d4a547747
+status: experimental
+created: '2026-09-07'
+author: itzco
+license: CC0
+quant: UD-Q4_K_XL
+lineage:
+  parents: []
+  rationale: "Auto-collected draft \u2014 fill in if this descends from another recipe."
+objectives:
+  primary: []
+  secondary: []
+  not_optimized: []
+constraints: []
+tradeoffs: []
+model:
+  name: Qwen3-Coder-30B-A3B-Instruct
+  arch: qwen3moe
+  source: unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF
+  file_sha256: null
+  size_gb: 16.5
+  mtp: false
+  vision: false
+  tool_calling: true
+hardware:
+  target: strix-halo-128gb-unified
+  gpu_mem_split_gb: null
+  min_ram_gb: 124
+  mem_total_gb: 124.9
+  gtt_gib: 110.0
+  vram_mib: 512.0
+backend:
+  engine: llama.cpp
+  commit: 5266f24da7
+  build: '10809'
+  build_flags: []
+  os_family: arch
+  kernel: 7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)
+  vulkan_version: 1.4.357
+  rocm_version: null
+launch:
+  command: /usr/bin/llama-server -hf unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:UD-Q4_K_XL
+    -ngl 999 --jinja -c 131072 -fa on --port ${PORT}
+  serving:
+    fronted_by: llama-swap
+    endpoint: http://127.0.0.1:1234/v1
+    note: 'llama-swap substitutes ${PORT} per child server; each config entry needs
+      proxy: http://127.0.0.1:${PORT} (llama-server binds IPv4 only). ttl=1800'
+parameters:
+  ctx_size:
+    value: 131072
+    annotations: []
+  ngl:
+    value: '999'
+    annotations: []
+  flash_attn:
+    value: true
+    annotations: []
+  jinja:
+    value: true
+    annotations: []
+annotations:
+- type: experimental
+  text: Auto-collected draft (2026-09-07); capabilities_confirmed are all false until
+    real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs,
+    and evidence refs per the v0.3 data model.
+harness_compat:
+  tested_with: []
+  exposes_as: TODO-fill-in
+  capabilities_confirmed:
+    tools: false
+    mcp: false
+    vision: false
+tests: []
+failure_notes: null

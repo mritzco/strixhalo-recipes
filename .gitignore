@@ -1,0 +1,19 @@
+# Machine-local harness state — never commit
+.pi/
+.omp/
+.claude/
+
+# Editor / temp
+*.swp
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Scratch probe outputs / local experiments
+/tmp/
+*.local.json

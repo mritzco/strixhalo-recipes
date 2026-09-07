@@ -1,0 +1,34 @@
+name: validate
+
+on:
+  pull_request:
+    paths:
+      - "recipes/**"
+      - "results/**"
+      - "schema/**"
+      - "tests/**"
+      - "tools/**"
+      - "index.json"
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r tools/requirements.txt
+      - name: Validate recipes, results, and test definitions
+        run: python tools/validate.py --strict
+      - name: Admin derived-status check
+        run: python tools/admin.py check
+      - name: Rebuild index (fails PR if committed index.json is stale)
+        run: |
+          python tools/build_index.py
+          git diff --exit-code index.json || \
+            (echo "::error::index.json is stale — run tools/build_index.py and commit the result." && exit 1)
+      - name: Rebuild leaderboard (informational, not blocking)
+        run: python tools/leaderboard.py || true

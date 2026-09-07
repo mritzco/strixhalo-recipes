@@ -1,0 +1,10 @@
+Files in this directory are dedicated to the public domain under
+CC0 1.0 Universal (see LICENSE-DATA at the repository root for the
+full legal text): registry records such as recipes, run results, and
+test outcomes may be freely copied, modified, and reused by anyone —
+including agents, mirrors, and commercial users — without attribution.
+
+By contributing a file here you warrant that you hold the rights to
+dedicate it under CC0. Do not embed third-party material you do not own
+(model outputs, benchmark prompts, images, vendor metadata); reference
+it or store it under its own license instead.

@@ -1,0 +1,219 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://strixhalo-recipes/schema/recipe.schema.json",
+  "title": "Recipe",
+  "description": "A reproducible, explained serving configuration for ONE model on a hardware class. Quant-agnostic: the tested quant is informative (root `quant`), never part of reproducibility identity. Parameter annotations, objectives, and tradeoffs carry the 'why'. See FORMAT.md.",
+  "type": "object",
+  "required": [
+    "id", "version", "content_hash", "status", "created", "author", "license",
+    "lineage", "objectives", "model", "hardware", "backend", "launch",
+    "harness_compat"
+  ],
+  "hashed_fields": ["model", "backend", "launch", "hardware"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.\\-]*$"},
+    "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "status": {"enum": ["experimental", "failed", "deprecated"]},
+    "created": {"type": "string", "format": "date"},
+    "author": {"type": "string", "minLength": 1},
+    "license": {"type": "string", "default": "CC0"},
+    "quant": {
+      "type": ["string", "null"],
+      "description": "Quant the recipe was drafted/tested with. Informational only — intentionally excluded from content_hash so recipes apply to a model, not a quant."
+    },
+
+    "lineage": {
+      "type": "object",
+      "required": ["parents", "rationale"],
+      "properties": {
+        "parents": {
+          "type": "array",
+          "description": "Multi-parent lineage: 0..n parents, each pinned by id+version at merge time.",
+          "items": {
+            "type": "object",
+            "required": ["id", "version", "contribution"],
+            "properties": {
+              "id": {"type": "string"},
+              "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+              "contribution": {"type": "string"},
+              "rationale": {"type": "string"}
+            }
+          }
+        },
+        "rationale": {"type": "string"}
+      }
+    },
+
+    "objectives": {
+      "type": "object",
+      "description": "What this recipe optimizes. No universal score exists; these dimensions are explicit.",
+      "required": ["primary", "secondary", "not_optimized"],
+      "properties": {
+        "primary": {"type": "array", "items": {"type": "string"}},
+        "secondary": {"type": "array", "items": {"type": "string"}},
+        "not_optimized": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "constraints": {"type": "array", "items": {"type": "string"}},
+    "tradeoffs": {"type": "array", "items": {"type": "string"}},
+
+    "model": {
+      "type": "object",
+      "required": ["name", "source", "size_gb", "vision", "tool_calling"],
+      "properties": {
+        "name": {"type": "string"},
+        "arch": {"type": "string", "description": "GGUF architecture string, e.g. qwen35, qwen3moe, llama."},
+        "source": {"type": "string", "description": "HuggingFace repo (repo:quant style stripped of quant) or local path origin."},
+        "file_sha256": {"type": ["string", "null"], "description": "sha256 of the GGUF file. Informational, not hashed."},
+        "size_gb": {"type": "number", "description": "Informational (varies with quant), not hashed."},
+        "mtp": {"type": "boolean", "description": "Model supports multi-token prediction."},
+        "vision": {"type": "boolean", "description": "Model arch supports vision (still requires mmproj + a real test to confirm)."},
+        "tool_calling": {"type": "boolean", "description": "Model natively supports tool-call formatting. Server-side capability still needs --jinja and a real test."}
+      }
+    },
+
+    "hardware": {
+      "type": "object",
+      "required": ["target"],
+      "properties": {
+        "target": {"type": "string", "description": "Hardware class, e.g. strix-halo-128gb-unified."},
+        "gpu_mem_split_gb": {"type": ["number", "null"]},
+        "min_ram_gb": {"type": ["number", "null"]},
+        "mem_total_gb": {"type": ["number", "null"], "description": "Filled from probe at collect time; informative."},
+        "gtt_gib": {"type": ["number", "null"]},
+        "vram_mib": {"type": ["number", "null"]}
+      }
+    },
+
+    "backend": {
+      "type": "object",
+      "required": ["engine", "commit"],
+      "properties": {
+        "engine": {"type": "string", "enum": ["llama.cpp", "ollama", "lemonade", "other"]},
+        "commit": {"type": "string", "description": "Backend commit hash (reproducibility pin). For custom forks this is the FORK's commit."},
+        "build": {"type": ["string", "null"], "description": "Build number, e.g. 10809."},
+        "upstream": {"type": ["string", "null"], "description": "Upstream source repo URL for custom builds, so agents can diff/rebuild when the fork's PRs land upstream. Null for distro packages."},
+        "patches": {
+          "type": "array",
+          "description": "PRs/patchset included in this build (custom forks). Agents use this to drop patches once upstream merges them.",
+          "items": {
+            "type": "object",
+            "required": ["ref"],
+            "properties": {
+              "ref": {"type": "string", "description": "PR number, commit, or patch id"},
+              "note": {"type": "string", "description": "What this patch does (e.g. 'PP 40% faster for MoE via ROCm scheduling')"}
+            }
+          }
+        },
+        "install_method": {"type": ["string", "null"], "description": "distro-package | build-from-source | appimage | manual-binary | other"},
+        "pkg_version": {"type": ["string", "null"], "description": "Distro package version when installed from a package."},
+        "build_flags": {"type": "array", "items": {"type": "string"}},
+        "os_family": {"type": "string", "description": "Distro family the recipe was verified on (arch|debian|fedora|unknown)."},
+        "kernel": {"type": ["string", "null"]},
+        "vulkan_version": {"type": ["string", "null"]},
+        "rocm_version": {"type": ["string", "null"]}
+      }
+    },
+
+    "launch": {
+      "type": "object",
+      "required": ["command"],
+      "properties": {
+        "command": {"type": "string", "description": "Verbatim launch command (llama-server argv). Quant tokens and --host/--port are normalized out of the content_hash."},
+        "serving": {
+          "type": "object",
+          "description": "Optional serving topology ABOVE llama-server (non-hashed knowledge).",
+          "properties": {
+            "fronted_by": {"type": "string"},
+            "endpoint": {"type": "string"},
+            "note": {"type": "string"}
+          }
+        }
+      }
+    },
+
+    "parameters": {
+      "type": "object",
+      "description": "Parameter name -> annotated value. The 'why' lives in annotations with evidence refs.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["value"],
+        "properties": {
+          "value": {},
+          "annotations": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/annotation"}
+          }
+        }
+      }
+    },
+
+    "annotations": {
+      "type": "array",
+      "description": "Recipe-scope annotations (knowledge that applies beyond a single parameter).",
+      "items": {"$ref": "#/definitions/annotation"}
+    },
+
+    "harness_compat": {
+      "type": "object",
+      "required": ["capabilities_confirmed"],
+      "properties": {
+        "tested_with": {"type": "array", "items": {"type": "string"}},
+        "exposes_as": {"type": "string"},
+        "capabilities_confirmed": {
+          "type": "object",
+          "description": "All three keys MUST be present; value reflects an actual tested run, never a guess.",
+          "required": ["tools", "mcp", "vision"],
+          "properties": {
+            "tools": {"type": "boolean"},
+            "mcp": {"type": "boolean"},
+            "vision": {"type": "boolean"}
+          }
+        }
+      }
+    },
+
+    "tests": {
+      "type": "array",
+      "description": "References to versioned test definitions under tests/definitions/.",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {"type": "string"},
+          "version": {"type": ["string", "null"]},
+          "expect": {
+            "description": "Expected outcome: a status string or {min_score: N}.",
+            "oneOf": [
+              {"type": "string", "enum": ["pass", "fail", "degraded", "unsupported", "not_run", "inconclusive"]},
+              {"type": "object", "required": ["min_score"], "properties": {"min_score": {"type": "number"}}}
+            ]
+          },
+          "args": {"type": "object"}
+        }
+      }
+    },
+
+    "failure_notes": {"type": ["string", "null"]}
+  },
+  "definitions": {
+    "annotation": {
+      "type": "object",
+      "required": ["type", "text"],
+      "properties": {
+        "type": {
+          "enum": ["recommendation", "warning", "required", "quality", "performance", "compatibility", "evidence", "experimental", "deprecated"]
+        },
+        "text": {"type": "string"},
+        "evidence": {
+          "type": "object",
+          "properties": {
+            "tests": {"type": "array", "items": {"type": "string"}},
+            "runs": {"type": "array", "items": {"type": "string"}}
+          }
+        }
+      }
+    }
+  }
+}
