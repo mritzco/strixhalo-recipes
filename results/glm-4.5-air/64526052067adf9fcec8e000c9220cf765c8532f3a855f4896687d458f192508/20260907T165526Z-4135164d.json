@@ -1,0 +1,86 @@
+{
+  "recipe_id": "glm-4.5-air",
+  "recipe_version": "0.1.0",
+  "content_hash": "sha256:64526052067adf9fcec8e000c9220cf765c8532f3a855f4896687d458f192508",
+  "run_id": "20260907T165526Z-4135164d",
+  "contributor_id": "itzco",
+  "quant": "UD-Q4_K_XL",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-09-07T16:55:26Z",
+    "family": "arch",
+    "distro": "CachyOS",
+    "kernel": "7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)",
+    "mem": {
+      "total_gb": 124.9,
+      "gtt_gib": 110.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S Graphics",
+      "driver": "radv",
+      "vulkan_version": "1.4.357",
+      "free_mib": 42830.0
+    },
+    "backend": {
+      "version_string": "version: 0.4.0-dev (build 10809, commit 5266f24da7)",
+      "build": "10809",
+      "commit": "5266f24da7",
+      "binary": "/usr/bin/llama-server",
+      "install_method": "distro-package",
+      "pkg_version": "0.4.0-1.1"
+    },
+    "rocm_version": null,
+    "llama_swap_config": "/home/itzco/.config/llama-swap/config.yaml",
+    "raw_hash": "sha256:90dc12bea28d878f2a133dd03e01f7563c8f59d2bcda7ef5ed152645c2ab6ad4"
+  },
+  "tests": [
+    {
+      "id": "tool-roundtrip",
+      "result": "pass",
+      "metrics": {
+        "tool_calls": 1,
+        "latency_s": 5.46
+      },
+      "observations": [
+        "1/1 tool call(s) well-formed"
+      ]
+    },
+    {
+      "id": "code-battery",
+      "result": "fail",
+      "score": 0.375,
+      "metrics": {
+        "tasks_passed": 3,
+        "tasks_total": 8
+      },
+      "observations": [
+        "task1: FAIL (Traceback (most recent call last):\n  File \"/tmp/codebat-vrtjcka7/test.py\", line 3, in <module>\n    assert rotate([1,2,3,4,5], 2) == [4,5,1,2,3]\n           ^^^^^^\nNameError: name 'rotate' is not define)",
+        "task2: PASS",
+        "task3: FAIL (Traceback (most recent call last):\n  File \"/tmp/codebat-215ti3vy/test.py\", line 3, in <module>\n    assert most_frequent(['a','b','a','c','b']) == 'a'\n           ^^^^^^^^^^^^^\nNameError: name 'most_fre)",
+        "task4: FAIL (Traceback (most recent call last):\n  File \"/tmp/codebat-z4m1xpfz/test.py\", line 3, in <module>\n    assert fib(0) == 0\n           ^^^\nNameError: name 'fib' is not defined)",
+        "task5: FAIL (Traceback (most recent call last):\n  File \"/tmp/codebat-m86s0shf/test.py\", line 3, in <module>\n    assert transpose([[1,2,3],[4,5,6]]) == [[1,4],[2,5],[3,6]]\n           ^^^^^^^^^\nNameError: name 'tran)",
+        "task6: FAIL (Traceback (most recent call last):\n  File \"/tmp/codebat-7yuie1x6/test.py\", line 3, in <module>\n    assert digital_root(9875) == 2\n           ^^^^^^^^^^^^\nNameError: name 'digital_root' is not defined)",
+        "task7: PASS",
+        "task8: PASS"
+      ],
+      "detail": "3/8 tasks passed"
+    },
+    {
+      "id": "throughput",
+      "result": "pass",
+      "metrics": {
+        "tokens_per_sec_tg": 3.7,
+        "median_round_s": 17.17,
+        "tokens_per_sec_pp": 3421.3
+      },
+      "observations": [
+        "1 rounds x ~64 out-tokens",
+        "prompt-eval round: ~2746 tokens"
+      ]
+    }
+  ],
+  "metrics": {},
+  "notes": "server-level (distro b10809, ctx 32k): tool_calls parse OK; code-battery 3/8; TG 3.7 single-round artifact (n=1, likely thinking-budget) \u2014 handbook UI numbers 70-80 t/s are chat-no-tools",
+  "tool_version": "submit_result.py@2.0.0"
+}

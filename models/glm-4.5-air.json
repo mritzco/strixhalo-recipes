@@ -78,20 +78,51 @@
       },
       "annotations": [
         {
-          "type": "experimental",
-          "text": "Auto-collected draft (2026-09-07); capabilities_confirmed are all false until real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs, and evidence refs per the v0.3 data model."
+          "type": "compatibility",
+          "text": "omp/oh-my-pi stream-parse FAILS tool-calling with GLM-4.5-Air (never returns; known since 2026-07). Server-level tool_calls parse fine (verified). Use pi, Open WebUI, or plain chat for this model.",
+          "evidence": {
+            "runs": [
+              "20260907T165526Z-4135164d"
+            ]
+          }
+        },
+        {
+          "type": "warning",
+          "text": "Coding ability measured weak on this box: code-battery 3/8. GLM is a chat/UI model here, not an agent workhorse.",
+          "evidence": {
+            "runs": [
+              "20260907T165526Z-4135164d"
+            ]
+          }
         }
       ],
       "harness_compat": {
-        "tested_with": [],
-        "exposes_as": "TODO-fill-in",
+        "tested_with": [
+          "openai-api"
+        ],
+        "exposes_as": "OpenAI-compatible /v1",
         "capabilities_confirmed": {
-          "tools": false,
+          "tools": true,
           "mcp": false,
           "vision": false
         }
       },
-      "tests": [],
+      "tests": [
+        {
+          "id": "tool-roundtrip",
+          "expect": "pass"
+        },
+        {
+          "id": "code-battery",
+          "expect": {
+            "min_score": 0.5
+          }
+        },
+        {
+          "id": "throughput",
+          "expect": "pass"
+        }
+      ],
       "failure_notes": null
     },
     "variants": [
@@ -102,19 +133,66 @@
         "quant": [
           "UD-Q4_K_XL"
         ],
-        "results": 0,
-        "witnesses": 0,
-        "witness_ids": [],
-        "pp": null,
-        "tg": null,
-        "tests": {},
-        "declared": []
+        "results": 1,
+        "witnesses": 1,
+        "witness_ids": [
+          "itzco"
+        ],
+        "pp": 3421.3,
+        "tg": 3.7,
+        "tests": {
+          "code-battery": {
+            "fail": 1
+          },
+          "throughput": {
+            "pass": 1
+          },
+          "tool-roundtrip": {
+            "pass": 1
+          }
+        },
+        "declared": [
+          "code-battery",
+          "throughput",
+          "tool-roundtrip"
+        ]
       }
     ],
-    "runs": [],
+    "runs": [
+      {
+        "run_id": "20260907T165526Z-4135164d",
+        "ts": "20260907T1655",
+        "contributor_id": "itzco",
+        "recipe_version": "0.1.0",
+        "quant": "UD-Q4_K_XL",
+        "content_hash": "sha256:64526052067adf9fcec8e000c9220cf765c8532f3a855f4896687d458f192508",
+        "hash": "645260",
+        "pp": 3421.3,
+        "tg": 3.7,
+        "tests": [
+          {
+            "id": "tool-roundtrip",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "code-battery",
+            "result": "fail",
+            "score": 0.375
+          },
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "server-level (distro b10809, ctx 32k): tool_calls parse OK; code-battery 3/8; TG 3.7 single-round artifact (n=1, likely thinking-budget) \u2014 handbook UI numbers 70-80 t/s are chat-no-tools",
+        "model_id": "glm-4.5-air"
+      }
+    ],
     "counts": {
-      "results": 0,
-      "witnesses": 0,
+      "results": 1,
+      "witnesses": 1,
       "cross_validated": false
     }
   }

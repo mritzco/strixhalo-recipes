@@ -62,16 +62,33 @@ parameters:
     value: true
     annotations: []
 annotations:
-- type: experimental
-  text: Auto-collected draft (2026-09-07); capabilities_confirmed are all false until
-    real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs,
-    and evidence refs per the v0.3 data model.
+- type: compatibility
+  text: omp/oh-my-pi stream-parse FAILS tool-calling with GLM-4.5-Air (never returns;
+    known since 2026-07). Server-level tool_calls parse fine (verified). Use pi, Open
+    WebUI, or plain chat for this model.
+  evidence:
+    runs:
+    - 20260907T165526Z-4135164d
+- type: warning
+  text: 'Coding ability measured weak on this box: code-battery 3/8. GLM is a chat/UI
+    model here, not an agent workhorse.'
+  evidence:
+    runs:
+    - 20260907T165526Z-4135164d
 harness_compat:
-  tested_with: []
-  exposes_as: TODO-fill-in
+  tested_with:
+  - openai-api
+  exposes_as: OpenAI-compatible /v1
   capabilities_confirmed:
-    tools: false
+    tools: true
     mcp: false
     vision: false
-tests: []
+tests:
+- id: tool-roundtrip
+  expect: pass
+- id: code-battery
+  expect:
+    min_score: 0.5
+- id: throughput
+  expect: pass
 failure_notes: null

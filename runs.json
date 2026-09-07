@@ -2,6 +2,36 @@
   "store_version": 1,
   "runs": [
     {
+      "run_id": "20260907T165526Z-4135164d",
+      "ts": "20260907T1655",
+      "contributor_id": "itzco",
+      "recipe_version": "0.1.0",
+      "quant": "UD-Q4_K_XL",
+      "content_hash": "sha256:64526052067adf9fcec8e000c9220cf765c8532f3a855f4896687d458f192508",
+      "hash": "645260",
+      "pp": 3421.3,
+      "tg": 3.7,
+      "tests": [
+        {
+          "id": "tool-roundtrip",
+          "result": "pass",
+          "score": null
+        },
+        {
+          "id": "code-battery",
+          "result": "fail",
+          "score": 0.375
+        },
+        {
+          "id": "throughput",
+          "result": "pass",
+          "score": null
+        }
+      ],
+      "notes": "server-level (distro b10809, ctx 32k): tool_calls parse OK; code-battery 3/8; TG 3.7 single-round artifact (n=1, likely thinking-budget) \u2014 handbook UI numbers 70-80 t/s are chat-no-tools",
+      "model_id": "glm-4.5-air"
+    },
+    {
       "run_id": "20260907T160944Z-96ba8ee5",
       "ts": "20260907T1609",
       "contributor_id": "quality-pilot",
