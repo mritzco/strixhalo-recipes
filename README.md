@@ -6,13 +6,46 @@ built so an AI agent can search, replicate, test, and contribute results
 with minimal token spend and without anyone having to trust a single
 person's claimed win.
 
+**The vision in one paragraph:** a database of *explained* serving
+configurations — each recipe pins what to run and why every parameter
+was chosen, records what it was optimizing (throughput? agent
+capability? vision?), and proves its capability claims with real harness
+tests. Recipes apply to a model, not a quant; results are immutable
+evidence; cross-validation is derived from independent witnesses, never
+asserted. Any model that only proves chat works is considered
+incomplete. How we built it: `ROADMAP.md` + `openspec/changes/`.
+
 Start here:
-- **`SPEC.md`** — goals, non-goals, and build checkpoints (for a human or
-  agent building/extending this repo).
-- **`FORMAT.md`** — full explanation of the recipe/result format,
-  versioning, and lineage rules.
-- **`SKILL.md`** — instructions for an agent using this repo day to day
-  (search, replicate, submit, contribute).
+- **`AGENTS.md`** — vision, requirements, roles, hard rules, data flow
+  (read this first if you are an agent).
+- **`SKILL.md`** — day-to-day operations: search, replicate, test,
+  submit, contribute.
+- **`FORMAT.md` / `SPEC.md`** — data model, format rationale, trust rules.
+- **`CONTRIBUTING.md`** — how humans and agents add work.
+- **`LEADERBOARD.md`** — the generated results board (landing) and
+  `models/` per-model pages.
+
+## Try it yourself (2 minutes)
+
+```bash
+git clone <this repo> && cd <repo>
+python3 -m venv .venv && .venv/bin/pip install -r tools/requirements.txt
+.venv/bin/python tools/validate.py --strict      # everything is consistent
+.venv/bin/python tools/search.py --model qwen3   # query the registry
+.venv/bin/python tools/leaderboard.py            # regenerate + read the board
+# query the JSON data layer without parsing YAML:
+.venv/bin/python -c "from tools.registry import Store; print(Store().find(sort='tg', limit=5))"
+bash tools/install-hooks.sh                      # validate on every commit
+```
+
+Run tests against **your** server — point the battery anywhere that
+speaks OpenAI `/v1` (llama.cpp, llama-swap, ollama, LM Studio):
+
+```bash
+export LLAMA_ENDPOINT=http://127.0.0.1:8080/v1     # your endpoint
+python3 tests/runners/tool_roundtrip.py --model your-model
+python3 tests/runners/agent_coding.py  --model your-model   # coding-agent loop
+```
 
 ## Quick start
 

@@ -28,8 +28,10 @@ import json
 import os
 import re
 import statistics
+import sys
 from collections import defaultdict
-from datetime import datetime
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from common import (REPO_ROOT, RECIPES_DIR, RESULTS_DIR,
                     iter_recipe_files, iter_result_files, load_yaml)

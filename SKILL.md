@@ -123,7 +123,7 @@ machine-readable layer lives in `index.json` (flat rows), `runs.json`
 YAML:
 
 ```python
-from registry import Store          # tools/registry.py
+from tools.registry import Store    # from the repo root (deps: PyYAML+jsonschema)
 s = Store()
 s.find(quant="Q8_0", backend="vulkan", tools=True, min_witnesses=1)
 s.find(sort="tg", limit=5)                     # top generation speed
