@@ -14,6 +14,30 @@ Registry records are CC0, code Apache-2.0, docs CC BY 4.0 (README →
 Licensing). Never embed third-party material (model outputs, benchmark
 prompts, images) in records you do not own — reference it instead.
 
+## Fast path: analyze (capture or test in one command)
+
+`python tools/analyze.py` is the daily driver — three verbs:
+
+- `analyze machine` — probe this machine and PROVE the probe JSON
+  validates against the result schema (other-OS agents: this is your
+  contract check; add `tools/probe.d/<family>.sh` from `arch.sh` if it
+  fails).
+- `analyze cmd "<launch command>" [--write]` — capture an EXISTING
+  setup (running server, llama-swap entry, or a pasted command line):
+  parses flags, reads the model, drafts a schema-valid recipe with a
+  correct content_hash, prints the share block (id + hash + the command
+  others run to test it). This is the reddit-poster path: run it, share
+  the id.
+- `analyze test --recipe <id> [--endpoint URL] [--submit --contributor you]`
+  — replicate someone else's recipe: runs the quick battery
+  (tool-roundtrip, throughput @8k PP, context-recall @4k) against your
+  server and, with `--submit`, writes an immutable result record. This
+  is the "let me verify what they claimed" path — compatible → run;
+  incompatible → collect a variant with lineage.
+
+Same hard rules apply: capabilities stay false until a test passes,
+records are append-only, one experiment = one PR.
+
 ## When the user wants to run a model
 
 1. If `index.json` is missing/stale: `python tools/build_index.py`.
@@ -39,7 +63,6 @@ prompts, images) in records you do not own — reference it instead.
    without confirmation.
 
 ## When the user wants to try a new model / flag combo / llama-swap system
-
 1. Search first — don't duplicate an existing recipe.
 2. **Generate drafts with `collect.py`, never hand-write YAML.** For the
    llama-swap systems on this machine (one draft each):

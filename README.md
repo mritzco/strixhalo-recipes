@@ -36,6 +36,14 @@ python3 -m venv .venv && .venv/bin/pip install -r tools/requirements.txt
 # query the JSON data layer without parsing YAML:
 .venv/bin/python -c "from tools.registry import Store; print(Store().find(sort='tg', limit=5))"
 bash tools/install-hooks.sh                      # validate on every commit
+# fingerprint + prove your probe matches the schema
+.venv/bin/python tools/analyze.py machine
+
+# capture YOUR existing setup in one shot (paste your launch command):
+.venv/bin/python tools/analyze.py cmd "/usr/bin/llama-server -hf unsloth/Model-GGUF:Q4_K_M -ngl 999 --jinja -c 32768 --port 8080" --write
+
+# test what someone else published (needs their server, or yours):
+.venv/bin/python tools/analyze.py test --recipe qwen3-coder --endpoint http://127.0.0.1:1234/v1 --submit --contributor you
 ```
 
 Run tests against **your** server — point the battery anywhere that
