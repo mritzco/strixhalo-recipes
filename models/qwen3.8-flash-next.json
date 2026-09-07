@@ -383,6 +383,18 @@
           "args": {
             "ctx": 4096
           }
+        },
+        {
+          "id": "code-battery",
+          "expect": {
+            "min_score": 0.5
+          }
+        },
+        {
+          "id": "math-verify",
+          "expect": {
+            "min_score": 0.5
+          }
         }
       ],
       "failure_notes": null
@@ -395,10 +407,11 @@
         "quant": [
           "UD-IQ4_XS"
         ],
-        "results": 1,
-        "witnesses": 1,
+        "results": 2,
+        "witnesses": 2,
         "witness_ids": [
-          "flash-pilot"
+          "flash-pilot",
+          "quality-pilot"
         ],
         "pp": 1468.8,
         "tg": 10.6,
@@ -406,8 +419,14 @@
           "agent-coding": {
             "pass": 1
           },
+          "code-battery": {
+            "degraded": 1
+          },
           "context-recall": {
             "pass": 1
+          },
+          "math-verify": {
+            "degraded": 1
           },
           "throughput": {
             "pass": 1
@@ -418,7 +437,9 @@
         },
         "declared": [
           "agent-coding",
+          "code-battery",
           "context-recall",
+          "math-verify",
           "throughput",
           "tool-roundtrip"
         ]
@@ -430,10 +451,11 @@
         "quant": [
           "UD-IQ4_XS"
         ],
-        "results": 1,
-        "witnesses": 1,
+        "results": 2,
+        "witnesses": 2,
         "witness_ids": [
-          "nathan-fork-pilot"
+          "nathan-fork-pilot",
+          "quality-pilot"
         ],
         "pp": 1798.1,
         "tg": 18.0,
@@ -441,8 +463,14 @@
           "agent-coding": {
             "pass": 1
           },
+          "code-battery": {
+            "degraded": 1
+          },
           "context-recall": {
             "pass": 1
+          },
+          "math-verify": {
+            "degraded": 1
           },
           "throughput": {
             "pass": 1
@@ -453,7 +481,9 @@
         },
         "declared": [
           "agent-coding",
+          "code-battery",
           "context-recall",
+          "math-verify",
           "throughput",
           "tool-roundtrip"
         ]
@@ -529,11 +559,61 @@
         ],
         "notes": "Nathan strix-halo-vulkan fork commit 5d8c07b44 built from source (GGML_VULKAN, host Mesa radv) + agentionai MTP Q8_0 sidecar fixed n4, port 8098. Fork=prefill, MTP=decode (attribution separate). COLD PP @10947 tok server-eval: 383.8 t/s vs v0.1.0 mainline 320 t/s (+20%, fork FA dequant-once + mmid rowlists). Server-eval decode on battery traffic (temp 0, structured/code/tool 64-tok rounds): 29.1-44.0 t/s per request, mean ~35 t/s (>=50-tok lines), vs v0.1.0 19.4-22.9 t/s -> ~1.6-1.8x (MTP). MTP acceptance content-dependent: structured 0.73-1.00 (deterministic count-gen 52.1 t/s at acc 1.0); open-ended prose 0.39-0.55 -> ~18-25 t/s (draft-head greedy agreement collapses on flat creative distributions; receipts' 40 t/s headline was code-emission traffic, their reasoning-heavy band 24-31). Runner metrics: tg 18.0 t/s mean (contaminated by one cold 10947-tok PP round at 30.4s, same artifact as v0.1.0's 10.6/37.4s); runner tokens_per_sec_pp 1798.1 is prefix-cache artifact (warm sys prompt), NOT cold PP. agent-coding pass 3 rounds (v0.1.0: 4), tool-roundtrip pass latency 3.05s (v0.1.0 4.75s), context-recall pass STRIX42@4096. Identity sane (Qwen/Tongyi, no leak). Probe backend block reflects the untouched distro /usr/bin/llama-server b10809 (machine reference); the recipe backend pins the fork. Full server log: /tmp/mtp.log; per-request parse: /tmp/mtp-server-timing.json; sanity: /tmp/mtp-sanity.json.",
         "model_id": "qwen3.8-flash-next"
+      },
+      {
+        "run_id": "20260907T160943Z-4b3190ec",
+        "ts": "20260907T1609",
+        "contributor_id": "quality-pilot",
+        "recipe_version": "0.1.0",
+        "quant": "UD-IQ4_XS",
+        "content_hash": "sha256:5ad6730ad596da3c9ebe28040f17c3216f6a714fca748de75537cc2dc29ab5cb",
+        "hash": "5ad673",
+        "pp": null,
+        "tg": null,
+        "tests": [
+          {
+            "id": "code-battery",
+            "result": "degraded",
+            "score": 0.875
+          },
+          {
+            "id": "math-verify",
+            "result": "degraded",
+            "score": 0.625
+          }
+        ],
+        "notes": "quality baseline, mainline b10809, ctx 8192 for these runs (recipe ctx 32768); math-verify 3 fails = thinking-token truncation (reasoning-effort medium server vs 768-token cap), not math errors \u2014 see observations",
+        "model_id": "qwen3.8-flash-next"
+      },
+      {
+        "run_id": "20260907T160944Z-96ba8ee5",
+        "ts": "20260907T1609",
+        "contributor_id": "quality-pilot",
+        "recipe_version": "0.2.0",
+        "quant": "UD-IQ4_XS",
+        "content_hash": "sha256:e992773347c4dd2ec8bf7873918bfb460ddfc39d979af8c706271644068d82b8",
+        "hash": "e99277",
+        "pp": null,
+        "tg": null,
+        "tests": [
+          {
+            "id": "code-battery",
+            "result": "degraded",
+            "score": 0.875
+          },
+          {
+            "id": "math-verify",
+            "result": "degraded",
+            "score": 0.625
+          }
+        ],
+        "notes": "quality A/B, Nathan fork + MTP, ctx 8192; IDENTICAL scores to mainline (7/8 code incl same task-3 edge, 5/8 math) \u2014 speed 1.6-1.8x at same quality; same truncation artifact on math",
+        "model_id": "qwen3.8-flash-next"
       }
     ],
     "counts": {
-      "results": 2,
-      "witnesses": 1,
+      "results": 4,
+      "witnesses": 2,
       "cross_validated": false
     }
   }

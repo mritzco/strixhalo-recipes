@@ -10,12 +10,13 @@ lineage:
   parents:
   - id: qwen3.8-flash-next
     version: 0.1.0
-    contribution: 'Nathan fork + MTP sidecar: fork prefill fixes + MTP decode (mainline cannot load standalone MTP
-      head)'
-  rationale: 'v0.1.0 was the honest mainline (b10809, no MTP) baseline. v0.2.0 swaps the engine to Nathan''s strix-halo-vulkan
-    fork built from source and adds the Q8_0 MTP sidecar draft head (-md --spec-type draft-mtp, fixed n4) — the
-    receipt-validated arrangement that mainline b10809 could not load (''output_hc_norm.weight not found''; MTP
-    sidecar support is fork-only, upstream PR #28243 unmerged).'
+    contribution: 'Nathan fork + MTP sidecar: fork prefill fixes + MTP decode (mainline
+      cannot load standalone MTP head)'
+  rationale: "v0.1.0 was the honest mainline (b10809, no MTP) baseline. v0.2.0 swaps\
+    \ the engine to Nathan's strix-halo-vulkan fork built from source and adds the\
+    \ Q8_0 MTP sidecar draft head (-md --spec-type draft-mtp, fixed n4) \u2014 the\
+    \ receipt-validated arrangement that mainline b10809 could not load ('output_hc_norm.weight\
+    \ not found'; MTP sidecar support is fork-only, upstream PR #28243 unmerged)."
 objectives:
   primary:
   - throughput
@@ -25,21 +26,25 @@ objectives:
 constraints:
 - fits_in_available_memory
 tradeoffs:
-- 'Fork-from-source vs distro mainline: the strix-halo-vulkan Vulkan fixes are prefill-only (FA dequant-once q8-KV,
-  f16 KV contiguize, coopmat1 FA stack, mmid rowlists MoE prepass) and cost nothing on decode; MTP sidecar adds
-  ~4.1GB resident. The from-source build route recovers the 6-24% the portable tarball payload leaves on the table
+- 'Fork-from-source vs distro mainline: the strix-halo-vulkan Vulkan fixes are prefill-only
+  (FA dequant-once q8-KV, f16 KV contiguize, coopmat1 FA stack, mmid rowlists MoE
+  prepass) and cost nothing on decode; MTP sidecar adds ~4.1GB resident. The from-source
+  build route recovers the 6-24% the portable tarball payload leaves on the table
   (receipts: JSON-class decode 28.3 -> 40.3 t/s identical flags).'
-- 'MTP decode speedup is content-predictability dependent, not uniform: structured/code/tool traffic accepted ~0.73-1.00
-  of draft tokens (decode 29-52 t/s server-eval on this box); open-ended prose collapsed to ~0.39-0.55 acceptance
-  (~18-25 t/s) — the draft head agrees greedily on near-deterministic text and disagrees on flat creative distributions.
-  Receipts'' 40 t/s headline was measured on code-emission (game-build) traffic; their reasoning-heavy band was
-  24-31 t/s.'
-- 'Reasoning flags cap thinking-token burn: without --reasoning-effort/--reasoning-budget this model spends its
-  whole output budget on reasoning and emits nothing (finish=length). Budget is a guardrail, not a quality knob
-  (8x budget scored worse in the source A/B and never touched the cap).'
-- 'MTP draft head file choice is load-bearing: the fork''s qwen4exp loader requires ''upstream tensor naming'' (top-level
-  output_hc_norm/down/up + token_embd). unsloth/Qwen3.8-Flash-Next-GGUF''s MTP/ heads (rev 38bb39ee, incl. the ''-shared-''
-  variants) nest the head inside blk.48.nextn.hc_head_* and FAIL to load on this fork (''check_tensor_dims: tensor
+- "MTP decode speedup is content-predictability dependent, not uniform: structured/code/tool\
+  \ traffic accepted ~0.73-1.00 of draft tokens (decode 29-52 t/s server-eval on this\
+  \ box); open-ended prose collapsed to ~0.39-0.55 acceptance (~18-25 t/s) \u2014\
+  \ the draft head agrees greedily on near-deterministic text and disagrees on flat\
+  \ creative distributions. Receipts' 40 t/s headline was measured on code-emission\
+  \ (game-build) traffic; their reasoning-heavy band was 24-31 t/s."
+- 'Reasoning flags cap thinking-token burn: without --reasoning-effort/--reasoning-budget
+  this model spends its whole output budget on reasoning and emits nothing (finish=length).
+  Budget is a guardrail, not a quality knob (8x budget scored worse in the source
+  A/B and never touched the cap).'
+- 'MTP draft head file choice is load-bearing: the fork''s qwen4exp loader requires
+  ''upstream tensor naming'' (top-level output_hc_norm/down/up + token_embd). unsloth/Qwen3.8-Flash-Next-GGUF''s
+  MTP/ heads (rev 38bb39ee, incl. the ''-shared-'' variants) nest the head inside
+  blk.48.nextn.hc_head_* and FAIL to load on this fork (''check_tensor_dims: tensor
   output_hc_norm.weight not found''); the fork was validated against agentionai/Qwen3.8-Flash-Next-MTP-Q8_0-GGUF
   (see fork commit 354390810).'
 model:
@@ -64,22 +69,27 @@ backend:
   build: '10659'
   upstream: https://github.com/Nathanw1014/llama.cpp
   patches:
-  - ref: strix-halo-vulkan branch, fork commit 5d8c07b44 (merged on upstream master 8161641)
-    note: 'Complete Vulkan stack shipped by the toolbox: FA dequant-once + all-quant transpose, f16 KV contiguize,
-      coopmat1 FA prefill stack (P-hoist / Psh relayout / wave32 pin), dense wave32 retile + coopmat LDS pad tune,
-      transposed concat, mmid row-list prepass + BM64/F16B, non-native K/V routing fix, plus qwen4exp MTP sidecar
-      + standalone-head support. Source: https://github.com/Nathanw1014/strix-halo-llamacpp (README/BUILD.md).'
+  - ref: strix-halo-vulkan branch, fork commit 5d8c07b44 (merged on upstream master
+      8161641)
+    note: 'Complete Vulkan stack shipped by the toolbox: FA dequant-once + all-quant
+      transpose, f16 KV contiguize, coopmat1 FA prefill stack (P-hoist / Psh relayout
+      / wave32 pin), dense wave32 retile + coopmat LDS pad tune, transposed concat,
+      mmid row-list prepass + BM64/F16B, non-native K/V routing fix, plus qwen4exp
+      MTP sidecar + standalone-head support. Source: https://github.com/Nathanw1014/strix-halo-llamacpp
+      (README/BUILD.md).'
   - ref: 'PR #25494 (upstreaming branch vulkan-coopmat1-fa-dequant-transpose)'
-    note: Vulkan FA dequant-once, q8 KV (prefill) — 'the bulk of the 3.26x' deep-prefill win per toolbox README;
-      in-flight upstream, carried in this fork.
+    note: "Vulkan FA dequant-once, q8 KV (prefill) \u2014 'the bulk of the 3.26x'\
+      \ deep-prefill win per toolbox README; in-flight upstream, carried in this fork."
   - ref: MTP sidecar support (qwen4exp draft head)
-    note: 'Mainline draft-mtp expects MTP tensors integrated in the model file and standalone-head -md loading is
-      unmerged upstream (PR #28243); this fork''s qwen4exp loader (commit 354390810) accepts an mtp-only sidecar
-      with top-level shared head (agentionai naming). Empirically FAILED on mainline b10809 and on this fork with
-      unsloth MTP/ heads (nested blk.48.nextn.hc_head_* naming).'
+    note: 'Mainline draft-mtp expects MTP tensors integrated in the model file and
+      standalone-head -md loading is unmerged upstream (PR #28243); this fork''s qwen4exp
+      loader (commit 354390810) accepts an mtp-only sidecar with top-level shared
+      head (agentionai naming). Empirically FAILED on mainline b10809 and on this
+      fork with unsloth MTP/ heads (nested blk.48.nextn.hc_head_* naming).'
   - ref: v0.7.4+ greedy repeatability fixes
-    note: Top-k selection order pin + stale-KV zeroing make temp-0 reruns deterministic; GGML_VK_FA_WAVE32 defaults
-      OFF from v0.7.4 (moves ~2% of greedy tokens on dense models — opt in with =1 only if tested).
+    note: "Top-k selection order pin + stale-KV zeroing make temp-0 reruns deterministic;\
+      \ GGML_VK_FA_WAVE32 defaults OFF from v0.7.4 (moves ~2% of greedy tokens on\
+      \ dense models \u2014 opt in with =1 only if tested)."
   install_method: build-from-source
   pkg_version: null
   build_flags:
@@ -93,24 +103,27 @@ backend:
   rocm_version: null
 launch:
   command: /home/itzco/src/nathan-llama.cpp/build-vk/bin/llama-server --model /home/itzco/models/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
-    -md /home/itzco/models/Qwen3.8-Flash-Next-GGUF/MTP-agentionai/Qwen3.8-Flash-Next-MTP-Q8_0.gguf --spec-type draft-mtp
-    --spec-draft-n-max 4 -ngld 999 --alias qwen3.8-flash-next-mtp -ngl 999 --jinja -fa on -c 32768 --cache-type-k
-    q8_0 --cache-type-v q8_0 -b 8192 -ub 2048 -np 1 --reasoning-effort medium --reasoning-budget 2048 --host 127.0.0.1
+    -md /home/itzco/models/Qwen3.8-Flash-Next-GGUF/MTP-agentionai/Qwen3.8-Flash-Next-MTP-Q8_0.gguf
+    --spec-type draft-mtp --spec-draft-n-max 4 -ngld 999 --alias qwen3.8-flash-next-mtp
+    -ngl 999 --jinja -fa on -c 32768 --cache-type-k q8_0 --cache-type-v q8_0 -b 8192
+    -ub 2048 -np 1 --reasoning-effort medium --reasoning-budget 2048 --host 127.0.0.1
     --port 8098
   serving:
     fronted_by: direct llama-server (no llama-swap)
     endpoint: http://127.0.0.1:8098/v1
-    note: 'One GPU rule: single llama-server on 127.0.0.1:8098 for this run; llama-swap (127.0.0.1:1234) not involved.
-      Fork binary is a SEPARATE path from the untouched distro /usr/bin/llama-server (b10809).'
+    note: 'One GPU rule: single llama-server on 127.0.0.1:8098 for this run; llama-swap
+      (127.0.0.1:1234) not involved. Fork binary is a SEPARATE path from the untouched
+      distro /usr/bin/llama-server (b10809).'
 parameters:
   ctx_size:
     value: 32768
     annotations:
     - type: recommendation
-      text: ctx 32k covers the test battery (context-recall@4096, throughput PP ~8192) and keeps q8_0 KV + 87.25GB
-        weights + 4.1GB MTP head inside GTT (~110 GiB). Source post ran 65536 default (131k allocates) for agent
-        sessions; receipts note decode is flat with allocated-but-unfilled ctx, so 32k is a KV-memory choice, not
-        a speed one. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/
+      text: ctx 32k covers the test battery (context-recall@4096, throughput PP ~8192)
+        and keeps q8_0 KV + 87.25GB weights + 4.1GB MTP head inside GTT (~110 GiB).
+        Source post ran 65536 default (131k allocates) for agent sessions; receipts
+        note decode is flat with allocated-but-unfilled ctx, so 32k is a KV-memory
+        choice, not a speed one. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -118,9 +131,11 @@ parameters:
     value: q8_0
     annotations:
     - type: quality
-      text: Q8_0 K-cache keeps long-context quality; with the fork's FA dequant-once + KV-contig fixes, KV type
-        is NO LONGER a prefill-speed decision (f16/q8/q4 within ~2.7% at depth per toolbox README) — pick on memory
-        + decode-at-depth + quality. https://github.com/Nathanw1014/strix-halo-llamacpp (README 'Recommended flags')
+      text: "Q8_0 K-cache keeps long-context quality; with the fork's FA dequant-once\
+        \ + KV-contig fixes, KV type is NO LONGER a prefill-speed decision (f16/q8/q4\
+        \ within ~2.7% at depth per toolbox README) \u2014 pick on memory + decode-at-depth\
+        \ + quality. https://github.com/Nathanw1014/strix-halo-llamacpp (README 'Recommended\
+        \ flags')"
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -128,8 +143,9 @@ parameters:
     value: q8_0
     annotations:
     - type: quality
-      text: Q8_0 V mirrors K ('q8_0 both' in the source post); q4_0 is the toolbox's smallest-footprint recommendation,
-        q8_0 kept here for KV quality parity with the v0.1.0 baseline so the A/B isolates engine+MTP. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/
+      text: Q8_0 V mirrors K ('q8_0 both' in the source post); q4_0 is the toolbox's
+        smallest-footprint recommendation, q8_0 kept here for KV quality parity with
+        the v0.1.0 baseline so the A/B isolates engine+MTP. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -137,8 +153,8 @@ parameters:
     value: '999'
     annotations:
     - type: recommendation
-      text: Full layer offload to the unified GTT heap (~110 GiB) — required for 87GB+model + head on this box;
-        Vulkan/radv only (no ROCm).
+      text: "Full layer offload to the unified GTT heap (~110 GiB) \u2014 required\
+        \ for 87GB+model + head on this box; Vulkan/radv only (no ROCm)."
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -146,11 +162,13 @@ parameters:
     value: /home/itzco/models/Qwen3.8-Flash-Next-GGUF/MTP-agentionai/Qwen3.8-Flash-Next-MTP-Q8_0.gguf
     annotations:
     - type: required
-      text: '-md names the MTP draft sidecar. MUST be the fork-validated layout (top-level output_hc_norm/down/up
-        + token_embd, ''upstream tensor naming''). unsloth MTP/ heads (mtp-Qwen3.8-Flash-Next-Q8_0.gguf and -shared-
-        variants at HF rev 38bb39ee) nest the head as blk.48.nextn.hc_head_* and FAIL on this fork with ''check_tensor_dims:
-        tensor output_hc_norm.weight not found''. Validated file: agentionai/Qwen3.8-Flash-Next-MTP-Q8_0-GGUF (fork
-        commit 354390810 notes agentionai''s conversion verified, hc_norm gammas (1+w)-folded exact). https://huggingface.co/agentionai/Qwen3.8-Flash-Next-MTP-Q8_0-GGUF'
+      text: '-md names the MTP draft sidecar. MUST be the fork-validated layout (top-level
+        output_hc_norm/down/up + token_embd, ''upstream tensor naming''). unsloth
+        MTP/ heads (mtp-Qwen3.8-Flash-Next-Q8_0.gguf and -shared- variants at HF rev
+        38bb39ee) nest the head as blk.48.nextn.hc_head_* and FAIL on this fork with
+        ''check_tensor_dims: tensor output_hc_norm.weight not found''. Validated file:
+        agentionai/Qwen3.8-Flash-Next-MTP-Q8_0-GGUF (fork commit 354390810 notes agentionai''s
+        conversion verified, hc_norm gammas (1+w)-folded exact). https://huggingface.co/agentionai/Qwen3.8-Flash-Next-MTP-Q8_0-GGUF'
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -158,10 +176,11 @@ parameters:
     value: draft-mtp
     annotations:
     - type: required
-      text: --spec-type draft-mtp engages the qwen4exp MTP draft graph (the fork's standalone-head support; mainline
-        has no qwen4exp MTP graph and no -md draft-mtp path for this model). Main model file has no MTP tensors,
-        so without the sidecar you get no-MTP decode. https://www.reddit.com/r/StrixHalo/comments/1w6t58a/ and unsloth
-        MTP README
+      text: --spec-type draft-mtp engages the qwen4exp MTP draft graph (the fork's
+        standalone-head support; mainline has no qwen4exp MTP graph and no -md draft-mtp
+        path for this model). Main model file has no MTP tensors, so without the sidecar
+        you get no-MTP decode. https://www.reddit.com/r/StrixHalo/comments/1w6t58a/
+        and unsloth MTP README
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -169,10 +188,12 @@ parameters:
     value: 4
     annotations:
     - type: recommendation
-      text: 'Fixed n4 = --spec-draft-n-max 4 with default --spec-draft-p-min 0.00 (no confidence early-stop). Receipts:
-        ''the native MTP head as a Q8_0 sidecar (~4GB), fixed n4. Don''t use adaptive draft sizing here, it loses
-        on MTP''s chained drafts (measured both directions)''. unsloth''s MTP README suggests n2 as a generic default;
-        the Strix-Halo fork receipts validated n4 on this model. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/'
+      text: 'Fixed n4 = --spec-draft-n-max 4 with default --spec-draft-p-min 0.00
+        (no confidence early-stop). Receipts: ''the native MTP head as a Q8_0 sidecar
+        (~4GB), fixed n4. Don''t use adaptive draft sizing here, it loses on MTP''s
+        chained drafts (measured both directions)''. unsloth''s MTP README suggests
+        n2 as a generic default; the Strix-Halo fork receipts validated n4 on this
+        model. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/'
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -180,8 +201,9 @@ parameters:
     value: '999'
     annotations:
     - type: recommendation
-      text: Full GPU offload of the draft head (-ngld 999); draft n_gpu_layers default is 'auto' but pinning 999
-        keeps the 4.1GB head off CPU on this Vulkan-only box.
+      text: Full GPU offload of the draft head (-ngld 999); draft n_gpu_layers default
+        is 'auto' but pinning 999 keeps the 4.1GB head off CPU on this Vulkan-only
+        box.
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -189,9 +211,9 @@ parameters:
     value: true
     annotations:
     - type: required
-      text: '-fa on: Flash Attention on Vulkan; the fork''s FA dequant-once/contiguize/coopmat1 stack is the prefill
-        payload (v0.1.0 measured 320 t/s cold PP @10.9k mainline; this fork run 383.8 t/s on the identical shape).
-        https://github.com/Nathanw1014/strix-halo-llamacpp'
+      text: '-fa on: Flash Attention on Vulkan; the fork''s FA dequant-once/contiguize/coopmat1
+        stack is the prefill payload (v0.1.0 measured 320 t/s cold PP @10.9k mainline;
+        this fork run 383.8 t/s on the identical shape). https://github.com/Nathanw1014/strix-halo-llamacpp'
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -199,8 +221,9 @@ parameters:
     value: true
     annotations:
     - type: required
-      text: --jinja parses structured tool_calls; without it tool syntax leaks into chat and harness tool use (tool-roundtrip/agent-coding)
-        breaks. (Enabled by default on this build; pinned explicitly for parity with v0.1.0.)
+      text: --jinja parses structured tool_calls; without it tool syntax leaks into
+        chat and harness tool use (tool-roundtrip/agent-coding) breaks. (Enabled by
+        default on this build; pinned explicitly for parity with v0.1.0.)
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -208,8 +231,9 @@ parameters:
     value: 8192
     annotations:
     - type: performance
-      text: -b 8192 logical batch (mainline commenter's Flash-Next flags) for fast prompt processing on Vulkan.
-        https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/ comment thread
+      text: -b 8192 logical batch (mainline commenter's Flash-Next flags) for fast
+        prompt processing on Vulkan. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/
+        comment thread
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -217,10 +241,12 @@ parameters:
     value: 2048
     annotations:
     - type: performance
-      text: '-ub 2048 physical max batch — the receipts'' MoE-prefill setting (default 512 leaves prefill on the
-        table: a MoE touches every expert once ubatch > ~16 tokens). hd128 small-expert MoE guidance is -b 2048
-        -ub 2048; mainline commenter ran -b 8192 -ub 2048 on this model; v0.1.0 used 2048 — kept identical for A/B.
-        https://github.com/Nathanw1014/strix-halo-llamacpp (README ''Recommended flags'')'
+      text: "-ub 2048 physical max batch \u2014 the receipts' MoE-prefill setting\
+        \ (default 512 leaves prefill on the table: a MoE touches every expert once\
+        \ ubatch > ~16 tokens). hd128 small-expert MoE guidance is -b 2048 -ub 2048;\
+        \ mainline commenter ran -b 8192 -ub 2048 on this model; v0.1.0 used 2048\
+        \ \u2014 kept identical for A/B. https://github.com/Nathanw1014/strix-halo-llamacpp\
+        \ (README 'Recommended flags')"
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -228,7 +254,8 @@ parameters:
     value: 1
     annotations:
     - type: recommendation
-      text: '-np 1 single slot: one client at a time on this intake; avoids splitting KV and matches v0.1.0/comments.'
+      text: '-np 1 single slot: one client at a time on this intake; avoids splitting
+        KV and matches v0.1.0/comments.'
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -236,9 +263,10 @@ parameters:
     value: medium
     annotations:
     - type: required
-      text: 'THE load-bearing flag per source post: ''--reasoning-effort medium --reasoning-budget 2048. Without
-        them, this model burns its entire output budget on reasoning and emits nothing, 8.5k chars of thinking,
-        zero content, finish=length.'' Server-native, template-independent. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/'
+      text: 'THE load-bearing flag per source post: ''--reasoning-effort medium --reasoning-budget
+        2048. Without them, this model burns its entire output budget on reasoning
+        and emits nothing, 8.5k chars of thinking, zero content, finish=length.''
+        Server-native, template-independent. https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/'
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
@@ -246,55 +274,66 @@ parameters:
     value: 2048
     annotations:
     - type: required
-      text: 'Guardrail against reasoning burn-out (see reasoning_effort). Source A/B: 8x the budget scored worse
-        and never touched the cap — budget is not a quality knob. Enforced per-request unless clients override.
-        Receipts note a hard end-of-think injection is off-distribution for the drafter (acceptance sags on thinking-heavy
-        traffic: 24-31 t/s vs 40 on clean emission). https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/'
+      text: "Guardrail against reasoning burn-out (see reasoning_effort). Source A/B:\
+        \ 8x the budget scored worse and never touched the cap \u2014 budget is not\
+        \ a quality knob. Enforced per-request unless clients override. Receipts note\
+        \ a hard end-of-think injection is off-distribution for the drafter (acceptance\
+        \ sags on thinking-heavy traffic: 24-31 t/s vs 40 on clean emission). https://www.reddit.com/r/StrixHalo/comments/1w6cf5t/"
       evidence:
         runs:
         - 20260907T153604Z-58c0cc83
 annotations:
 - type: experimental
-  text: 'First fork+MTP record for Qwen3.8-Flash-Next (2026-09-07): Nathan strix-halo-vulkan fork commit 5d8c07b44
-    built from source (Vulkan, host Mesa/radv), MTP Q8_0 sidecar fixed n4. capabilities_confirmed set only from
-    the tests that actually ran this session.'
+  text: 'First fork+MTP record for Qwen3.8-Flash-Next (2026-09-07): Nathan strix-halo-vulkan
+    fork commit 5d8c07b44 built from source (Vulkan, host Mesa/radv), MTP Q8_0 sidecar
+    fixed n4. capabilities_confirmed set only from the tests that actually ran this
+    session.'
 - type: warning
-  text: 'DECODE ATTRIBUTION — the fork''s Vulkan patches are PREFILL-only by construction (FA dequant-once, KV contiguize,
-    coopmat1 FA stack, mmid rowlists; decode untouched: toolbox README ''Decode is untouched by the Vulkan fixes'').
-    The decode gain over v0.1.0 comes from the MTP sidecar; the PP gain (~383.8 vs 320 t/s @10.9k cold) comes from
-    the fork. Keep the two claims separate; evidence for each is in the run record (server-eval lines from /tmp/mtp.log).'
+  text: "DECODE ATTRIBUTION \u2014 the fork's Vulkan patches are PREFILL-only by construction\
+    \ (FA dequant-once, KV contiguize, coopmat1 FA stack, mmid rowlists; decode untouched:\
+    \ toolbox README 'Decode is untouched by the Vulkan fixes'). The decode gain over\
+    \ v0.1.0 comes from the MTP sidecar; the PP gain (~383.8 vs 320 t/s @10.9k cold)\
+    \ comes from the fork. Keep the two claims separate; evidence for each is in the\
+    \ run record (server-eval lines from /tmp/mtp.log)."
 - type: evidence
-  text: 'MTP acceptance on this box is content-dependent: structured/code/tool traffic 0.73-1.00 per-request (battery
-    rounds decode 29.1-44.0 t/s, deterministic count-gen 52.1 t/s at acceptance 1.0), open-ended prose 0.39-0.55
-    (~18-25 t/s). Receipts quote ~74% on game-build (code-emission) sessions and ''decode 40 → 31 → ~25 t/s from
-    low to high effort as reasoning-heavy content lowers acceptance'' — consistent with this run''s split.'
+  text: "MTP acceptance on this box is content-dependent: structured/code/tool traffic\
+    \ 0.73-1.00 per-request (battery rounds decode 29.1-44.0 t/s, deterministic count-gen\
+    \ 52.1 t/s at acceptance 1.0), open-ended prose 0.39-0.55 (~18-25 t/s). Receipts\
+    \ quote ~74% on game-build (code-emission) sessions and 'decode 40 \u2192 31 \u2192\
+    \ ~25 t/s from low to high effort as reasoning-heavy content lowers acceptance'\
+    \ \u2014 consistent with this run's split."
   evidence:
     runs:
     - 20260907T153604Z-58c0cc83
 - type: compatibility
-  text: 'File-layout finding (fork 5d8c07b44, 2026-09-07): unsloth/Qwen3.8-Flash-Next-GGUF MTP/ heads at HF rev
-    38bb39ee (mtp-Qwen3.8-Flash-Next-Q8_0.gguf 3.85GB self-contained AND mtp-...-shared-Q8_0.gguf 2.60GB) both FAIL
-    to load as -md on the fork: ''check_tensor_dims: tensor output_hc_norm.weight not found''. Their hc head tensors
-    are nested as blk.48.nextn.hc_head_{norm,down,up}; the fork loader (and the qwen4exp graph_mtp) requires top-level
-    output_hc_norm/down/up + token_embd. agentionai/Qwen3.8-Flash-Next-MTP-Q8_0-GGUF (4.13GB, 34 tensors, block_count
-    49, nextn_predict_layers 1) loads and speculates. Source post warned ''they re-upload under the same names —
-    pin your revision''; the head file choice is part of reproducibility.'
+  text: "File-layout finding (fork 5d8c07b44, 2026-09-07): unsloth/Qwen3.8-Flash-Next-GGUF\
+    \ MTP/ heads at HF rev 38bb39ee (mtp-Qwen3.8-Flash-Next-Q8_0.gguf 3.85GB self-contained\
+    \ AND mtp-...-shared-Q8_0.gguf 2.60GB) both FAIL to load as -md on the fork: 'check_tensor_dims:\
+    \ tensor output_hc_norm.weight not found'. Their hc head tensors are nested as\
+    \ blk.48.nextn.hc_head_{norm,down,up}; the fork loader (and the qwen4exp graph_mtp)\
+    \ requires top-level output_hc_norm/down/up + token_embd. agentionai/Qwen3.8-Flash-Next-MTP-Q8_0-GGUF\
+    \ (4.13GB, 34 tensors, block_count 49, nextn_predict_layers 1) loads and speculates.\
+    \ Source post warned 'they re-upload under the same names \u2014 pin your revision';\
+    \ the head file choice is part of reproducibility."
 - type: evidence
-  text: 'Sanity before battery: identity prompt answered ''I''m Qwen, a large language model developed by Alibaba
-    Group''s Tongyi Lab'' (no KDiff/Moonshot leak, no malformed control tokens — the source-post warning case);
-    short coding question returned a valid Python fib() with code-only output; reasoning traces present and coherent
-    (effort medium).'
+  text: "Sanity before battery: identity prompt answered 'I'm Qwen, a large language\
+    \ model developed by Alibaba Group's Tongyi Lab' (no KDiff/Moonshot leak, no malformed\
+    \ control tokens \u2014 the source-post warning case); short coding question returned\
+    \ a valid Python fib() with code-only output; reasoning traces present and coherent\
+    \ (effort medium)."
   evidence:
     runs:
     - 20260907T153604Z-58c0cc83
 - type: recommendation
   text: Quant pinned at HF revision 38bb39ee97821de2c9009abb7e93950eec396e66 of unsloth/Qwen3.8-Flash-Next-GGUF
-    (UD-IQ4_XS, 3 shards, ~87.25 GiB). MTP head from agentionai/Qwen3.8-Flash-Next-MTP-Q8_0-GGUF rev f843615d (see
-    backend/model_draft annotations for why not the unsloth MTP/ file).
+    (UD-IQ4_XS, 3 shards, ~87.25 GiB). MTP head from agentionai/Qwen3.8-Flash-Next-MTP-Q8_0-GGUF
+    rev f843615d (see backend/model_draft annotations for why not the unsloth MTP/
+    file).
 harness_compat:
   tested_with:
   - openai-api
-  exposes_as: OpenAI-compatible /v1 on http://127.0.0.1:8098 (direct llama-server, --alias qwen3.8-flash-next-mtp)
+  exposes_as: OpenAI-compatible /v1 on http://127.0.0.1:8098 (direct llama-server,
+    --alias qwen3.8-flash-next-mtp)
   capabilities_confirmed:
     tools: true
     mcp: false
@@ -313,4 +352,10 @@ tests:
     min_score: 1.0
   args:
     ctx: 4096
+- id: code-battery
+  expect:
+    min_score: 0.5
+- id: math-verify
+  expect:
+    min_score: 0.5
 failure_notes: null

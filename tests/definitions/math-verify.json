@@ -1,0 +1,13 @@
+{
+  "id": "math-verify",
+  "version": "1.0.0",
+  "capability": "quality",
+  "description": "Graded exact-answer arithmetic/reasoning: 8 problems generated with ground-truth answers computed in-run (stdlib). Grades exact integers; hallucination and reasoning drift lower the score. Deterministic per --seed.",
+  "harness": ["openai-api"],
+  "runner": "tests/runners/math_verify.py",
+  "endpoint_var": "LLAMA_ENDPOINT",
+  "acceptance": {"min_score": 0.5},
+  "examples": [
+    "python tests/runners/math_verify.py --endpoint http://127.0.0.1:1234/v1 --model qwen3-coder"
+  ]
+}

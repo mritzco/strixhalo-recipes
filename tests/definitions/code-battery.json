@@ -1,0 +1,13 @@
+{
+  "id": "code-battery",
+  "version": "1.0.0",
+  "capability": "agent-task",
+  "description": "Graded functional correctness: 8 original self-written Python tasks, hidden unit tests executed per task in an isolated subprocess. Score = passed/total. Separates 'fast but inaccurate' quants from usable ones.",
+  "harness": ["openai-api"],
+  "runner": "tests/runners/code_battery.py",
+  "endpoint_var": "LLAMA_ENDPOINT",
+  "acceptance": {"min_score": 0.5},
+  "examples": [
+    "python tests/runners/code_battery.py --endpoint http://127.0.0.1:1234/v1 --model qwen3-coder"
+  ]
+}

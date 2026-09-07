@@ -2,6 +2,56 @@
   "store_version": 1,
   "runs": [
     {
+      "run_id": "20260907T160944Z-96ba8ee5",
+      "ts": "20260907T1609",
+      "contributor_id": "quality-pilot",
+      "recipe_version": "0.2.0",
+      "quant": "UD-IQ4_XS",
+      "content_hash": "sha256:e992773347c4dd2ec8bf7873918bfb460ddfc39d979af8c706271644068d82b8",
+      "hash": "e99277",
+      "pp": null,
+      "tg": null,
+      "tests": [
+        {
+          "id": "code-battery",
+          "result": "degraded",
+          "score": 0.875
+        },
+        {
+          "id": "math-verify",
+          "result": "degraded",
+          "score": 0.625
+        }
+      ],
+      "notes": "quality A/B, Nathan fork + MTP, ctx 8192; IDENTICAL scores to mainline (7/8 code incl same task-3 edge, 5/8 math) \u2014 speed 1.6-1.8x at same quality; same truncation artifact on math",
+      "model_id": "qwen3.8-flash-next"
+    },
+    {
+      "run_id": "20260907T160943Z-4b3190ec",
+      "ts": "20260907T1609",
+      "contributor_id": "quality-pilot",
+      "recipe_version": "0.1.0",
+      "quant": "UD-IQ4_XS",
+      "content_hash": "sha256:5ad6730ad596da3c9ebe28040f17c3216f6a714fca748de75537cc2dc29ab5cb",
+      "hash": "5ad673",
+      "pp": null,
+      "tg": null,
+      "tests": [
+        {
+          "id": "code-battery",
+          "result": "degraded",
+          "score": 0.875
+        },
+        {
+          "id": "math-verify",
+          "result": "degraded",
+          "score": 0.625
+        }
+      ],
+      "notes": "quality baseline, mainline b10809, ctx 8192 for these runs (recipe ctx 32768); math-verify 3 fails = thinking-token truncation (reasoning-effort medium server vs 768-token cap), not math errors \u2014 see observations",
+      "model_id": "qwen3.8-flash-next"
+    },
+    {
       "run_id": "20260907T153604Z-58c0cc83",
       "ts": "20260907T1536",
       "contributor_id": "nathan-fork-pilot",

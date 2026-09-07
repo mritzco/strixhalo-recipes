@@ -261,13 +261,13 @@
         "mcp": false,
         "vision": false
       },
-      "witnesses": 1,
-      "distinct_witnesses": 1,
+      "witnesses": 2,
+      "distinct_witnesses": 2,
       "pp": 1798.1,
       "tg": 18.0,
-      "results": 1,
+      "results": 2,
       "n_variants": 2,
-      "last_run": "20260907T153604Z-58c0cc83",
+      "last_run": "20260907T160944Z-96ba8ee5",
       "cross_validated": false,
       "path": "recipes/qwen3.8-flash-next/qwen3.8-flash-next-v0.2.0.yaml"
     }

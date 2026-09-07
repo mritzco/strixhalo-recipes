@@ -1,0 +1,82 @@
+{
+  "recipe_id": "qwen3.8-flash-next",
+  "recipe_version": "0.1.0",
+  "content_hash": "sha256:5ad6730ad596da3c9ebe28040f17c3216f6a714fca748de75537cc2dc29ab5cb",
+  "run_id": "20260907T160943Z-4b3190ec",
+  "contributor_id": "quality-pilot",
+  "quant": "UD-IQ4_XS",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-09-07T16:09:43Z",
+    "family": "arch",
+    "distro": "CachyOS",
+    "kernel": "7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)",
+    "mem": {
+      "total_gb": 124.9,
+      "gtt_gib": 110.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S Graphics",
+      "driver": "radv",
+      "vulkan_version": "1.4.357",
+      "free_mib": 43415.0
+    },
+    "backend": {
+      "version_string": "version: 0.4.0-dev (build 10809, commit 5266f24da7)",
+      "build": "10809",
+      "commit": "5266f24da7",
+      "binary": "/usr/bin/llama-server",
+      "install_method": "distro-package",
+      "pkg_version": "0.4.0-1.1"
+    },
+    "rocm_version": null,
+    "llama_swap_config": "/home/itzco/.config/llama-swap/config.yaml",
+    "raw_hash": "sha256:3f1d1fbadbb751d6e7c98fef45861defe4162139d41a1a00434dc047d1137d44"
+  },
+  "tests": [
+    {
+      "id": "code-battery",
+      "result": "degraded",
+      "score": 0.875,
+      "metrics": {
+        "tasks_passed": 7,
+        "tasks_total": 8
+      },
+      "observations": [
+        "task1: PASS",
+        "task2: PASS",
+        "task3: FAIL (ck (most recent call last):\n  File \"/tmp/codebat-so83w1t8/test.py\", line 6, in <module>\n    assert most_frequent([]) is None\n           ~~~~~~~~~~~~~^^^^\n  File \"/tmp/codebat-so83w1t8/sol.py\", line 5,)",
+        "task4: PASS",
+        "task5: PASS",
+        "task6: PASS",
+        "task7: PASS",
+        "task8: PASS"
+      ],
+      "detail": "7/8 tasks passed"
+    },
+    {
+      "id": "math-verify",
+      "result": "degraded",
+      "score": 0.625,
+      "metrics": {
+        "tasks_passed": 5,
+        "tasks_total": 8
+      },
+      "observations": [
+        "PASS Sum all integers from 1 to 215 inclusive.\u2026 (got 23220, want 23220; tail: \u2026'{215 \\\\times 216}{2} = 215 \\\\times 108 = 23220$$\\n\\nANSWER=23220')",
+        "PASS Least common multiple of 15 and 31.\u2026 (got 465, want 465; tail: \u2026' their product:\\n\\nLCM(15, 31) = 15 \u00d7 31 = **465**\\n\\nANSWER=465')",
+        "FAIL The list [32, 25, 12, 23, 49, 30, 0, 37, 47,\u2026 (got None, want 3; tail: \u2026'')",
+        "FAIL How many prime numbers are there from 2 to 1\u2026 (got None, want 34; tail: \u2026'')",
+        "PASS The smallest multiple of 15 that is strictly\u2026 (got 165, want 165; tail: \u2026'iple of 15 strictly greater than 156 is **165**.\\n\\nANSWER=165')",
+        "PASS Product of the digits of 56145.\u2026 (got 600, want 600; tail: \u2026' 30\\n- 30 \u00d7 1 = 30\\n- 30 \u00d7 4 = 120\\n- 120 \u00d7 5 = 600\\n\\nANSWER=600')",
+        "FAIL Exactly how many days are between 2026-01-11\u2026 (got 31, want 248; tail: \u2026'y: 31\\n- August: 31\\n- September 1\u201316: 16\\n\\nTotal: 31 + 28 + 31')",
+        "PASS How many days are in August 2026?\u2026 (got 31, want 31; tail: \u2026'f the year. This is true for August 2026 as well.\\n\\nANSWER=31')"
+      ],
+      "detail": "5/8 problems answered exactly"
+    }
+  ],
+  "metrics": {},
+  "notes": "quality baseline, mainline b10809, ctx 8192 for these runs (recipe ctx 32768); math-verify 3 fails = thinking-token truncation (reasoning-effort medium server vs 768-token cap), not math errors \u2014 see observations",
+  "tool_version": "submit_result.py@2.0.0"
+}
