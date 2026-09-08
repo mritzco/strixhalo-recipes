@@ -3,7 +3,7 @@
 - Latest version: **v0.1.0** · IQ4_XS · 0.0 GB · arch qwen4exp · engine vulkan
 - Source: /home/itzco/models/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS
 - Verdict: 1 witness — 1 result(s) across 1 variant(s); 1 witness(es) at the current hash
-- Confirmed capabilities: tools=False, mcp=False, vision=False · objectives: —
+- Confirmed capabilities: tools=True, mcp=False, vision=False · objectives: agent_capability
 
 ## Variants (configurations tested)
 
@@ -22,3 +22,8 @@ Each variant = a content hash (pinned launch configuration) with its own evidenc
 ### Sources & notes
 
 - 20260908T1108Z — 131k ctx variant, cold load ~25s. Runner TG 11.0 contaminated by cold 11k-token PP round (known artifact); llama-swap UI field stats from real omp session at 30-51k ctx: decode 14.6-18.4 t/s sustained. context-recall @8k pass.
+
+### Lineage
+
+- **qwen3.8-flash-next v0.1.0** — ctx 32768 -> 131072 for real agent sessions: omp hit a compaction loop at 32k ('freed too little context'), flash needs headroom for big tool outputs + thinking.
+- Rationale: Deployment variant: same model/flags as v0.1.0 but 131k context (matches other llama-swap models and the receipts' '131k allocates fine on 128GB').

@@ -292,9 +292,11 @@
       "tool_calling": true,
       "tool_model": true,
       "vision_model": false,
-      "objectives_primary": [],
+      "objectives_primary": [
+        "agent_capability"
+      ],
       "capabilities_confirmed": {
-        "tools": false,
+        "tools": true,
         "mcp": false,
         "vision": false
       },

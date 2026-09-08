@@ -7,11 +7,19 @@ author: mritzco
 license: CC0
 quant: IQ4_XS
 lineage:
-  parents: []
-  rationale: "Auto-collected draft \u2014 fill in if this descends from another recipe."
+  parents:
+  - id: qwen3.8-flash-next
+    version: 0.1.0
+    contribution: 'ctx 32768 -> 131072 for real agent sessions: omp hit a compaction
+      loop at 32k (''freed too little context''), flash needs headroom for big tool
+      outputs + thinking.'
+  rationale: 'Deployment variant: same model/flags as v0.1.0 but 131k context (matches
+    other llama-swap models and the receipts'' ''131k allocates fine on 128GB'').'
 objectives:
-  primary: []
-  secondary: []
+  primary:
+  - agent_capability
+  secondary:
+  - throughput
   not_optimized: []
 constraints: []
 tradeoffs: []
@@ -52,13 +60,25 @@ launch:
 parameters:
   ctx_size:
     value: 131072
-    annotations: []
+    annotations:
+    - type: recommendation
+      text: '131072 chosen because 32768 caused omp compaction loops on real agent
+        sessions (warning: ''freed too little context... switch to larger-context'').
+        Field stats at 30-51k ctx: decode 14.6-18.4 t/s sustained (llama-swap UI),
+        PP up to 255 t/s with prefix reuse. Q8 KV at 131k ~ 13.5 GiB fits the 110
+        GiB GTT.'
   cache_type_k:
     value: q8_0
-    annotations: []
+    annotations:
+    - type: quality
+      text: 'Q8_0 KV kept: preserves long-context quality, 131k ctx memory ~13.5 GiB
+        (fork README: KV quantization no longer a prefill-speed decision on this stack).'
   cache_type_v:
     value: q8_0
-    annotations: []
+    annotations:
+    - type: quality
+      text: 'Q8_0 KV kept: preserves long-context quality, 131k ctx memory ~13.5 GiB
+        (fork README: KV quantization no longer a prefill-speed decision on this stack).'
   ngl:
     value: '999'
     annotations: []
@@ -67,18 +87,38 @@ parameters:
     annotations: []
   jinja:
     value: true
-    annotations: []
+    annotations:
+    - type: required
+      text: --jinja parses structured tool_calls; verified by tool-roundtrip.
+  ubatch:
+    value: 2048
+    annotations:
+    - type: recommendation
+      text: -ub 2048 per MoE receipts (reddit 1w6cf5t); measured neutral on Vulkan
+        at long prompts but retained as documented variant.
 annotations:
-- type: experimental
-  text: Auto-collected draft (2026-09-08); capabilities_confirmed are all false until
-    real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs,
-    and evidence refs per the v0.3 data model.
+- type: evidence
+  text: "First evidence at 131k ctx: tool/agent/context pass (2026-09-08). Real omp\
+    \ decode 14.6-18.4 t/s at 30-51k ctx (llama-swap UI) \u2014 a few t/s below the\
+    \ 32k-ctx recipe because decode slows with depth."
 harness_compat:
-  tested_with: []
-  exposes_as: TODO-fill-in
+  tested_with:
+  - openai-api
+  exposes_as: OpenAI-compatible /v1 (llama-swap 127.0.0.1:1234)
   capabilities_confirmed:
-    tools: false
+    tools: true
     mcp: false
     vision: false
-tests: []
+tests:
+- id: tool-roundtrip
+  expect: pass
+- id: throughput
+  expect: pass
+- id: agent-coding
+  expect: pass
+- id: context-recall
+  expect:
+    min_score: 1.0
+  args:
+    ctx: 8192
 failure_notes: null
