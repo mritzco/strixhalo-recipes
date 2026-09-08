@@ -1,0 +1,179 @@
+{
+  "store_version": 1,
+  "model": {
+    "id": "qwen3.8-flash-next-131k",
+    "recipe": {
+      "id": "qwen3.8-flash-next-131k",
+      "version": "0.1.0",
+      "content_hash": "sha256:0b714b6ae6212b6e0b4435c167c0152b6fbb87dfff0e59a6497f9e0918b5abe9",
+      "status": "experimental",
+      "created": "2026-09-08",
+      "author": "mritzco",
+      "license": "CC0",
+      "quant": "IQ4_XS",
+      "lineage": {
+        "parents": [],
+        "rationale": "Auto-collected draft \u2014 fill in if this descends from another recipe."
+      },
+      "objectives": {
+        "primary": [],
+        "secondary": [],
+        "not_optimized": []
+      },
+      "constraints": [],
+      "tradeoffs": [],
+      "model": {
+        "name": "Qwen3.8 Flash Next",
+        "arch": "qwen4exp",
+        "source": "/home/itzco/models/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS",
+        "file_sha256": null,
+        "size_gb": 0.0,
+        "mtp": false,
+        "vision": false,
+        "tool_calling": true
+      },
+      "hardware": {
+        "target": "strix-halo-128gb-unified",
+        "gpu_mem_split_gb": null,
+        "min_ram_gb": 124,
+        "mem_total_gb": 124.9,
+        "gtt_gib": 110.0,
+        "vram_mib": 512.0
+      },
+      "backend": {
+        "engine": "llama.cpp",
+        "commit": "5266f24da7",
+        "build": "10809",
+        "upstream": null,
+        "patches": [],
+        "install_method": "distro-package",
+        "pkg_version": "0.4.0-1.1",
+        "build_flags": [],
+        "os_family": "arch",
+        "kernel": "7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)",
+        "vulkan_version": "1.4.357",
+        "rocm_version": null
+      },
+      "launch": {
+        "command": "/usr/bin/llama-server --model /home/itzco/models/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --alias qwen3.8-flash-next -ngl 999 --jinja -fa on -c 131072 --cache-type-k q8_0 --cache-type-v q8_0 -b 8192 -ub 2048 -np 1 --reasoning-effort medium --reasoning-budget 2048 --port ${PORT}"
+      },
+      "parameters": {
+        "ctx_size": {
+          "value": 131072,
+          "annotations": []
+        },
+        "cache_type_k": {
+          "value": "q8_0",
+          "annotations": []
+        },
+        "cache_type_v": {
+          "value": "q8_0",
+          "annotations": []
+        },
+        "ngl": {
+          "value": "999",
+          "annotations": []
+        },
+        "flash_attn": {
+          "value": true,
+          "annotations": []
+        },
+        "jinja": {
+          "value": true,
+          "annotations": []
+        }
+      },
+      "annotations": [
+        {
+          "type": "experimental",
+          "text": "Auto-collected draft (2026-09-08); capabilities_confirmed are all false until real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs, and evidence refs per the v0.3 data model."
+        }
+      ],
+      "harness_compat": {
+        "tested_with": [],
+        "exposes_as": "TODO-fill-in",
+        "capabilities_confirmed": {
+          "tools": false,
+          "mcp": false,
+          "vision": false
+        }
+      },
+      "tests": [],
+      "failure_notes": null
+    },
+    "variants": [
+      {
+        "content_hash": "sha256:0b714b6ae6212b6e0b4435c167c0152b6fbb87dfff0e59a6497f9e0918b5abe9",
+        "hash": "0b714b",
+        "version": "0.1.0",
+        "quant": [
+          "IQ4_XS"
+        ],
+        "results": 1,
+        "witnesses": 1,
+        "witness_ids": [
+          "flash-pilot"
+        ],
+        "pp": 1290.5,
+        "tg": 11.0,
+        "tests": {
+          "agent-coding": {
+            "pass": 1
+          },
+          "context-recall": {
+            "pass": 1
+          },
+          "throughput": {
+            "pass": 1
+          },
+          "tool-roundtrip": {
+            "pass": 1
+          }
+        },
+        "declared": []
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "20260908T110801Z-06097239",
+        "ts": "20260908T1108",
+        "contributor_id": "flash-pilot",
+        "recipe_version": "0.1.0",
+        "quant": "IQ4_XS",
+        "content_hash": "sha256:0b714b6ae6212b6e0b4435c167c0152b6fbb87dfff0e59a6497f9e0918b5abe9",
+        "hash": "0b714b",
+        "pp": 1290.5,
+        "tg": 11.0,
+        "tests": [
+          {
+            "id": "tool-roundtrip",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "agent-coding",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "context-recall",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "131k ctx variant, cold load ~25s. Runner TG 11.0 contaminated by cold 11k-token PP round (known artifact); llama-swap UI field stats from real omp session at 30-51k ctx: decode 14.6-18.4 t/s sustained. context-recall @8k pass.",
+        "model_id": "qwen3.8-flash-next-131k"
+      }
+    ],
+    "counts": {
+      "results": 1,
+      "witnesses": 1,
+      "cross_validated": false
+    }
+  }
+}

@@ -13,7 +13,7 @@ A registry of reproducible, evidence-backed serving recipes for local LLMs on un
 
 ## Models
 
-_7 models · 13 result records · latest activity first_
+_8 models · 14 result records · latest activity first_
 
 | id | model | variants | quant(s) | size | T M V | PP t/s | TG t/s | wit | backend | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -22,6 +22,7 @@ _7 models · 13 result records · latest activity first_
 | [qwen3.8-27b](models/qwen3.8-27b.md) | Qwen3.8-27B | 1 | Q8_0 | 27.1 | Y-- | - | 7.3 | 1 | vulkan | 1 witness |
 | [qwen3.8-27b-vl](models/qwen3.8-27b-vl.md) | Qwen3.8-27B | 1 | Q8_0 | 27.1 | Y-Y | - | - | 1 | vulkan | 1 witness |
 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | Qwen3.8 Flash Next | 2 | UD-IQ4_XS | 87.25 | Y-- | 1798.1 | 18.0 | 2 | vulkan | 1 witness |
+| [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | Qwen3.8 Flash Next | 1 | IQ4_XS | - | --- | 1290.5 | 11.0 | 1 | vulkan | 1 witness |
 | [qwen3-instruct](models/qwen3-instruct.md) | Qwen3-30B-A3B-Instruct-2507 | 1 | UD-Q4_K_XL | 16.5 | --- | - | - | 0 | vulkan | no results |
 | [qwen3-vl](models/qwen3-vl.md) | Qwen3-Vl-30B-A3B-Instruct | 1 | UD-Q4_K_XL | 16.5 | --- | - | - | 0 | vulkan | no results |
 
@@ -31,6 +32,10 @@ _T=confirmed tool calling, M=confirmed MCP, V=confirmed vision. `validated*` = �
 
 | when (UTC) | model | test | result | PP t/s | TG t/s | who |
 |---|---|---|---|---|---|---|
+| 20260908 T1108 | [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | `tool-roundtrip` | pass | 1290.5 | 11.0 | flash-pilot |
+| 20260908 T1108 | [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | `throughput` | pass | 1290.5 | 11.0 | flash-pilot |
+| 20260908 T1108 | [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | `agent-coding` | pass | 1290.5 | 11.0 | flash-pilot |
+| 20260908 T1108 | [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | `context-recall` | pass | 1290.5 | 11.0 | flash-pilot |
 | 20260907 T1655 | [glm-4.5-air](models/glm-4.5-air.md) | `tool-roundtrip` | pass | 3421.3 | 3.7 | itzco |
 | 20260907 T1655 | [glm-4.5-air](models/glm-4.5-air.md) | `code-battery` | fail | 3421.3 | 3.7 | itzco |
 | 20260907 T1655 | [glm-4.5-air](models/glm-4.5-air.md) | `throughput` | pass | 3421.3 | 3.7 | itzco |
@@ -50,5 +55,3 @@ _T=confirmed tool calling, M=confirmed MCP, V=confirmed vision. `validated*` = �
 | 20260907 T1217 | [qwen3-coder](models/qwen3-coder.md) | `agent-coding` | pass | - | - | itzco |
 | 20260907 T1158 | [qwen3-coder](models/qwen3-coder.md) | `throughput` | pass | 75317.8 | 49.3 | itzco |
 | 20260907 T1158 | [qwen3-coder](models/qwen3-coder.md) | `throughput` | pass | 74791.3 | 49.3 | itzco |
-| 20260907 T1138 | [qwen3-coder](models/qwen3-coder.md) | `throughput` | pass | 6728.7 | 66.9 | pilot-itzco |
-| 20260907 T1138 | [qwen3-coder](models/qwen3-coder.md) | `tool-roundtrip` | pass | 6728.7 | 66.9 | pilot-itzco |

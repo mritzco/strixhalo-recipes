@@ -2,6 +2,41 @@
   "store_version": 1,
   "runs": [
     {
+      "run_id": "20260908T110801Z-06097239",
+      "ts": "20260908T1108",
+      "contributor_id": "flash-pilot",
+      "recipe_version": "0.1.0",
+      "quant": "IQ4_XS",
+      "content_hash": "sha256:0b714b6ae6212b6e0b4435c167c0152b6fbb87dfff0e59a6497f9e0918b5abe9",
+      "hash": "0b714b",
+      "pp": 1290.5,
+      "tg": 11.0,
+      "tests": [
+        {
+          "id": "tool-roundtrip",
+          "result": "pass",
+          "score": null
+        },
+        {
+          "id": "throughput",
+          "result": "pass",
+          "score": null
+        },
+        {
+          "id": "agent-coding",
+          "result": "pass",
+          "score": null
+        },
+        {
+          "id": "context-recall",
+          "result": "pass",
+          "score": null
+        }
+      ],
+      "notes": "131k ctx variant, cold load ~25s. Runner TG 11.0 contaminated by cold 11k-token PP round (known artifact); llama-swap UI field stats from real omp session at 30-51k ctx: decode 14.6-18.4 t/s sustained. context-recall @8k pass.",
+      "model_id": "qwen3.8-flash-next-131k"
+    },
+    {
       "run_id": "20260907T165526Z-4135164d",
       "ts": "20260907T1655",
       "contributor_id": "itzco",
