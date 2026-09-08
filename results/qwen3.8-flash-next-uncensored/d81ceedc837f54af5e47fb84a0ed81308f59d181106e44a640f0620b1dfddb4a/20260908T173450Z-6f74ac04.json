@@ -1,0 +1,52 @@
+{
+  "recipe_id": "qwen3.8-flash-next-uncensored",
+  "recipe_version": "0.1.0",
+  "content_hash": "sha256:d81ceedc837f54af5e47fb84a0ed81308f59d181106e44a640f0620b1dfddb4a",
+  "run_id": "20260908T173450Z-6f74ac04",
+  "contributor_id": "itzco",
+  "quant": "IQ4_XS",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-09-08T17:34:50Z",
+    "family": "arch",
+    "distro": "CachyOS",
+    "kernel": "7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)",
+    "mem": {
+      "total_gb": 124.9,
+      "gtt_gib": 110.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S Graphics",
+      "driver": "radv",
+      "vulkan_version": "1.4.357",
+      "free_mib": 34379.0
+    },
+    "backend": {
+      "version_string": "version: 0.4.0-dev (build 10809, commit 5266f24da7)",
+      "build": "10809",
+      "commit": "5266f24da7",
+      "binary": "/usr/bin/llama-server",
+      "install_method": "distro-package",
+      "pkg_version": "0.4.0-1.1"
+    },
+    "rocm_version": null,
+    "llama_swap_config": "/home/itzco/.config/llama-swap/config.yaml",
+    "raw_hash": "sha256:330dd80b325e36b2655e6bb6ec44856364213ee564607c4963e45750be362f96"
+  },
+  "tests": [
+    {
+      "id": "vision-basic",
+      "result": "pass",
+      "metrics": {
+        "latency_s": 83.49
+      },
+      "observations": [
+        "model answer: red"
+      ]
+    }
+  ],
+  "metrics": {},
+  "notes": "VISION CONFIRMED on flash-family via myhacsint fork + mradermacher mmproj-f16 (test through llama-swap). Model now: tools+vision+agent-coding all confirmed; mcp still false.",
+  "tool_version": "submit_result.py@2.0.0"
+}

@@ -436,7 +436,7 @@ harness_compat:
   capabilities_confirmed:
     tools: true
     mcp: false
-    vision: false
+    vision: true
 tests:
 - id: tool-roundtrip
   expect: pass
@@ -449,6 +449,8 @@ tests:
   args:
     ctx: 8192
 - id: harness-tool-use
+  expect: pass
+- id: vision-basic
   expect: pass
 failure_notes: null
 content_hash: sha256:d81ceedc837f54af5e47fb84a0ed81308f59d181106e44a640f0620b1dfddb4a

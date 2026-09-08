@@ -463,7 +463,7 @@
         "capabilities_confirmed": {
           "tools": true,
           "mcp": false,
-          "vision": false
+          "vision": true
         }
       },
       "tests": [
@@ -489,6 +489,10 @@
         {
           "id": "harness-tool-use",
           "expect": "pass"
+        },
+        {
+          "id": "vision-basic",
+          "expect": "pass"
         }
       ],
       "failure_notes": null,
@@ -502,7 +506,7 @@
         "quant": [
           "IQ4_XS"
         ],
-        "results": 2,
+        "results": 3,
         "witnesses": 2,
         "witness_ids": [
           "itzco",
@@ -525,6 +529,9 @@
           },
           "tool-roundtrip": {
             "pass": 1
+          },
+          "vision-basic": {
+            "pass": 1
           }
         },
         "declared": [
@@ -532,7 +539,8 @@
           "context-recall",
           "harness-tool-use",
           "throughput",
-          "tool-roundtrip"
+          "tool-roundtrip",
+          "vision-basic"
         ]
       }
     ],
@@ -591,10 +599,30 @@
         ],
         "notes": "HARNESS-LEVEL evidence: omp -p one-shot tool round-trip against llama-swap lm-studio/qwen3.8-flash-uncensored (myhacsint fork + shared MTP + uncensored IQ4_XS @131k). Tool result 42 observed, exit 0. GLM-class omp breakage does NOT occur on this stack.",
         "model_id": "qwen3.8-flash-next-uncensored"
+      },
+      {
+        "run_id": "20260908T173450Z-6f74ac04",
+        "ts": "20260908T1734",
+        "contributor_id": "itzco",
+        "recipe_version": "0.1.0",
+        "quant": "IQ4_XS",
+        "content_hash": "sha256:d81ceedc837f54af5e47fb84a0ed81308f59d181106e44a640f0620b1dfddb4a",
+        "hash": "d81cee",
+        "pp": null,
+        "tg": null,
+        "tests": [
+          {
+            "id": "vision-basic",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "VISION CONFIRMED on flash-family via myhacsint fork + mradermacher mmproj-f16 (test through llama-swap). Model now: tools+vision+agent-coding all confirmed; mcp still false.",
+        "model_id": "qwen3.8-flash-next-uncensored"
       }
     ],
     "counts": {
-      "results": 2,
+      "results": 3,
       "witnesses": 2,
       "cross_validated": true
     }

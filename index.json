@@ -338,15 +338,15 @@
       "capabilities_confirmed": {
         "tools": true,
         "mcp": false,
-        "vision": false
+        "vision": true
       },
       "witnesses": 2,
       "distinct_witnesses": 2,
       "pp": 3329.3,
       "tg": 19.0,
-      "results": 2,
+      "results": 3,
       "n_variants": 1,
-      "last_run": "20260908T171742Z-4cab5221",
+      "last_run": "20260908T173450Z-6f74ac04",
       "cross_validated": true,
       "path": "recipes/qwen3.8-flash-next-uncensored/qwen3.8-flash-next-uncensored-v0.1.0.yaml"
     }
