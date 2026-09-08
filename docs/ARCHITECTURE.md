@@ -1,0 +1,89 @@
+# Architecture — codebase map
+
+Living document: what this repo does and what each Python module
+contains. Function lists were taken from the source; if this table and
+`tools/*.py` ever disagree, the code wins — fix this file.
+Licensing: docs are CC BY 4.0 (`LICENSE-DOCS`).
+
+## What this repository does
+
+**Strix Halo Recipe Registry** — an agent-first, git-as-database registry
+of reproducible, evidence-backed serving *recipes* for local LLMs on
+unified-memory Linux APUs (Strix Halo class first). A recipe
+(`recipes/<id>/<id>-v<semver>.yaml`) pins a deployment for a **model,
+not a quant**: backend, launch command, per-parameter rationale, and
+capability claims that are only true when a real test proved them.
+
+Trust is mechanical, not social:
+
+- **Content hash** (`tools/common.py`) covers only reproducibility-
+  relevant fields (model identity, backend, launch command, hardware
+  target) — quant, docs, annotations, and `--host/--port` never change
+  it, so `id + hash-prefix` pins an exact setup.
+- **Results are immutable** evidence records at
+  `results/<recipe_id>/<content_hash>/<run_id>.json`, written once by
+  `tools/submit_result.py` (append-only; overwrite refused).
+- **Capabilities** (tools / MCP / vision) count as confirmed only via
+  test runs; runners emit the six-status evidence JSON
+  (`pass|fail|degraded|unsupported|not_run|inconclusive`).
+- **Cross-validation** is *derived*: ≥ 2 distinct `contributor_id`s at
+  the same reproducibility key; never typed by hand.
+
+One compute engine — `tools/registry.py` — reads the git tree and derives
+all generated views (`index.json`, `runs.json`, `models/<id>.json`);
+`tools/leaderboard.py` renders the markdown board from the same records.
+
+Daily flow: `analyze.py machine` (fingerprint + schema-check your box) →
+`analyze.py cmd "launch line" --write` (capture a running setup as a
+draft recipe; batch version: `collect.py`) → `analyze.py test --recipe
+<id>` (run the battery against any OpenAI-compatible endpoint;
+`--submit` writes a result record) → `build_index.py` +
+`leaderboard.py` regenerate derived views (pre-commit hook + CI run the
+same gate via `validate.py`).
+
+## Python modules
+
+| Module | Purpose | Functions |
+|---|---|---|
+| `tools/common.py` | Shared plumbing: repo paths, probe contract version, and the quant-agnostic content-hash model (`HASH_SUBSETS` — only model/backend/launch/hardware fields are hashed) | `load_yaml`, `canonical_json`, `normalize_command`, `hash_subset`, `compute_content_hash`, `iter_recipe_files`, `iter_result_files`, `iter_test_definitions`, `load_schema` |
+| `tools/gguf_lite.py` | Minimal dependency-free GGUF reader — header + KV metadata only (never tensor data, so it is fast on 100 GB+ files); `VISION_ARCHS` flags multimodal base archs | `GGUFParseError`, `read_metadata`, `quant_from_filename`, `summarize` |
+| `tools/registry.py` | The compute engine: joins recipes + test definitions + all result runs into the derived stores, and the `Store` query API over `index.json` | `latest_by_id`, `_median`, `_metric_values`, `_run_summary`, `compute`, `write_stores`, `Store` |
+| `tools/validate.py` | Schema validation (recipe / result / test-definition against `schema/*.schema.json`) + content-hash recompute; `--strict` fails on warnings (CI gate) | `validate_recipes`, `validate_results`, `load_test_definitions`, `main` |
+| `tools/collect.py` | Batch-captures existing setups into schema-shaped recipe drafts — from a launch command, a running `--pid`, or a llama-swap config; resolves `-hf repo:quant` through the HF cache, reads GGUF metadata, probes the machine; nothing guessed, capabilities false until tested | `_run_probe`, `slugify`, `find_local_gguf`, `hf_cache_path`, `parse_launch_flags`, `make_draft`, `load_llama_swap`, `main` |
+| `tools/analyze.py` | The daily-life entry point, three verbs: `machine` (probe v2 + validate probe JSON against schema), `cmd` (capture one launch command/pid/llama-swap key → draft recipe + share block), `test` (run the battery against a recipe by id/hash, `--submit` writes the result record) | `_probe`, `cmd_machine`, `cmd_capture`, `cmd_test`, `main` |
+| `tools/build_index.py` | Regenerates the generated stores — `index.json`, `runs.json`, `models/<id>.json` — from the source of truth | `main` (thin wrapper over `registry.compute` + `write_stores`) |
+| `tools/leaderboard.py` | Renders `LEADERBOARD.md` + per-model `models/<id>.md` from immutable records; trust marks derived (`validated*` at ≥2 witnesses); CLI table with sort flags | `caps`, `fmt_tmv`, `cap_score`, `status_mark`, `landing_md`, `latest_tests_md`, `model_md`, `render_table`, `main` |
+| `tools/search.py` | Search CLI over the store: `--model`, `--quant`, `--hash` prefix, `--vision`, capability filters | `main` |
+| `tools/admin.py` | Admin surface over derived data: `check` (bulk validate), `ready` (≥2 witnesses + declared tests all run), `provenance` (auto-collected recipes with unconfirmed capabilities), plus the derived-trust map | `_derive`, `check`, `ready`, `provenance`, `main` |
+| `tools/submit_result.py` | Writes one immutable result record to `results/<id>/<hash>/<run_id>.json` (refuses overwrite); assembles runner JSON evidence + probe output; prints the branch/PR next steps | `find_recipe`, `parse_test_arg`, `load_evidence`, `make_run_id`, `main` |
+| `tests/lib.py` | Runner library: OpenAI-compatible chat (with tools), multimodal-error detection, in-repo PNG fixture generation, and the evidence-record emitter (stdout JSON contract; notes to stderr) | `add_args`, `emit`, `_post`, `chat`, `is_multimodal_error`, `make_test_png_bytes`, `image_content_message`, `result_text` |
+| `tests/runners/*.py` | Evidence-producing test scripts — each prints one evidence JSON record to stdout; non-zero exits carry `unsupported`/`inconclusive`/`fail` statuses (a non-zero exit is a status, not a crash) | per-runner `main` + fixtures/graders (`_exec_tool`, `_run_one`, `_problems`, …) |
+
+`tools/__init__.py` is a package marker (lets `python -c "from
+tools.registry import Store"` work).
+
+### Test runners (`tests/runners/`)
+
+| Runner | What it proves |
+|---|---|
+| `tool_roundtrip.py` | The *server* (`--jinja`) parses a forced tool call into structured `tool_calls` with valid JSON args |
+| `harness_tool_use.py` | Tool use end to end through a **real harness** (pi, omp) via `--harness-cmd`/`$HARNESS_CMD` — the only test catching harness↔model breakage (e.g. omp's stream parser vs GLM); `not_run` without a harness command |
+| `vision_basic.py` | Image input works through mmproj: generated 256×256 PNG (left half red), pass when the answer names red; `unsupported` (exit 2) when images are rejected |
+| `context_needle.py` | Long-context retrieval at the declared ctx — needle token at a chosen depth in filler; the evidence test for KV-cache (`cache-type-k/v`) annotations |
+| `throughput.py` | Generation tok/s over N rounds at fixed output length + prompt-eval throughput; leaderboard aggregates medians across witnesses |
+| `code_battery.py` | Functional coding correctness: 8 original (CC0-clean) Python specs, candidate code executed against hidden asserts in a subprocess; separates "fast but inaccurate" quants |
+| `math_verify.py` | 8 exact-answer problems with runner-computed ground truth (stdlib, seeded); hallucination and quant drift show as score loss |
+| `agent_coding.py` | The real agent loop: multi-round sandbox repo work with client-executed `read_file`/`write_file`/`run_python`; pass = the planted bug is fixed via tools and ground truth holds (`main.py` prints 5) — the model's own "DONE" message is observed, not required |
+
+## Non-Python pieces
+
+| Path | Role |
+|---|---|
+| `recipes/`, `results/` | CC0 records: versioned recipe YAML; immutable append-only evidence |
+| `schema/` | `recipe` / `result` / `test-definition` JSON Schemas — source of truth for validation |
+| `tests/definitions/` | Semver'd test definitions referenced by recipes and results |
+| `tools/probe.sh` + `tools/probe.d/` | Machine fingerprint v2 (memory model, GPU, backend commit, install method); new distro family = new `probe.d/<family>.sh` |
+| `tools/install-hooks.sh`, `.githooks/`, `.github/workflows/` | Commit-time and CI gate: validate + fail on stale generated files |
+| `SKILL.md`, `AGENTS.md`, `SPEC.md`, `FORMAT.md`, `CONTRIBUTING.md` | Agent manual; orientation; authoritative product/data model; contribution rules |
+| `index.json`, `runs.json`, `models/`, `LEADERBOARD.md` | Generated views — never hand-edited |
+| `ROADMAP.md`, `openspec/`, `specs/` | Build trail, change queue, founding reference docs |

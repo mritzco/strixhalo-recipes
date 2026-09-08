@@ -12,7 +12,8 @@ which capabilities (tools / MCP / vision) are proven by real harness
 tests. Recipes apply to a **model**, not a quant. Results are immutable
 evidence; cross-validation is derived from independent witnesses, never
 asserted. Chat-only recipes are considered incomplete. How it's built:
-`ROADMAP.md` + `openspec/changes/`. Agent orientation: `AGENTS.md`.
+`ROADMAP.md` + `openspec/changes/`. Codebase map (what each module
+does): `docs/ARCHITECTURE.md`. Agent orientation: `AGENTS.md`.
 Data model & trust: `SPEC.md` / `FORMAT.md`. Contributing:
 `CONTRIBUTING.md`.
 
