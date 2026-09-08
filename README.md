@@ -98,6 +98,7 @@ python3 tests/runners/vision_basic.py  --model your-vl-model # vision (mmproj)
 schema/ recipes/ results/ tests/ tools/    # source of truth (see above)
 index.json runs.json models/*.json         # generated JSON stores (CC0)
 LEADERBOARD.md models/*.md                 # generated markdown board (CC0)
+docs/                                     # codebase map (qwen-generated sample)
 openspec/ ROADMAP.md                       # how it was built; change queue
 specs/                                     # founding reference docs
 .githooks/ .github/workflows/              # local + CI enforcement
