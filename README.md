@@ -17,6 +17,20 @@ does): `docs/ARCHITECTURE.md`. Agent orientation: `AGENTS.md`.
 Data model & trust: `SPEC.md` / `FORMAT.md`. Contributing:
 `CONTRIBUTING.md`.
 
+## Try these first (featured setups)
+
+| Model / recipe | Why | Evidence |
+|---|---|---|
+| [**qwen3.8-flash-next-131k**](models/qwen3.8-flash-next-131k.md) | Strongest model here — 125B-A6B MoE at 131k context for agent work (omp compaction-safe). Needs `--reasoning-effort medium --reasoning-budget 2048` | tools ✅ agent-coding ✅ context ✅ · field decode **14.6–18.4 t/s** at 30–51k ctx |
+| [**qwen3.8-flash-next** v0.2.0](models/qwen3.8-flash-next.md) | Fastest measured config: **Nathan fork + MTP** ≈ 35 t/s decode (vs ~20 mainline) | full A/B in the recipe: same quality, 1.6–1.8× speed |
+| [**qwen3-coder**](models/qwen3-coder.md) | Daily driver — fast MoE (~65 t/s), reliable tools through omp/pi | tools ✅ agent-coding ✅ quality A/B ✅ |
+| [**qwen3.8-27b-vl**](models/qwen3.8-27b-vl.md) | Easiest vision setup (local mmproj) | vision ✅ tools ✅ |
+
+_Every ✅ is a real test run, not a claim. Browse everything:
+[LEADERBOARD.md](LEADERBOARD.md) (all models & results) or `models/`
+(one page per model: variants, runs, sources). Want your setup here?
+Capture it with `analyze cmd "your launch line" --write` and open a PR._
+
 ## What you can do
 
 | You want to… | Run this |
