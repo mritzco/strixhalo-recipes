@@ -1,0 +1,51 @@
+{
+  "recipe_id": "qwen3.8-flash-next-uncensored",
+  "recipe_version": "0.1.0",
+  "content_hash": "sha256:d81ceedc837f54af5e47fb84a0ed81308f59d181106e44a640f0620b1dfddb4a",
+  "run_id": "20260908T171742Z-4cab5221",
+  "contributor_id": "itzco",
+  "quant": "IQ4_XS",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-09-08T17:17:42Z",
+    "family": "arch",
+    "distro": "CachyOS",
+    "kernel": "7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)",
+    "mem": {
+      "total_gb": 124.9,
+      "gtt_gib": 110.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S Graphics",
+      "driver": "radv",
+      "vulkan_version": "1.4.357",
+      "free_mib": 34247.0
+    },
+    "backend": {
+      "version_string": "version: 0.4.0-dev (build 10809, commit 5266f24da7)",
+      "build": "10809",
+      "commit": "5266f24da7",
+      "binary": "/usr/bin/llama-server",
+      "install_method": "distro-package",
+      "pkg_version": "0.4.0-1.1"
+    },
+    "rocm_version": null,
+    "llama_swap_config": "/home/itzco/.config/llama-swap/config.yaml",
+    "raw_hash": "sha256:6f62c2c3ca80f0748b032de54ac2260909f2892c114d65998515e737eca97bf4"
+  },
+  "tests": [
+    {
+      "id": "harness-tool-use",
+      "result": "pass",
+      "observations": [
+        "omp -p one-shot (provider lm-studio/qwen3.8-flash-uncensored) executed its tool loop",
+        "harness exit=0; output contains '42'"
+      ],
+      "detail": "omp tool round-trip via llama-swap; reasoning-effort xhigh; 78s incl thinking"
+    }
+  ],
+  "metrics": {},
+  "notes": "HARNESS-LEVEL evidence: omp -p one-shot tool round-trip against llama-swap lm-studio/qwen3.8-flash-uncensored (myhacsint fork + shared MTP + uncensored IQ4_XS @131k). Tool result 42 observed, exit 0. GLM-class omp breakage does NOT occur on this stack.",
+  "tool_version": "submit_result.py@2.0.0"
+}

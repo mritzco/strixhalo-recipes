@@ -13,7 +13,7 @@ A registry of reproducible, evidence-backed serving recipes for local LLMs on un
 
 ## Models
 
-_9 models · 15 result records · latest activity first_
+_9 models · 16 result records · latest activity first_
 
 | id | model | variants | quant(s) | size | T M V | PP t/s | TG t/s | wit | backend | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -23,7 +23,7 @@ _9 models · 15 result records · latest activity first_
 | [qwen3.8-27b-vl](models/qwen3.8-27b-vl.md) | Qwen3.8-27B | 1 | Q8_0 | 27.1 | Y-Y | - | - | 1 | vulkan | 1 witness |
 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | Qwen3.8 Flash Next | 2 | UD-IQ4_XS | 87.25 | Y-- | 1798.1 | 18.0 | 2 | vulkan | 1 witness |
 | [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | Qwen3.8 Flash Next | 1 | IQ4_XS | - | Y-- | 1290.5 | 11.0 | 1 | vulkan | 1 witness |
-| [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | Qwen3.8 Flash Next Uncensored | 1 | IQ4_XS | 91.7 | Y-- | 3329.3 | 19.0 | 1 | vulkan | 1 witness |
+| [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | Qwen3.8 Flash Next Uncensored | 1 | IQ4_XS | 91.7 | Y-- | 3329.3 | 19.0 | 2 | vulkan | validated* |
 | [qwen3-instruct](models/qwen3-instruct.md) | Qwen3-30B-A3B-Instruct-2507 | 1 | UD-Q4_K_XL | 16.5 | --- | - | - | 0 | vulkan | no results |
 | [qwen3-vl](models/qwen3-vl.md) | Qwen3-Vl-30B-A3B-Instruct | 1 | UD-Q4_K_XL | 16.5 | --- | - | - | 0 | vulkan | no results |
 
@@ -33,6 +33,7 @@ _T=confirmed tool calling, M=confirmed MCP, V=confirmed vision. `validated*` = �
 
 | when (UTC) | model | test | result | PP t/s | TG t/s | who |
 |---|---|---|---|---|---|---|
+| 20260908 T1717 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `harness-tool-use` | pass | - | - | itzco |
 | 20260908 T1703 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `tool-roundtrip` | pass | 3329.3 | 19.0 | myhacsint-pilot |
 | 20260908 T1703 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `throughput` | pass | 3329.3 | 19.0 | myhacsint-pilot |
 | 20260908 T1703 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `agent-coding` | pass | 3329.3 | 19.0 | myhacsint-pilot |
@@ -58,4 +59,3 @@ _T=confirmed tool calling, M=confirmed MCP, V=confirmed vision. `validated*` = �
 | 20260907 T1453 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `context-recall` | pass | 1468.8 | 10.6 | flash-pilot |
 | 20260907 T1250 | [qwen3-coder](models/qwen3-coder.md) | `harness-tool-use` | pass | - | - | itzco |
 | 20260907 T1217 | [qwen3-coder](models/qwen3-coder.md) | `agent-coding` | pass | - | - | itzco |
-| 20260907 T1158 | [qwen3-coder](models/qwen3-coder.md) | `throughput` | pass | 75317.8 | 49.3 | itzco |

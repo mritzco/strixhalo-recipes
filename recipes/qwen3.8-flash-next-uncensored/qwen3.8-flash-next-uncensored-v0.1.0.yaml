@@ -9,19 +9,22 @@ lineage:
   parents:
   - id: qwen3.8-flash-next-131k
     version: 0.1.0
-    contribution: Agent-session deployment base at ctx 131072 (stock unsloth UD-IQ4_XS, mainline b10809,
-      q8 KV). This run keeps the 131k context scale and agent battery but swaps the weights (uncensored
-      IQ4_XS mirror), the engine (myhacsint qwen4exp fork), and the decode path (shared-MTP adaptive).
+    contribution: Agent-session deployment base at ctx 131072 (stock unsloth UD-IQ4_XS,
+      mainline b10809, q8 KV). This run keeps the 131k context scale and agent battery
+      but swaps the weights (uncensored IQ4_XS mirror), the engine (myhacsint qwen4exp
+      fork), and the decode path (shared-MTP adaptive).
   - id: qwen3.8-flash-next
     version: 0.2.0
-    contribution: Fork + MTP baseline (Nathan strix-halo-vulkan fork + agentionai non-shared MTP Q8_0
-      sidecar, fixed n4, q8 KV @32k). This run is the myhacsint b10685 fork + unsloth *shared* MTP head
-      with adaptive draft sizing (n0-5, p-min 0.75), f16 KV @131072, uncensored weights.
-  rationale: "Uncensored-weights variant of the committed Qwen3.8-Flash-Next (qwen4exp) recipes: community-favored\
-    \ stack (myhacsint fork + orca Q5_K_M + unsloth shared MTP, per the alchi-flac receipts) adapted to\
-    \ what this 128 GB box can actually serve \u2014 Q5_K_M is arithmetically unrunnable here (see annotations),\
-    \ so the uncensored IQ4_XS mirror keeps the quant class of the stock baselines for a clean A/B of\
-    \ engine + MTP head + weights."
+    contribution: Fork + MTP baseline (Nathan strix-halo-vulkan fork + agentionai
+      non-shared MTP Q8_0 sidecar, fixed n4, q8 KV @32k). This run is the myhacsint
+      b10685 fork + unsloth *shared* MTP head with adaptive draft sizing (n0-5, p-min
+      0.75), f16 KV @131072, uncensored weights.
+  rationale: "Uncensored-weights variant of the committed Qwen3.8-Flash-Next (qwen4exp)\
+    \ recipes: community-favored stack (myhacsint fork + orca Q5_K_M + unsloth shared\
+    \ MTP, per the alchi-flac receipts) adapted to what this 128 GB box can actually\
+    \ serve \u2014 Q5_K_M is arithmetically unrunnable here (see annotations), so\
+    \ the uncensored IQ4_XS mirror keeps the quant class of the stock baselines for\
+    \ a clean A/B of engine + MTP head + weights."
 objectives:
   primary:
   - quality
@@ -33,25 +36,27 @@ objectives:
 constraints:
 - fits_in_available_memory
 tradeoffs:
-- "Q5_K_M is unrunnable on this 128 GB box: the current orca revision's Q5_K_M = 134.11 GB decimal (124.91\
-  \ GiB) vs 124.93 GiB usable RAM \u2014 the model alone is 99.98% of all memory, so no ctx works (KV\
-  \ f16 needs 12.0 GiB @131072 for this arch: 48 layers x 2 KV heads x 256 dim x 2 B x 131072 tokens;\
-  \ MTP head +2.6 GiB, mmproj +0.84, compute +2-4, OS +4-6). The poster's ~111 GB / 120 GB-with-cache\
-  \ receipts predate the current orca revision (same filenames re-uploaded larger) and do not reproduce\
-  \ on any 128 GB box (their numbers imply ~36 KB/token KV; real f16 KV is 96 KB/token). IQ4_XS is the\
-  \ serving ceiling here."
-- 'IQ4_XS choice is deliberate for the A/B: it keeps the quant class identical to the committed stock
-  baselines (UD-IQ4_XS), so deltas isolate engine (myhacsint b10685 vs mainline b10809 / Nathan 5d8c07b44)
-  + MTP head (unsloth shared/adaptive vs agentionai non-shared/fixed n4) + uncensored-vs-stock weights.'
-- "Quantizer variance is a named confound: mradermacher IQ4_XS (98.42 GB, single file) vs stock unsloth\
-  \ UD-IQ4_XS (87.25 GB @ rev 38bb39ee) both label 'IQ4_XS' but differ in size/quality \u2014 cross-quantizer\
-  \ deltas are hypotheses until re-measured."
-- f16 KV (poster receipt) costs ~12.0 GiB @131072 vs ~6.0 GiB for q8_0; chosen for parity with the receipt
-  and because this fork's Vulkan prefill is KV-type-insensitive; q8_0 would only buy headroom toward a
-  ctx that RAM cannot reach anyway.
-- "mmproj (vision projector) is loaded and the server advertises 'multimodal', but no vision test ran\
-  \ in this battery \u2014 model.vision=true reflects capability, capabilities_confirmed.vision=false\
-  \ is the evidence state."
+- "Q5_K_M is unrunnable on this 128 GB box: the current orca revision's Q5_K_M = 134.11\
+  \ GB decimal (124.91 GiB) vs 124.93 GiB usable RAM \u2014 the model alone is 99.98%\
+  \ of all memory, so no ctx works (KV f16 needs 12.0 GiB @131072 for this arch: 48\
+  \ layers x 2 KV heads x 256 dim x 2 B x 131072 tokens; MTP head +2.6 GiB, mmproj\
+  \ +0.84, compute +2-4, OS +4-6). The poster's ~111 GB / 120 GB-with-cache receipts\
+  \ predate the current orca revision (same filenames re-uploaded larger) and do not\
+  \ reproduce on any 128 GB box (their numbers imply ~36 KB/token KV; real f16 KV\
+  \ is 96 KB/token). IQ4_XS is the serving ceiling here."
+- 'IQ4_XS choice is deliberate for the A/B: it keeps the quant class identical to
+  the committed stock baselines (UD-IQ4_XS), so deltas isolate engine (myhacsint b10685
+  vs mainline b10809 / Nathan 5d8c07b44) + MTP head (unsloth shared/adaptive vs agentionai
+  non-shared/fixed n4) + uncensored-vs-stock weights.'
+- "Quantizer variance is a named confound: mradermacher IQ4_XS (98.42 GB, single file)\
+  \ vs stock unsloth UD-IQ4_XS (87.25 GB @ rev 38bb39ee) both label 'IQ4_XS' but differ\
+  \ in size/quality \u2014 cross-quantizer deltas are hypotheses until re-measured."
+- f16 KV (poster receipt) costs ~12.0 GiB @131072 vs ~6.0 GiB for q8_0; chosen for
+  parity with the receipt and because this fork's Vulkan prefill is KV-type-insensitive;
+  q8_0 would only buy headroom toward a ctx that RAM cannot reach anyway.
+- "mmproj (vision projector) is loaded and the server advertises 'multimodal', but\
+  \ no vision test ran in this battery \u2014 model.vision=true reflects capability,\
+  \ capabilities_confirmed.vision=false is the evidence state."
 model:
   name: Qwen3.8 Flash Next Uncensored
   arch: qwen4exp
@@ -74,41 +79,46 @@ backend:
   build: null
   upstream: https://github.com/myhacsint/llama.cpp
   patches:
-  - ref: branch production/strix-halo-qwen4exp-b10685 (public clean-snapshot commit 38afc1983; prod binary
-      b10685 @ bbc7d56660 is the same source; local binary self-reports 'build 1, commit 2dff859')
+  - ref: branch production/strix-halo-qwen4exp-b10685 (public clean-snapshot commit
+      38afc1983; prod binary b10685 @ bbc7d56660 is the same source; local binary
+      self-reports 'build 1, commit 2dff859')
     note: 'Fork URL: https://github.com/myhacsint/llama.cpp/tree/production/strix-halo-qwen4exp-b10685.
-      PRODUCTION-SNAPSHOT.md states the clean snapshot tree is identical to the original production source;
-      binary hash differs by build path. Vulkan/system-RADV only.'
+      PRODUCTION-SNAPSHOT.md states the clean snapshot tree is identical to the original
+      production source; binary hash differs by build path. Vulkan/system-RADV only.'
   - ref: 'ggml-org/llama.cpp PR #27742'
-    note: 'Qwen3.8 Flash Next (''qwen4exp'') architecture: Hyper-Connections, GDN, MoE (512 experts/10
-      active), PLE n-gram embeddings, QSA sparse attention, conversion, quantization, state handling,
-      multimodal. See https://github.com/myhacsint/llama.cpp/blob/production/strix-halo-qwen4exp-b10685/PATCHSET.md'
+    note: 'Qwen3.8 Flash Next (''qwen4exp'') architecture: Hyper-Connections, GDN,
+      MoE (512 experts/10 active), PLE n-gram embeddings, QSA sparse attention, conversion,
+      quantization, state handling, multimodal. See https://github.com/myhacsint/llama.cpp/blob/production/strix-halo-qwen4exp-b10685/PATCHSET.md'
   - ref: 'ggml-org/llama.cpp PR #27836'
-    note: NextN/MTP tensor registration, conversion, loading, draft graph. Supports integrated MTP and
-      a compatible external sidecar (-md / --spec-draft-model).
-  - ref: adaptive speculative sizing (--spec-draft-adaptive) + MTP checkpoint/rollback/cache/server fixes
-    note: Per-request draft depth sized from measured acceptance; server fixes needed for reliable MTP
-      speculative decode.
+    note: NextN/MTP tensor registration, conversion, loading, draft graph. Supports
+      integrated MTP and a compatible external sidecar (-md / --spec-draft-model).
+  - ref: adaptive speculative sizing (--spec-draft-adaptive) + MTP checkpoint/rollback/cache/server
+      fixes
+    note: Per-request draft depth sized from measured acceptance; server fixes needed
+      for reliable MTP speculative decode.
   - ref: 'ggml-org/llama.cpp PR #27794'
-    note: Lazy tensor reads (--tensor-read-lazy) incl. PLE gather prefetch for unified memory.
-  - ref: 'ggml-org/llama.cpp PR #27941 + Unsloth PR #144 (shared target/draft weights + compact shared
-      sidecar)'
-    note: 'Lets the official small shared MTP sidecar (mtp-...-shared-Q8_0.gguf, no token_embd/output
-      head) run beside the normal 3-shard target without duplicating embedding/output tensors. This is
-      the myhacsint-vs-Nathan difference that lets the unsloth shared head load (the Nathan fork failed
-      on it: ''output_hc_norm.weight not found'').'
-  - ref: local shared-MTP fit integration (upstream joint-fit commit 2fb989b9e7 + local compact-sidecar
-      fix)
-    note: --fit on now measures target + external draft together; the sidecar gets a metadata-only view
-      of its target during the no-allocation fit probe so omitted shared tensors resolve without double-counting
-      weights. Validated upstream-of-us by the fork owner with UD-IQ4_XS + shared Q8_0 head (39/41 draft
-      tokens accepted).
+    note: Lazy tensor reads (--tensor-read-lazy) incl. PLE gather prefetch for unified
+      memory.
+  - ref: 'ggml-org/llama.cpp PR #27941 + Unsloth PR #144 (shared target/draft weights
+      + compact shared sidecar)'
+    note: 'Lets the official small shared MTP sidecar (mtp-...-shared-Q8_0.gguf, no
+      token_embd/output head) run beside the normal 3-shard target without duplicating
+      embedding/output tensors. This is the myhacsint-vs-Nathan difference that lets
+      the unsloth shared head load (the Nathan fork failed on it: ''output_hc_norm.weight
+      not found'').'
+  - ref: local shared-MTP fit integration (upstream joint-fit commit 2fb989b9e7 +
+      local compact-sidecar fix)
+    note: --fit on now measures target + external draft together; the sidecar gets
+      a metadata-only view of its target during the no-allocation fit probe so omitted
+      shared tensors resolve without double-counting weights. Validated upstream-of-us
+      by the fork owner with UD-IQ4_XS + shared Q8_0 head (39/41 draft tokens accepted).
   - ref: Nathanw1014 Strix Halo Vulkan line (strix-halo-llamacpp toolbox)
-    note: Flash-attention / MoE-prefill / QSA gathered decode / radix top-k / GDN contiguity / static
-      RDNA3 mat-vec paths / quantized-KV support, inherited via the b10685 source line.
+    note: Flash-attention / MoE-prefill / QSA gathered decode / radix top-k / GDN
+      contiguity / static RDNA3 mat-vec paths / quantized-KV support, inherited via
+      the b10685 source line.
   - ref: 'b10685 refresh (incl. ggml-org/llama.cpp PR #27812)'
-    note: Vulkan graph alias-dependency correctness, gathered FA extended to GQA QSA caches, recurrent-state
-      + KV rollback + n-gram cache fixes.
+    note: Vulkan graph alias-dependency correctness, gathered FA extended to GQA QSA
+      caches, recurrent-state + KV rollback + n-gram cache fixes.
   install_method: build-from-source
   pkg_version: null
   build_flags:
@@ -124,34 +134,38 @@ backend:
   vulkan_version: 1.4.357
   rocm_version: null
 launch:
-  command: /home/itzco/src/myhacsint-llama.cpp/build-vulkan/bin/llama-server --model /home/itzco/models/Qwen3.8-Flash-Next-Uncensored-GGUF/IQ4_XS/Qwen3.8-Flash-Next-Uncensored.IQ4_XS.gguf
+  command: /home/itzco/src/myhacsint-llama.cpp/build-vulkan/bin/llama-server --model
+    /home/itzco/models/Qwen3.8-Flash-Next-Uncensored-GGUF/IQ4_XS/Qwen3.8-Flash-Next-Uncensored.IQ4_XS.gguf
     --alias qwen3.8-flash-next-uncensored -md /home/itzco/models/Qwen3.8-Flash-Next-Uncensored-GGUF/MTP-unsloth/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
     --mmproj /home/itzco/models/Qwen3.8-Flash-Next-Uncensored-GGUF/mmproj/Qwen3.8-Flash-Next-Uncensored.mmproj-f16.gguf
-    --image-min-tokens 1024 -ngl 999 -fa on --jinja -c 131072 --cache-type-k f16 --cache-type-v f16 -b
-    2048 -ub 1024 --n-cpu-moe 0 --load-mode mmap --tensor-read-lazy auto --no-repack --no-host --fit on
-    --reasoning-effort xhigh --reasoning-preserve --temp 1.0 --top-k 20 --top-p 0.95 --spec-type draft-mtp
-    --spec-draft-adaptive --spec-draft-n-min 0 --spec-draft-n-max 5 --spec-draft-p-min 0.75 --spec-draft-type-k
-    f16 --spec-draft-type-v f16 --host 127.0.0.1 --port 8098
+    --image-min-tokens 1024 -ngl 999 -fa on --jinja -c 131072 --cache-type-k f16 --cache-type-v
+    f16 -b 2048 -ub 1024 --n-cpu-moe 0 --load-mode mmap --tensor-read-lazy auto --no-repack
+    --no-host --fit on --reasoning-effort xhigh --reasoning-preserve --temp 1.0 --top-k
+    20 --top-p 0.95 --spec-type draft-mtp --spec-draft-adaptive --spec-draft-n-min
+    0 --spec-draft-n-max 5 --spec-draft-p-min 0.75 --spec-draft-type-k f16 --spec-draft-type-v
+    f16 --host 127.0.0.1 --port 8098
 parameters:
   ctx_size:
     value: 131072
     annotations:
     - type: recommendation
-      text: 'Poster runs -c 262144 (their receipt: ~120 GB total with f16 cache full). 262144 is provably
-        impossible on this box (needs +12.0 GiB KV over the 131072 run that already peaked near 87 GB
-        used; arithmetic total ~122+ GiB vs 124.93 usable incl. ~9 GB OS/apps). 131072 is the empirically
-        loaded ceiling here (KV f16 = 12.0 GiB for this arch).'
+      text: 'Poster runs -c 262144 (their receipt: ~120 GB total with f16 cache full).
+        262144 is provably impossible on this box (needs +12.0 GiB KV over the 131072
+        run that already peaked near 87 GB used; arithmetic total ~122+ GiB vs 124.93
+        usable incl. ~9 GB OS/apps). 131072 is the empirically loaded ceiling here
+        (KV f16 = 12.0 GiB for this arch).'
       source: https://www.reddit.com/r/StrixHalo/comments/1w9sye5/finally_a_llamacpp_build_for_qwen38flash_im_happy/
     - type: evidence
-      text: "Loaded and served the full battery at 131072 (server log); 262144 not attempted \u2014 preflight\
-        \ arithmetic overflow, honest ceiling recorded."
+      text: "Loaded and served the full battery at 131072 (server log); 262144 not\
+        \ attempted \u2014 preflight arithmetic overflow, honest ceiling recorded."
   ubatch:
     value: 1024
     annotations:
     - type: performance
-      text: Poster receipt -b 2048 -ub 1024. MoE prefill guidance is ubatch >= ~16 tokens per expert visit;
-        1024 is the poster's physical batch on this stack. (Our committed baselines used -b 8192 -ub 2048;
-        kept the poster's values to mirror the receipt.)
+      text: Poster receipt -b 2048 -ub 1024. MoE prefill guidance is ubatch >= ~16
+        tokens per expert visit; 1024 is the poster's physical batch on this stack.
+        (Our committed baselines used -b 8192 -ub 2048; kept the poster's values to
+        mirror the receipt.)
       source: https://www.reddit.com/r/StrixHalo/comments/1w9sye5/finally_a_llamacpp_build_for_qwen38flash_im_happy/
   batch_size:
     value: 2048
@@ -163,11 +177,12 @@ parameters:
     value: f16
     annotations:
     - type: quality
-      text: Poster -ctk/-ctv f16. This fork's Vulkan FA stack makes KV type a memory/quality choice, not
-        a prefill-speed one (Nathan toolbox README). f16 at 131072 = ~12.0 GiB; see ctx_size annotation
-        for why 262144 cannot follow.
+      text: Poster -ctk/-ctv f16. This fork's Vulkan FA stack makes KV type a memory/quality
+        choice, not a prefill-speed one (Nathan toolbox README). f16 at 131072 = ~12.0
+        GiB; see ctx_size annotation for why 262144 cannot follow.
     - type: evidence
-      text: Served the battery at f16 KV @131072 without OOM; machine peak used ~87/124.9 GB.
+      text: Served the battery at f16 KV @131072 without OOM; machine peak used ~87/124.9
+        GB.
   cache_type_v:
     value: f16
     annotations:
@@ -178,54 +193,58 @@ parameters:
     value: 999
     annotations:
     - type: recommendation
-      text: Full layer offload to the unified GTT heap (110 GiB). Fit on, mmap + lazy reads keep the resident
-        set under the machine ceiling (see memory annotation).
+      text: Full layer offload to the unified GTT heap (110 GiB). Fit on, mmap + lazy
+        reads keep the resident set under the machine ceiling (see memory annotation).
   flash_attn:
     value: true
     annotations:
     - type: required
-      text: '-fa on: Flash Attention on Vulkan; the fork''s FA line is the prefill payload. Poster wrote
-        ''-fa 1''; -fa on is equivalent and matches our committed baselines.'
+      text: '-fa on: Flash Attention on Vulkan; the fork''s FA line is the prefill
+        payload. Poster wrote ''-fa 1''; -fa on is equivalent and matches our committed
+        baselines.'
   jinja:
     value: true
     annotations:
     - type: required
-      text: --jinja parses structured tool_calls; without it tool syntax leaks into chat and tool-roundtrip/agent-coding
-        break. Verified by tool-roundtrip + agent-coding passes.
+      text: --jinja parses structured tool_calls; without it tool syntax leaks into
+        chat and tool-roundtrip/agent-coding break. Verified by tool-roundtrip + agent-coding
+        passes.
   model_draft:
     value: /home/itzco/models/Qwen3.8-Flash-Next-Uncensored-GGUF/MTP-unsloth/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
     annotations:
     - type: required
-      text: "-md names the MTP draft sidecar. MUST be the unsloth *shared* head (top-level nextn tensors\
-        \ shared with target, no duplicated token_embd/output) \u2014 the myhacsint fork's shared-weight\
-        \ support (PR #27941/Unsloth #144 + local fit fix) is what makes it load; the Nathan fork (v0.2.0\
-        \ baseline) FAILED on the identical unsloth MTP/ files ('output_hc_norm.weight not found'). Loaded\
-        \ cleanly in this run (naming hazard cleared empirically)."
+      text: "-md names the MTP draft sidecar. MUST be the unsloth *shared* head (top-level\
+        \ nextn tensors shared with target, no duplicated token_embd/output) \u2014\
+        \ the myhacsint fork's shared-weight support (PR #27941/Unsloth #144 + local\
+        \ fit fix) is what makes it load; the Nathan fork (v0.2.0 baseline) FAILED\
+        \ on the identical unsloth MTP/ files ('output_hc_norm.weight not found').\
+        \ Loaded cleanly in this run (naming hazard cleared empirically)."
       source: https://github.com/myhacsint/llama.cpp/blob/production/strix-halo-qwen4exp-b10685/QWEN38-FLASH-NEXT-MTP.md
     - type: evidence
-      text: 'Server log: ''loading draft model ...mtp-...-shared-Q8_0.gguf'' with no error; 13/13 logged
-        tasks carried draft-acceptance lines (mean 0.947).'
+      text: 'Server log: ''loading draft model ...mtp-...-shared-Q8_0.gguf'' with
+        no error; 13/13 logged tasks carried draft-acceptance lines (mean 0.947).'
   spec_type:
     value: draft-mtp
     annotations:
     - type: required
-      text: --spec-type draft-mtp engages the qwen4exp MTP draft graph (mainline b10809 cannot load standalone
-        MTP heads for this model; fork-only path).
+      text: --spec-type draft-mtp engages the qwen4exp MTP draft graph (mainline b10809
+        cannot load standalone MTP heads for this model; fork-only path).
       source: https://github.com/myhacsint/llama.cpp/blob/production/strix-halo-qwen4exp-b10685/QWEN38-FLASH-NEXT-MTP.md
   spec_draft_adaptive:
     value: true
     annotations:
     - type: recommendation
-      text: 'Adaptive draft sizing (poster): sizes each draft from measured acceptance instead of always
-        drafting n-max. The fork owner''s note: ''best maximum draft depth is workload-dependent''; the
-        uncensored quant benefited from a larger upper bound (n-max 5 here) than the official-model preset
-        (n-max 4).'
+      text: 'Adaptive draft sizing (poster): sizes each draft from measured acceptance
+        instead of always drafting n-max. The fork owner''s note: ''best maximum draft
+        depth is workload-dependent''; the uncensored quant benefited from a larger
+        upper bound (n-max 5 here) than the official-model preset (n-max 4).'
       source: https://github.com/myhacsint/llama.cpp/blob/production/strix-halo-qwen4exp-b10685/QWEN38-FLASH-NEXT-MTP.md
   spec_draft_n_min:
     value: 0
     annotations:
     - type: recommendation
-      text: 'Poster --spec-draft-n-min 0: no minimum draft length (can fall back to no speculation).'
+      text: 'Poster --spec-draft-n-min 0: no minimum draft length (can fall back to
+        no speculation).'
       source: https://www.reddit.com/r/StrixHalo/comments/1w9sye5/finally_a_llamacpp_build_for_qwen38flash_im_happy/
   spec_draft_n_max:
     value: 5
@@ -237,13 +256,15 @@ parameters:
     value: 0.75
     annotations:
     - type: recommendation
-      text: 'Poster --spec-draft-p-min 0.75: per-token confidence early-stop threshold for the draft chain.'
+      text: 'Poster --spec-draft-p-min 0.75: per-token confidence early-stop threshold
+        for the draft chain.'
       source: https://www.reddit.com/r/StrixHalo/comments/1w9sye5/finally_a_llamacpp_build_for_qwen38flash_im_happy/
   spec_draft_type_k:
     value: f16
     annotations:
     - type: quality
-      text: 'Poster -ctkd f16: draft-model KV type; default f16 anyway, pinned for receipt parity.'
+      text: 'Poster -ctkd f16: draft-model KV type; default f16 anyway, pinned for
+        receipt parity.'
       source: https://www.reddit.com/r/StrixHalo/comments/1w9sye5/finally_a_llamacpp_build_for_qwen38flash_im_happy/
   spec_draft_type_v:
     value: f16
@@ -255,81 +276,87 @@ parameters:
     value: /home/itzco/models/Qwen3.8-Flash-Next-Uncensored-GGUF/mmproj/Qwen3.8-Flash-Next-Uncensored.mmproj-f16.gguf
     annotations:
     - type: required
-      text: --mmproj loads the uncensored model's vision projector (F16, 904,004,352 B). Loaded without
-        error; the model stack advertises 'multimodal'. Vision capability itself is NOT yet confirmed
-        by a test run.
+      text: --mmproj loads the uncensored model's vision projector (F16, 904,004,352
+        B). Loaded without error; the model stack advertises 'multimodal'. Vision
+        capability itself is NOT yet confirmed by a test run.
   image_min_tokens:
     value: 1024
     annotations:
     - type: recommendation
-      text: 'Poster --image-min-tokens 1024: floor tokens per image for dynamic-resolution vision models.'
+      text: 'Poster --image-min-tokens 1024: floor tokens per image for dynamic-resolution
+        vision models.'
       source: https://www.reddit.com/r/StrixHalo/comments/1w9sye5/finally_a_llamacpp_build_for_qwen38flash_im_happy/
   load_mode:
     value: mmap
     annotations:
     - type: recommendation
-      text: 'Poster --load-mode mmap: memory-map the 98.4 GB file so untouched pages stay in page cache
-        (see no_repack/tensor_read_lazy).'
+      text: 'Poster --load-mode mmap: memory-map the 98.4 GB file so untouched pages
+        stay in page cache (see no_repack/tensor_read_lazy).'
   tensor_read_lazy:
     value: auto
     annotations:
     - type: recommendation
-      text: "Poster --tensor-read-lazy auto: on-demand reading of per-layer tensors (requires mmap) \u2014\
-        \ key to fitting a near-RAM-size model; the process VmHWM stayed at 51.5 GB while GTT held 78.6\
-        \ GiB."
+      text: "Poster --tensor-read-lazy auto: on-demand reading of per-layer tensors\
+        \ (requires mmap) \u2014 key to fitting a near-RAM-size model; the process\
+        \ VmHWM stayed at 51.5 GB while GTT held 78.6 GiB."
   no_repack:
     value: true
     annotations:
     - type: recommendation
-      text: 'Poster --no-repack: skip weight repacking so the mmap stays file-backed (repacking would
-        force full resident copies).'
+      text: 'Poster --no-repack: skip weight repacking so the mmap stays file-backed
+        (repacking would force full resident copies).'
   no_host:
     value: true
     annotations:
     - type: recommendation
-      text: 'Poster --no-host: bypass host-visible staging buffers where possible, freeing memory headroom.'
+      text: 'Poster --no-host: bypass host-visible staging buffers where possible,
+        freeing memory headroom.'
   fit:
     value: 'on'
     annotations:
     - type: recommendation
-      text: 'Poster --fit on: auto-adjust unset args to fit device memory (default margin 1024 MiB). The
-        fork''s joint target+draft fit accounting is what makes shared-MTP + fit safe (see backend patches).'
+      text: 'Poster --fit on: auto-adjust unset args to fit device memory (default
+        margin 1024 MiB). The fork''s joint target+draft fit accounting is what makes
+        shared-MTP + fit safe (see backend patches).'
       source: https://github.com/myhacsint/llama.cpp
     - type: evidence
-      text: 'Run with --fit on: server loaded model + shared MTP + mmproj at ctx 131072 and served the
-        whole battery.'
+      text: 'Run with --fit on: server loaded model + shared MTP + mmproj at ctx 131072
+        and served the whole battery.'
   n_cpu_moe:
     value: 0
     annotations:
     - type: recommendation
-      text: 'Poster --n-cpu-moe 0: keep all MoE expert weights on the GPU (no CPU-side expert offload).'
+      text: 'Poster --n-cpu-moe 0: keep all MoE expert weights on the GPU (no CPU-side
+        expert offload).'
   reasoning_effort:
     value: xhigh
     annotations:
     - type: required
-      text: Poster --reasoning-effort xhigh (their reasoning-heavy deployment). qwen4exp spends output
-        budget on reasoning; effort+preserve replace the older effort+budget guardrail combo used by our
-        committed baselines (medium + 2048 budget).
+      text: Poster --reasoning-effort xhigh (their reasoning-heavy deployment). qwen4exp
+        spends output budget on reasoning; effort+preserve replace the older effort+budget
+        guardrail combo used by our committed baselines (medium + 2048 budget).
       source: https://www.reddit.com/r/StrixHalo/comments/1w9sye5/finally_a_llamacpp_build_for_qwen38flash_im_happy/
   reasoning_preserve:
     value: true
     annotations:
     - type: required
-      text: "Poster --reasoning-preserve. Per the thread's hazard note: at temp>0 MTP can leak drafted\
-        \ tokens (corrupted code/CJK identifiers); xhigh+preserve reasoning is reported to self-correct/limit\
-        \ burn. Our battery is temp 0, where the leak is documented clean \u2014 no corruption observed."
+      text: "Poster --reasoning-preserve. Per the thread's hazard note: at temp>0\
+        \ MTP can leak drafted tokens (corrupted code/CJK identifiers); xhigh+preserve\
+        \ reasoning is reported to self-correct/limit burn. Our battery is temp 0,\
+        \ where the leak is documented clean \u2014 no corruption observed."
   temp:
     value: 1.0
     annotations:
     - type: experimental
-      text: 'Poster chat sampler temp 1.0 top-k 20 top-p 0.95. Server defaults only: the repo battery
-        and all evidence runs here pass temperature 0 (deterministic), where the MTP-leak caveat does
-        not apply.'
+      text: 'Poster chat sampler temp 1.0 top-k 20 top-p 0.95. Server defaults only:
+        the repo battery and all evidence runs here pass temperature 0 (deterministic),
+        where the MTP-leak caveat does not apply.'
   top_k:
     value: 20
     annotations:
     - type: experimental
-      text: Poster chat sampler; battery runs override with temp 0 (top_k not pinned by runners).
+      text: Poster chat sampler; battery runs override with temp 0 (top_k not pinned
+        by runners).
   top_p:
     value: 0.95
     annotations:
@@ -337,65 +364,75 @@ parameters:
       text: Poster chat sampler; battery runs override with temp 0.
 annotations:
 - type: experimental
-  text: "First myhacsint-fork record for Qwen3.8-Flash-Next-Uncensored (2026-09-09): fork build-vulkan\
-    \ binary @ 2dff8596 built from source (Vulkan/system RADV; cmake 4.4.3 + locally-fetched Vulkan/SPIRV\
-    \ headers \u2014 no system installs), mradermacher IQ4_XS uncensored single-file weights, unsloth\
-    \ shared MTP Q8_0 head, mmproj-f16, ctx 131072, f16 KV, adaptive spec n0-5. capabilities_confirmed\
-    \ only from the tests that actually ran (tool-roundtrip, throughput, agent-coding, context-recall)."
+  text: "First myhacsint-fork record for Qwen3.8-Flash-Next-Uncensored (2026-09-09):\
+    \ fork build-vulkan binary @ 2dff8596 built from source (Vulkan/system RADV; cmake\
+    \ 4.4.3 + locally-fetched Vulkan/SPIRV headers \u2014 no system installs), mradermacher\
+    \ IQ4_XS uncensored single-file weights, unsloth shared MTP Q8_0 head, mmproj-f16,\
+    \ ctx 131072, f16 KV, adaptive spec n0-5. capabilities_confirmed only from the\
+    \ tests that actually ran (tool-roundtrip, throughput, agent-coding, context-recall)."
 - type: warning
   text: "Inspiration/primary source: https://www.reddit.com/r/StrixHalo/comments/1w9sye5/finally_a_llamacpp_build_for_qwen38flash_im_happy/\
-    \ ('Finally a llama.cpp build for Qwen3.8-Flash I'm happy with', alchi-flac \u2014 orca Q5_K_M + unsloth\
-    \ shared MTP @ ~200k ctx). REVISION DRIFT + GATING findings pinned to that post: its ~111 GB figure\
-    \ does not match the current orca revision (Q5_K_M now 134.11 GB = 124.91 GiB \u2014 99.98% of this\
-    \ box's usable RAM; unrunnable at ANY ctx, arithmetic above), and orcarouter/Qwen3.8-Flash-Next-Uncensored-GGUF\
-    \ is now HF auth-gated ('requires approval', 401 unauthenticated; no token on this box). Substitution\
-    \ recorded: mradermacher/Qwen3.8-Flash-Next-Uncensored-GGUF rev 61f739cd47b2 (gated:false) \u2014\
-    \ same Qwen3.8-Flash-Next-Uncensored base model, independent IQ4_XS quant, single file, blob oid a1975fd73542230e2b344d112f29f22ff522d051cb4bf33bdb872cb3ffc5dedf\
-    \ (98,421,788,672 B). ALWAYS pin revisions on this model family: publishers re-upload under identical\
-    \ filenames (stock unsloth UD-IQ4_XS was 87.25 GB @ rev 38bb39ee, 93.68 GB now)."
+    \ ('Finally a llama.cpp build for Qwen3.8-Flash I'm happy with', alchi-flac \u2014\
+    \ orca Q5_K_M + unsloth shared MTP @ ~200k ctx). REVISION DRIFT + GATING findings\
+    \ pinned to that post: its ~111 GB figure does not match the current orca revision\
+    \ (Q5_K_M now 134.11 GB = 124.91 GiB \u2014 99.98% of this box's usable RAM; unrunnable\
+    \ at ANY ctx, arithmetic above), and orcarouter/Qwen3.8-Flash-Next-Uncensored-GGUF\
+    \ is now HF auth-gated ('requires approval', 401 unauthenticated; no token on\
+    \ this box). Substitution recorded: mradermacher/Qwen3.8-Flash-Next-Uncensored-GGUF\
+    \ rev 61f739cd47b2 (gated:false) \u2014 same Qwen3.8-Flash-Next-Uncensored base\
+    \ model, independent IQ4_XS quant, single file, blob oid a1975fd73542230e2b344d112f29f22ff522d051cb4bf33bdb872cb3ffc5dedf\
+    \ (98,421,788,672 B). ALWAYS pin revisions on this model family: publishers re-upload\
+    \ under identical filenames (stock unsloth UD-IQ4_XS was 87.25 GB @ rev 38bb39ee,\
+    \ 93.68 GB now)."
 - type: warning
-  text: "MTP temp>0 leak caveat (thread commenter): with speculative MTP and temperature > 0, drafted\
-    \ tokens can leak into the output (corrupted code/CJK identifiers); temp 0 is documented clean. This\
-    \ entire evidence battery ran temperature 0 \u2014 outputs were clean, no leak symptom observed. Do\
-    \ NOT generalize the acceptance/decode numbers to temp>0 chat; the poster's chat sampler (1.0/20/0.95)\
-    \ is served but untested here."
+  text: "MTP temp>0 leak caveat (thread commenter): with speculative MTP and temperature\
+    \ > 0, drafted tokens can leak into the output (corrupted code/CJK identifiers);\
+    \ temp 0 is documented clean. This entire evidence battery ran temperature 0 \u2014\
+    \ outputs were clean, no leak symptom observed. Do NOT generalize the acceptance/decode\
+    \ numbers to temp>0 chat; the poster's chat sampler (1.0/20/0.95) is served but\
+    \ untested here."
 - type: evidence
-  text: "Battery results (all pass) + memory facts are in the run record; server-eval summary: decode\
-    \ 30.8-43.9 t/s on <=128-token structured/agent rounds; cold deep-PP 398.1 t/s @10985 tokens and 372.9\
-    \ t/s @12365 (context-recall prompt); MTP draft acceptance 0.816-1.000 per task, mean 0.947 over all\
-    \ 13 logged tasks (adaptive, mean len 2.3-5.0). Machine peak during battery: 87/124.9 GB used, GTT\
-    \ 78.6 GiB, process VmHWM 51.5 GB (model partially page-cache-backed by mmap+lazy+no-repack \u2014\
-    \ the poster's fit design)."
+  text: "Battery results (all pass) + memory facts are in the run record; server-eval\
+    \ summary: decode 30.8-43.9 t/s on <=128-token structured/agent rounds; cold deep-PP\
+    \ 398.1 t/s @10985 tokens and 372.9 t/s @12365 (context-recall prompt); MTP draft\
+    \ acceptance 0.816-1.000 per task, mean 0.947 over all 13 logged tasks (adaptive,\
+    \ mean len 2.3-5.0). Machine peak during battery: 87/124.9 GB used, GTT 78.6 GiB,\
+    \ process VmHWM 51.5 GB (model partially page-cache-backed by mmap+lazy+no-repack\
+    \ \u2014 the poster's fit design)."
 - type: evidence
-  text: "A/B vs committed baselines (same box, IQ4_XS class): (1) v0.1.0 mainline b10809 no-MTP \u2014\
-    \ server decode ~20-22 t/s, cold PP 320 t/s @10947; (2) v0.2.0 Nathan fork + agentionai MTP fixed\
-    \ n4, q8 KV @32k \u2014 server decode 29.1-44.0 t/s structured, cold PP 383.8 t/s @10947, acceptance\
-    \ 0.73-0.91 structured / ~0.47-0.50 prose; (3) qwen3.8-flash-next-131k mainline @131072 q8 KV \u2014\
-    \ real-session decode 14.6-18.4 t/s @30-51k ctx, runner TG 11.0 (cold-PP contaminated). This run:\
-    \ decode 30.8-43.9 t/s at the same 131k ctx scale as (3) with f16 KV, PP 398.1 t/s, acceptance 0.947\
-    \ mean \u2014 i.e. MTP+engine restore the (2)-class decode at 4x the allocated context. Depth caveat:\
-    \ (3)'s field numbers were measured at 30-51k used ctx, this battery at ~8-12k used ctx; decode slows\
-    \ with depth. Quality: agent-coding passed with ground truth (4 rounds, prints 5) like all baselines;\
-    \ math/code quality batteries were not re-run."
+  text: "A/B vs committed baselines (same box, IQ4_XS class): (1) v0.1.0 mainline\
+    \ b10809 no-MTP \u2014 server decode ~20-22 t/s, cold PP 320 t/s @10947; (2) v0.2.0\
+    \ Nathan fork + agentionai MTP fixed n4, q8 KV @32k \u2014 server decode 29.1-44.0\
+    \ t/s structured, cold PP 383.8 t/s @10947, acceptance 0.73-0.91 structured /\
+    \ ~0.47-0.50 prose; (3) qwen3.8-flash-next-131k mainline @131072 q8 KV \u2014\
+    \ real-session decode 14.6-18.4 t/s @30-51k ctx, runner TG 11.0 (cold-PP contaminated).\
+    \ This run: decode 30.8-43.9 t/s at the same 131k ctx scale as (3) with f16 KV,\
+    \ PP 398.1 t/s, acceptance 0.947 mean \u2014 i.e. MTP+engine restore the (2)-class\
+    \ decode at 4x the allocated context. Depth caveat: (3)'s field numbers were measured\
+    \ at 30-51k used ctx, this battery at ~8-12k used ctx; decode slows with depth.\
+    \ Quality: agent-coding passed with ground truth (4 rounds, prints 5) like all\
+    \ baselines; math/code quality batteries were not re-run."
 - type: warning
-  text: "Uncensored weights: this repo records configurations; the model itself is the mradermacher/orca\
-    \ 'Uncensored' derivative of Qwen3.8-Flash-Next (license Qwen-community; see HF model card). Identity\
-    \ probe confirmed 'Qwen, created by Alibaba's Tongyi Lab' self-identification. No refusal-boundary\
-    \ or content-safety battery exists in tests/ \u2014 none claimed."
+  text: "Uncensored weights: this repo records configurations; the model itself is\
+    \ the mradermacher/orca 'Uncensored' derivative of Qwen3.8-Flash-Next (license\
+    \ Qwen-community; see HF model card). Identity probe confirmed 'Qwen, created\
+    \ by Alibaba's Tongyi Lab' self-identification. No refusal-boundary or content-safety\
+    \ battery exists in tests/ \u2014 none claimed."
 - type: compatibility
-  text: "Fork build provenance on THIS box: no system-wide installs made (cmake 4.4.3 wheel in /tmp/recvenv;\
-    \ Vulkan-Headers 1.4.357 + SPIRV-Headers staged under /tmp/vkprefix because the CachyOS box lacks\
-    \ the -dev packages; glslang/shaderc 1.4.357 present). Binary sha256sum is build-path-dependent (PRODUCTION-SNAPSHOT.md)\
-    \ \u2014 source identity is the pin."
+  text: "Fork build provenance on THIS box: no system-wide installs made (cmake 4.4.3\
+    \ wheel in /tmp/recvenv; Vulkan-Headers 1.4.357 + SPIRV-Headers staged under /tmp/vkprefix\
+    \ because the CachyOS box lacks the -dev packages; glslang/shaderc 1.4.357 present).\
+    \ Binary sha256sum is build-path-dependent (PRODUCTION-SNAPSHOT.md) \u2014 source\
+    \ identity is the pin."
 - type: experimental
-  text: "Vision: mmproj-f16 loads and /v1/models advertises 'multimodal' (image_min_tokens 1024 set),\
-    \ but no vision test ran \u2014 model.vision=true (capability), capabilities_confirmed.vision=false\
+  text: "Vision: mmproj-f16 loads and /v1/models advertises 'multimodal' (image_min_tokens\
+    \ 1024 set), but no vision test ran \u2014 model.vision=true (capability), capabilities_confirmed.vision=false\
     \ (evidence). mcp not tested (no MCP harness in this run)."
 harness_compat:
   tested_with:
   - openai-api
-  exposes_as: "OpenAI-compatible /v1 \u2014 direct llama-server on 127.0.0.1:8098 (no llama-swap; one-GPU\
-    \ rule, /usr/bin b10809 + llama-swap :1234 untouched)"
+  exposes_as: "OpenAI-compatible /v1 \u2014 direct llama-server on 127.0.0.1:8098\
+    \ (no llama-swap; one-GPU rule, /usr/bin b10809 + llama-swap :1234 untouched)"
   capabilities_confirmed:
     tools: true
     mcp: false
@@ -411,5 +448,7 @@ tests:
   expect: pass
   args:
     ctx: 8192
+- id: harness-tool-use
+  expect: pass
 failure_notes: null
 content_hash: sha256:d81ceedc837f54af5e47fb84a0ed81308f59d181106e44a640f0620b1dfddb4a
