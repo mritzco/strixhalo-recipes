@@ -107,6 +107,7 @@ def parse_launch_flags(cmd):
     out = {
         "cmd": cmd, "engine": "llama.cpp", "model_spec": None,
         "model_path": None, "quant": None, "ctx_size": None,
+        "ubatch": None,
         "cache_type_k": None, "cache_type_v": None, "flash_attn": False,
         "jinja": False, "ngl": None, "mmproj": None, "alias": None,
         "host": "127.0.0.1", "port": None, "hf_repo": None,
@@ -115,6 +116,7 @@ def parse_launch_flags(cmd):
         "-m": "model_path", "--model": "model_path",
         "-hf": "hf_repo", "-hfr": "_hf_rev",
         "-c": "ctx_size", "--ctx-size": "ctx_size",
+        "-ub": "ubatch", "--ubatch-size": "ubatch",
         "--cache-type-k": "cache_type_k", "--cache-type-v": "cache_type_v",
         "-ngl": "ngl", "--n-gpu-layers": "ngl",
         "--mmproj": "mmproj", "--mmproj-file": "mmproj",
@@ -259,6 +261,7 @@ def make_draft(key, flags, probe, author, min_ram_gb, hardware_target,
 
     for pname, val in (
         ("ctx_size", flags["ctx_size"]),
+        ("ubatch", flags["ubatch"]),
         ("cache_type_k", flags["cache_type_k"]),
         ("cache_type_v", flags["cache_type_v"]),
         ("ngl", flags["ngl"]),
