@@ -2,6 +2,26 @@
   "store_version": 1,
   "runs": [
     {
+      "run_id": "20260909T075019Z-5193c573",
+      "ts": "20260909T0750",
+      "contributor_id": "itzco",
+      "recipe_version": "0.1.0",
+      "quant": "UD-Q4_K_XL",
+      "content_hash": "sha256:2bb42ddd78be743b6cbab0227e361100b5fe92fdecc3147fc32471f7825f3b43",
+      "hash": "2bb42d",
+      "pp": null,
+      "tg": null,
+      "tests": [
+        {
+          "id": "vision-basic",
+          "result": "pass",
+          "score": null
+        }
+      ],
+      "notes": "First evidence for qwen3-vl: vision confirmed (mmproj, through llama-swap). tools/mcp still untested -> false.",
+      "model_id": "qwen3-vl"
+    },
+    {
       "run_id": "20260908T173450Z-6f74ac04",
       "ts": "20260908T1734",
       "contributor_id": "itzco",

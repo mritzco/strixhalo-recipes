@@ -21,10 +21,11 @@ Data model & trust: `SPEC.md` / `FORMAT.md`. Contributing:
 
 | Model / recipe | Why | Evidence |
 |---|---|---|
-| [**qwen3.8-flash-next-131k**](models/qwen3.8-flash-next-131k.md) | Strongest model here — 125B-A6B MoE at 131k context for agent work (omp compaction-safe). Needs `--reasoning-effort medium --reasoning-budget 2048` | tools ✅ agent-coding ✅ context ✅ · field decode **14.6–18.4 t/s** at 30–51k ctx |
-| [**qwen3.8-flash-next** v0.2.0](models/qwen3.8-flash-next.md) | Fastest measured config: **Nathan fork + MTP** ≈ 35 t/s decode (vs ~20 mainline) | full A/B in the recipe: same quality, 1.6–1.8× speed |
-| [**qwen3-coder**](models/qwen3-coder.md) | Daily driver — fast MoE (~65 t/s), reliable tools through omp/pi | tools ✅ agent-coding ✅ quality A/B ✅ |
-| [**qwen3.8-27b-vl**](models/qwen3.8-27b-vl.md) | Easiest vision setup (local mmproj) | vision ✅ tools ✅ |
+| [**qwen3.8-flash-uncensored**](models/qwen3.8-flash-next-uncensored.md) | Best all-round stack: myhacsint fork + shared MTP (0.947 acceptance) + uncensored IQ4_XS @131k + mmproj — the only recipe here with tools **and** vision **and** agent-coding **and** real-harness (omp) all confirmed | tools ✅ vision ✅ agent-coding ✅ harness ✅ · 30.8–43.9 t/s |
+| [**qwen3.8-flash-next-131k**](models/qwen3.8-flash-next-131k.md) | Stock-aligned alternative (mainline, no MTP) at 131k for agent work | tools ✅ agent-coding ✅ context ✅ · field 14.6–18.4 t/s |
+| [**qwen3-coder**](models/qwen3-coder.md) | Fast lightweight default (~65 t/s), reliable tools | tools ✅ agent-coding ✅ |
+| [**qwen3.8-27b-vl**](models/qwen3.8-27b-vl.md) | Dense vision (slight detail edge) | vision ✅ |
+| [**qwen3-vl**](models/qwen3-vl.md) | Small fast MoE vision | draft — vision test pending |
 
 _Every ✅ is a real test run, not a claim. Browse everything:
 [LEADERBOARD.md](LEADERBOARD.md) (all models & results) or `models/`

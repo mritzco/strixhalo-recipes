@@ -62,16 +62,18 @@ parameters:
     value: true
     annotations: []
 annotations:
-- type: experimental
-  text: Auto-collected draft (2026-09-07); capabilities_confirmed are all false until
-    real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs,
-    and evidence refs per the v0.3 data model.
+- type: evidence
+  text: Vision confirmed 2026-09-09 (vision-basic pass). Fast MoE vision default;
+    kept alongside dense qwen3.8-27b-vl for the detail edge.
 harness_compat:
-  tested_with: []
-  exposes_as: TODO-fill-in
+  tested_with:
+  - openai-api
+  exposes_as: OpenAI-compatible /v1 (llama-swap 127.0.0.1:1234)
   capabilities_confirmed:
     tools: false
     mcp: false
-    vision: false
-tests: []
+    vision: true
+tests:
+- id: vision-basic
+  expect: pass
 failure_notes: null

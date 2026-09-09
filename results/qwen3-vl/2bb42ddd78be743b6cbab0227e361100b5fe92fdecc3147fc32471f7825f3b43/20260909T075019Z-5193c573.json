@@ -1,0 +1,52 @@
+{
+  "recipe_id": "qwen3-vl",
+  "recipe_version": "0.1.0",
+  "content_hash": "sha256:2bb42ddd78be743b6cbab0227e361100b5fe92fdecc3147fc32471f7825f3b43",
+  "run_id": "20260909T075019Z-5193c573",
+  "contributor_id": "itzco",
+  "quant": "UD-Q4_K_XL",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-09-09T07:50:19Z",
+    "family": "arch",
+    "distro": "CachyOS",
+    "kernel": "7.0.11-3-cachyos-px13 (linux-cachyos 7.2.3-1)",
+    "mem": {
+      "total_gb": 124.9,
+      "gtt_gib": 110.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S Graphics",
+      "driver": "radv",
+      "vulkan_version": "1.4.357",
+      "free_mib": 50591.0
+    },
+    "backend": {
+      "version_string": "version: 0.4.0-dev (build 10809, commit 5266f24da7)",
+      "build": "10809",
+      "commit": "5266f24da7",
+      "binary": "/usr/bin/llama-server",
+      "install_method": "distro-package",
+      "pkg_version": "0.4.0-1.1"
+    },
+    "rocm_version": null,
+    "llama_swap_config": "/home/itzco/.config/llama-swap/config.yaml",
+    "raw_hash": "sha256:ea269c4b0c3a20a4ee4c439e67be34f3a890c95099100c2d5f0745e0c8e8b6ab"
+  },
+  "tests": [
+    {
+      "id": "vision-basic",
+      "result": "pass",
+      "metrics": {
+        "latency_s": 14.56
+      },
+      "observations": [
+        "model answer: red"
+      ]
+    }
+  ],
+  "metrics": {},
+  "notes": "First evidence for qwen3-vl: vision confirmed (mmproj, through llama-swap). tools/mcp still untested -> false.",
+  "tool_version": "submit_result.py@2.0.0"
+}
