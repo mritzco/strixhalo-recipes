@@ -428,6 +428,13 @@ annotations:
   text: "Vision: mmproj-f16 loads and /v1/models advertises 'multimodal' (image_min_tokens\
     \ 1024 set), but no vision test ran \u2014 model.vision=true (capability), capabilities_confirmed.vision=false\
     \ (evidence). mcp not tested (no MCP harness in this run)."
+- type: compatibility
+  text: "MCP harness-level test NOT possible on this box yet: omp 18.1.14 and pi 0.85.1\
+    \ expose no MCP client configuration (no mcp config key/command/flag). Server\
+    \ tool-calling path proven via tool-roundtrip + harness-tool-use (omp) \u2014\
+    \ what's missing is a harness that speaks the MCP protocol. Revisit when omp/pi\
+    \ ship MCP support or via an MCP-capable client (Cline/Roo/Claude Code) pointed\
+    \ at llama-swap."
 harness_compat:
   tested_with:
   - openai-api
