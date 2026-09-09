@@ -1,7 +1,7 @@
 id: glm-4.5-air
 version: 0.1.0
 content_hash: sha256:64526052067adf9fcec8e000c9220cf765c8532f3a855f4896687d458f192508
-status: experimental
+status: deprecated
 created: '2026-09-07'
 author: itzco
 license: CC0
@@ -75,6 +75,8 @@ annotations:
   evidence:
     runs:
     - 20260907T165526Z-4135164d
+- type: deprecated
+  text: removed from live llama-swap 2026-09-07 (chat-only; omp tool-calling broken)
 harness_compat:
   tested_with:
   - openai-api

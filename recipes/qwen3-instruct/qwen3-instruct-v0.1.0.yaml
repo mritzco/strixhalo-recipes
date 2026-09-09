@@ -1,7 +1,7 @@
 id: qwen3-instruct
 version: 0.1.0
 content_hash: sha256:103ea9ab2ac4035a5bb2b5eace2648618b5bc47053b43620d07b8543e59a2c5a
-status: experimental
+status: deprecated
 created: '2026-09-07'
 author: itzco
 license: CC0
@@ -66,6 +66,8 @@ annotations:
   text: Auto-collected draft (2026-09-07); capabilities_confirmed are all false until
     real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs,
     and evidence refs per the v0.3 data model.
+- type: deprecated
+  text: removed from live llama-swap 2026-09-09 (superseded by flash-family for chat+agents)
 harness_compat:
   tested_with: []
   exposes_as: TODO-fill-in
