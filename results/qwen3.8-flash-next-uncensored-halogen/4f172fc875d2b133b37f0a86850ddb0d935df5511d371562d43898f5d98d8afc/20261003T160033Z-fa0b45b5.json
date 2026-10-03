@@ -1,0 +1,56 @@
+{
+  "recipe_id": "qwen3.8-flash-next-uncensored-halogen",
+  "recipe_version": "0.3.0",
+  "content_hash": "sha256:4f172fc875d2b133b37f0a86850ddb0d935df5511d371562d43898f5d98d8afc",
+  "run_id": "20261003T160033Z-fa0b45b5",
+  "contributor_id": "mritzco",
+  "quant": "IQ4_XS",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-10-03T16:00:33Z",
+    "family": "arch",
+    "distro": "CachyOS",
+    "kernel": "7.2.3-1-cachyos (linux-cachyos 7.2.3-1)",
+    "mem": {
+      "total_gb": 124.9,
+      "gtt_gib": 110.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S Graphics",
+      "driver": "radv",
+      "vulkan_version": "1.4.357",
+      "free_mib": 91202.0
+    },
+    "backend": {
+      "version_string": "version: 0.4.0-dev (build 10809, commit 5266f24da7)",
+      "build": "10809",
+      "commit": "5266f24da7",
+      "binary": "/usr/bin/llama-server",
+      "install_method": "distro-package",
+      "pkg_version": "0.4.0-1.1"
+    },
+    "rocm_version": null,
+    "llama_swap_config": "/home/itzco/.config/llama-swap/config.yaml",
+    "raw_hash": "sha256:e0201f2405859f6fffe38bd1fd6f97618fcd9c464d4f393f22ce77a4ba3da4d7"
+  },
+  "tests": [
+    {
+      "id": "vision-basic",
+      "result": "pass"
+    },
+    {
+      "id": "vision-basic",
+      "result": "pass",
+      "metrics": {
+        "latency_s": 3.6
+      },
+      "observations": [
+        "model answer: red"
+      ]
+    }
+  ],
+  "metrics": {},
+  "notes": "v0.3.0 vision arm: tower on (0.84 GiB sidecar) on the abliterated trunk; see the v0.2.0 standalone record for the exact-ground-truth harness result (4.9 s).",
+  "tool_version": "submit_result.py@2.0.0"
+}

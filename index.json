@@ -349,6 +349,45 @@
       "last_run": "20260908T173450Z-6f74ac04",
       "cross_validated": true,
       "path": "recipes/qwen3.8-flash-next-uncensored/qwen3.8-flash-next-uncensored-v0.1.0.yaml"
+    },
+    {
+      "id": "qwen3.8-flash-next-uncensored-halogen",
+      "version": "0.3.0",
+      "content_hash": "sha256:4f172fc875d2b133b37f0a86850ddb0d935df5511d371562d43898f5d98d8afc",
+      "status": "experimental",
+      "model_name": "Qwen3.8 Flash Next Uncensored",
+      "arch": "qwen4exp",
+      "source": "/home/itzco/models/Qwen3.8-Flash-Next-Uncensored-GGUF/IQ4_XS/Qwen3.8-Flash-Next-Uncensored.IQ4_XS.gguf",
+      "engine": "other",
+      "backend": "vulkan",
+      "os_family": "arch",
+      "hardware_target": "strix-halo-128gb-unified",
+      "size_gb": 91.7,
+      "quant": "IQ4_XS",
+      "quants": [
+        "IQ4_XS"
+      ],
+      "vision": true,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": true,
+      "objectives_primary": [
+        "agent_capability"
+      ],
+      "capabilities_confirmed": {
+        "tools": true,
+        "mcp": false,
+        "vision": true
+      },
+      "witnesses": 1,
+      "distinct_witnesses": 1,
+      "pp": 4128.8,
+      "tg": 9.0,
+      "results": 2,
+      "n_variants": 3,
+      "last_run": "20261003T160033Z-fa0b45b5",
+      "cross_validated": false,
+      "path": "recipes/qwen3.8-flash-next-uncensored-halogen/qwen3.8-flash-next-uncensored-halogen-v0.3.0.yaml"
     }
   ]
 }

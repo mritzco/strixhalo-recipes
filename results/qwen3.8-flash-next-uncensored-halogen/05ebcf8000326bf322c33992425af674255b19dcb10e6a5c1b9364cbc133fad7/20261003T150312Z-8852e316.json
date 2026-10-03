@@ -1,0 +1,66 @@
+{
+  "recipe_id": "qwen3.8-flash-next-uncensored-halogen",
+  "recipe_version": "0.2.0",
+  "content_hash": "sha256:05ebcf8000326bf322c33992425af674255b19dcb10e6a5c1b9364cbc133fad7",
+  "run_id": "20261003T150312Z-8852e316",
+  "contributor_id": "mritzco",
+  "quant": "IQ4_XS",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-10-03T15:03:12Z",
+    "family": "arch",
+    "distro": "CachyOS",
+    "kernel": "7.2.3-1-cachyos (linux-cachyos 7.2.3-1)",
+    "mem": {
+      "total_gb": 124.9,
+      "gtt_gib": 110.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S Graphics",
+      "driver": "radv",
+      "vulkan_version": "1.4.357",
+      "free_mib": 89964.0
+    },
+    "backend": {
+      "version_string": "version: 0.4.0-dev (build 10809, commit 5266f24da7)",
+      "build": "10809",
+      "commit": "5266f24da7",
+      "binary": "/usr/bin/llama-server",
+      "install_method": "distro-package",
+      "pkg_version": "0.4.0-1.1"
+    },
+    "rocm_version": null,
+    "llama_swap_config": "/home/itzco/.config/llama-swap/config.yaml",
+    "raw_hash": "sha256:f26e7ec273b54157329d0efb3f4b9a369847dd4fb1ff9f80a9cade35f9424b00"
+  },
+  "tests": [
+    {
+      "id": "tool-roundtrip",
+      "result": "pass",
+      "metrics": {
+        "tool_calls": 1,
+        "latency_s": 2.81
+      },
+      "observations": [
+        "1/1 tool call(s) well-formed"
+      ]
+    },
+    {
+      "id": "throughput",
+      "result": "pass",
+      "metrics": {
+        "tokens_per_sec_tg": 12.3,
+        "median_round_s": 22.33,
+        "tokens_per_sec_pp": 6298.8
+      },
+      "observations": [
+        "2 rounds x ~64 out-tokens",
+        "prompt-eval round: ~10983 tokens"
+      ]
+    }
+  ],
+  "metrics": {},
+  "notes": "v0.2.0 = v0.1.0 + HALOGEN_VISION_TOWER=1 (vision verified on the abliterated trunk: the tower is fitted to the original trunk and works unchanged). Run against the live serving config (prompt cache at its default 2), so tokens_per_sec_pp is again cache-inflated - 9514-class numbers are an artifact of the runner dividing TOTAL prompt tokens by wall time; the same recipe with HALOGEN_PROMPT_CACHE=0 measured 976.6 t/s, and the engine's own timings.prompt_per_second reports 1092 t/s at 26.7k prompt tokens. True decode: 28.4 t/s thinking-off, 33.3 t/s over a 1304-token thinking turn, 29.7 t/s on the vision request. See the v0.1.0 records for the cache-off arm.",
+  "tool_version": "submit_result.py@2.0.0"
+}

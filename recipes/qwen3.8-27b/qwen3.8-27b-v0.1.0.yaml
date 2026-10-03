@@ -8,7 +8,7 @@ license: CC0
 quant: Q8_0
 lineage:
   parents: []
-  rationale: "Auto-collected draft \u2014 fill in if this descends from another recipe."
+  rationale: Auto-collected draft — fill in if this descends from another recipe.
 objectives:
   primary:
   - agent_capability
@@ -18,10 +18,8 @@ objectives:
   not_optimized: []
 constraints: []
 tradeoffs:
-- 'Q8_0 is dense and bandwidth-bound: ~7 tok/s generation on this box (MoE models
-  are ~10x faster).'
-- ctx 32k verified in tests; recipe launches at 131072 (agents overflowed 32K into
-  compaction loops).
+- 'Q8_0 is dense and bandwidth-bound: ~7 tok/s generation on this box (MoE models are ~10x faster).'
+- ctx 32k verified in tests; recipe launches at 131072 (agents overflowed 32K into compaction loops).
 model:
   name: Qwen3.8-27B
   arch: qwen35
@@ -48,20 +46,20 @@ backend:
   vulkan_version: 1.4.357
   rocm_version: null
 launch:
-  command: /usr/bin/llama-server --model /home/itzco/models/Qwen3.8-27B-GGUF/Qwen3.8-27B-Q8_0.gguf
-    -ngl 999 --jinja -c 131072 -fa on --alias qwen3.8-27b --port ${PORT}
+  command: /usr/bin/llama-server --model /home/itzco/models/Qwen3.8-27B-GGUF/Qwen3.8-27B-Q8_0.gguf -ngl 999 --jinja -c
+    131072 -fa on --alias qwen3.8-27b --port ${PORT}
   serving:
     fronted_by: llama-swap
     endpoint: http://127.0.0.1:1234/v1
-    note: 'llama-swap substitutes ${PORT} per child server; each config entry needs
-      proxy: http://127.0.0.1:${PORT} (llama-server binds IPv4 only). ttl=1800'
+    note: 'llama-swap substitutes ${PORT} per child server; each config entry needs proxy: http://127.0.0.1:${PORT} (llama-server
+      binds IPv4 only). ttl=1800'
 parameters:
   ctx_size:
     value: 131072
     annotations:
     - type: recommendation
-      text: "131072 in the launch command; agents inject large system prompts + tool\
-        \ schemas \u2014 32K overflowed omp into a compaction loop."
+      text: 131072 in the launch command; agents inject large system prompts + tool schemas — 32K overflowed omp into
+        a compaction loop.
   ngl:
     value: '999'
     annotations: []
@@ -72,19 +70,16 @@ parameters:
     value: true
     annotations:
     - type: required
-      text: --jinja parses structured tool_calls; without it tool syntax leaks into
-        chat as raw text.
+      text: --jinja parses structured tool_calls; without it tool syntax leaks into chat as raw text.
       evidence:
         tests:
         - tool-roundtrip
 annotations:
 - type: experimental
-  text: Auto-collected draft (2026-09-07); capabilities_confirmed are all false until
-    real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs,
-    and evidence refs per the v0.3 data model.
+  text: Auto-collected draft (2026-09-07); capabilities_confirmed are all false until real harness tests run. Add parameter
+    annotations with the 'why', objectives/constraints/tradeoffs, and evidence refs per the v0.3 data model.
 - type: deprecated
-  text: removed from live llama-swap 2026-09-07 (7 t/s dense, superseded by flash
-    MoE)
+  text: removed from live llama-swap 2026-09-07 (7 t/s dense, superseded by flash MoE)
 harness_compat:
   tested_with:
   - openai-api

@@ -8,7 +8,7 @@ license: CC0
 quant: Q8_0
 lineage:
   parents: []
-  rationale: "Auto-collected draft \u2014 fill in if this descends from another recipe."
+  rationale: Auto-collected draft — fill in if this descends from another recipe.
 objectives:
   primary:
   - vision
@@ -20,8 +20,7 @@ constraints:
 - vision_required
 - mmproj_required
 tradeoffs:
-- Same dense Q8_0 base as qwen3.8-27b; vision adds mmproj load, throughput unchanged
-  (~7 tok/s).
+- Same dense Q8_0 base as qwen3.8-27b; vision adds mmproj load, throughput unchanged (~7 tok/s).
 model:
   name: Qwen3.8-27B
   arch: qwen35
@@ -48,14 +47,13 @@ backend:
   vulkan_version: 1.4.357
   rocm_version: null
 launch:
-  command: /usr/bin/llama-server --model /home/itzco/models/Qwen3.8-27B-GGUF/Qwen3.8-27B-Q8_0.gguf
-    --mmproj /home/itzco/models/Qwen3.8-27B-GGUF/mmproj-F16.gguf -ngl 999 --jinja
-    -c 131072 -fa on --alias qwen3.8-27b-vl --port ${PORT}
+  command: /usr/bin/llama-server --model /home/itzco/models/Qwen3.8-27B-GGUF/Qwen3.8-27B-Q8_0.gguf --mmproj /home/itzco/models/Qwen3.8-27B-GGUF/mmproj-F16.gguf
+    -ngl 999 --jinja -c 131072 -fa on --alias qwen3.8-27b-vl --port ${PORT}
   serving:
     fronted_by: llama-swap
     endpoint: http://127.0.0.1:1234/v1
-    note: 'llama-swap substitutes ${PORT} per child server; each config entry needs
-      proxy: http://127.0.0.1:${PORT} (llama-server binds IPv4 only). ttl=1800'
+    note: 'llama-swap substitutes ${PORT} per child server; each config entry needs proxy: http://127.0.0.1:${PORT} (llama-server
+      binds IPv4 only). ttl=1800'
 parameters:
   ctx_size:
     value: 131072
@@ -67,8 +65,7 @@ parameters:
     value: /home/itzco/models/Qwen3.8-27B-GGUF/mmproj-F16.gguf
     annotations:
     - type: required
-      text: 'Required for vision workloads; without --mmproj image requests fail (verified:
-        unsupported).'
+      text: 'Required for vision workloads; without --mmproj image requests fail (verified: unsupported).'
       evidence:
         tests:
         - vision-basic
@@ -85,9 +82,8 @@ parameters:
         - tool-roundtrip
 annotations:
 - type: experimental
-  text: Auto-collected draft (2026-09-07); capabilities_confirmed are all false until
-    real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs,
-    and evidence refs per the v0.3 data model.
+  text: Auto-collected draft (2026-09-07); capabilities_confirmed are all false until real harness tests run. Add parameter
+    annotations with the 'why', objectives/constraints/tradeoffs, and evidence refs per the v0.3 data model.
 harness_compat:
   tested_with:
   - openai-api

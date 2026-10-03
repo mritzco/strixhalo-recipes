@@ -13,7 +13,7 @@ A registry of reproducible, evidence-backed serving recipes for local LLMs on un
 
 ## Models
 
-_9 models · 18 result records · latest activity first_
+_10 models · 24 result records · latest activity first_
 
 | id | model | variants | quant(s) | size | T M V | PP t/s | TG t/s | wit | backend | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -25,6 +25,7 @@ _9 models · 18 result records · latest activity first_
 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | Qwen3.8 Flash Next | 2 | UD-IQ4_XS | 87.25 | Y-- | 1798.1 | 18.0 | 2 | vulkan | 1 witness |
 | [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | Qwen3.8 Flash Next | 1 | IQ4_XS | - | Y-- | 1290.5 | 11.0 | 1 | vulkan | 1 witness |
 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | Qwen3.8 Flash Next Uncensored | 1 | IQ4_XS | 91.7 | Y-Y | 3329.3 | 19.0 | 2 | vulkan | validated* |
+| [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | Qwen3.8 Flash Next Uncensored | 3 | IQ4_XS | 91.7 | Y-Y | 4128.8 | 9.0 | 1 | vulkan | 1 witness |
 | [qwen3-instruct](models/qwen3-instruct.md) | Qwen3-30B-A3B-Instruct-2507 | 1 | UD-Q4_K_XL | 16.5 | --- | - | - | 0 | vulkan | no results |
 
 _T=confirmed tool calling, M=confirmed MCP, V=confirmed vision. `validated*` = ≥ 2 contributor ids at the current hash with all declared tests passing — aliases of one person count as one._
@@ -33,6 +34,18 @@ _T=confirmed tool calling, M=confirmed MCP, V=confirmed vision. `validated*` = �
 
 | when (UTC) | model | test | result | PP t/s | TG t/s | who |
 |---|---|---|---|---|---|---|
+| 20261003 T1600 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `vision-basic` | pass | - | - | mritzco |
+| 20261003 T1600 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `vision-basic` | pass | - | - | mritzco |
+| 20261003 T1600 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `tool-roundtrip` | pass | 4128.8 | 9.0 | mritzco |
+| 20261003 T1600 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `throughput` | pass | 4128.8 | 9.0 | mritzco |
+| 20261003 T1503 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `vision-basic` | pass | - | - | mritzco |
+| 20261003 T1503 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `vision-basic` | pass | - | - | mritzco |
+| 20261003 T1503 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `tool-roundtrip` | pass | 6298.8 | 12.3 | mritzco |
+| 20261003 T1503 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `throughput` | pass | 6298.8 | 12.3 | mritzco |
+| 20261003 T1409 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `tool-roundtrip` | pass | 976.6 | 5.6 | mritzco |
+| 20261003 T1409 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `throughput` | pass | 976.6 | 5.6 | mritzco |
+| 20261003 T1407 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `tool-roundtrip` | pass | 9514.6 | 11.7 | mritzco |
+| 20261003 T1407 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `throughput` | pass | 9514.6 | 11.7 | mritzco |
 | 20260909 T0750 | [qwen3-vl](models/qwen3-vl.md) | `vision-basic` | pass | - | - | itzco |
 | 20260908 T1734 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `vision-basic` | pass | - | - | itzco |
 | 20260908 T1717 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `harness-tool-use` | pass | - | - | itzco |
@@ -40,22 +53,3 @@ _T=confirmed tool calling, M=confirmed MCP, V=confirmed vision. `validated*` = �
 | 20260908 T1703 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `throughput` | pass | 3329.3 | 19.0 | myhacsint-pilot |
 | 20260908 T1703 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `agent-coding` | pass | 3329.3 | 19.0 | myhacsint-pilot |
 | 20260908 T1703 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `context-recall` | pass | 3329.3 | 19.0 | myhacsint-pilot |
-| 20260908 T1108 | [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | `tool-roundtrip` | pass | 1290.5 | 11.0 | flash-pilot |
-| 20260908 T1108 | [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | `throughput` | pass | 1290.5 | 11.0 | flash-pilot |
-| 20260908 T1108 | [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | `agent-coding` | pass | 1290.5 | 11.0 | flash-pilot |
-| 20260908 T1108 | [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | `context-recall` | pass | 1290.5 | 11.0 | flash-pilot |
-| 20260907 T1655 | [glm-4.5-air](models/glm-4.5-air.md) | `tool-roundtrip` | pass | 3421.3 | 3.7 | itzco |
-| 20260907 T1655 | [glm-4.5-air](models/glm-4.5-air.md) | `code-battery` | fail | 3421.3 | 3.7 | itzco |
-| 20260907 T1655 | [glm-4.5-air](models/glm-4.5-air.md) | `throughput` | pass | 3421.3 | 3.7 | itzco |
-| 20260907 T1609 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `code-battery` | degraded | - | - | quality-pilot |
-| 20260907 T1609 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `math-verify` | degraded | - | - | quality-pilot |
-| 20260907 T1609 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `code-battery` | degraded | - | - | quality-pilot |
-| 20260907 T1609 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `math-verify` | degraded | - | - | quality-pilot |
-| 20260907 T1536 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `tool-roundtrip` | pass | 1798.1 | 18.0 | nathan-fork-pilot |
-| 20260907 T1536 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `agent-coding` | pass | 1798.1 | 18.0 | nathan-fork-pilot |
-| 20260907 T1536 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `throughput` | pass | 1798.1 | 18.0 | nathan-fork-pilot |
-| 20260907 T1536 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `context-recall` | pass | 1798.1 | 18.0 | nathan-fork-pilot |
-| 20260907 T1453 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `tool-roundtrip` | pass | 1468.8 | 10.6 | flash-pilot |
-| 20260907 T1453 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `agent-coding` | pass | 1468.8 | 10.6 | flash-pilot |
-| 20260907 T1453 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `throughput` | pass | 1468.8 | 10.6 | flash-pilot |
-| 20260907 T1453 | [qwen3.8-flash-next](models/qwen3.8-flash-next.md) | `context-recall` | pass | 1468.8 | 10.6 | flash-pilot |

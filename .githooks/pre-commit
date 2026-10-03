@@ -5,10 +5,21 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
-if [ -x /tmp/recvenv/bin/python ]; then
+# Pick an interpreter that can actually import jsonschema. The repo's own .venv is
+# the durable choice: /tmp is wiped by a reboot, which silently degraded this hook
+# to a bare python3 and failed the commit with ModuleNotFoundError.
+if [ -x "$PWD/.venv/bin/python" ]; then
+  PY="$PWD/.venv/bin/python"
+elif [ -x /tmp/recvenv/bin/python ]; then
   PY=/tmp/recvenv/bin/python
 else
   PY=python3
+fi
+
+if ! "$PY" -c 'import jsonschema' 2>/dev/null; then
+  echo "::error:: $PY has no jsonschema — the registry hook cannot validate."
+  echo "Create the repo venv:  python3 -m venv .venv && .venv/bin/pip install -r tools/requirements.txt"
+  exit 1
 fi
 
 echo "[hooks] validate.py --strict"

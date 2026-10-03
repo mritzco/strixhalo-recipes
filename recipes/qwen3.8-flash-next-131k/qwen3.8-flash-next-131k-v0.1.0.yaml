@@ -10,11 +10,10 @@ lineage:
   parents:
   - id: qwen3.8-flash-next
     version: 0.1.0
-    contribution: 'ctx 32768 -> 131072 for real agent sessions: omp hit a compaction
-      loop at 32k (''freed too little context''), flash needs headroom for big tool
-      outputs + thinking.'
-  rationale: 'Deployment variant: same model/flags as v0.1.0 but 131k context (matches
-    other llama-swap models and the receipts'' ''131k allocates fine on 128GB'').'
+    contribution: 'ctx 32768 -> 131072 for real agent sessions: omp hit a compaction loop at 32k (''freed too little
+      context''), flash needs headroom for big tool outputs + thinking.'
+  rationale: 'Deployment variant: same model/flags as v0.1.0 but 131k context (matches other llama-swap models and the
+    receipts'' ''131k allocates fine on 128GB'').'
 objectives:
   primary:
   - agent_capability
@@ -54,31 +53,28 @@ backend:
   rocm_version: null
 launch:
   command: /usr/bin/llama-server --model /home/itzco/models/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
-    --alias qwen3.8-flash-next -ngl 999 --jinja -fa on -c 131072 --cache-type-k q8_0
-    --cache-type-v q8_0 -b 8192 -ub 2048 -np 1 --reasoning-effort medium --reasoning-budget
-    2048 --port ${PORT}
+    --alias qwen3.8-flash-next -ngl 999 --jinja -fa on -c 131072 --cache-type-k q8_0 --cache-type-v q8_0 -b 8192 -ub
+    2048 -np 1 --reasoning-effort medium --reasoning-budget 2048 --port ${PORT}
 parameters:
   ctx_size:
     value: 131072
     annotations:
     - type: recommendation
-      text: '131072 chosen because 32768 caused omp compaction loops on real agent
-        sessions (warning: ''freed too little context... switch to larger-context'').
-        Field stats at 30-51k ctx: decode 14.6-18.4 t/s sustained (llama-swap UI),
-        PP up to 255 t/s with prefix reuse. Q8 KV at 131k ~ 13.5 GiB fits the 110
-        GiB GTT.'
+      text: '131072 chosen because 32768 caused omp compaction loops on real agent sessions (warning: ''freed too little
+        context... switch to larger-context''). Field stats at 30-51k ctx: decode 14.6-18.4 t/s sustained (llama-swap
+        UI), PP up to 255 t/s with prefix reuse. Q8 KV at 131k ~ 13.5 GiB fits the 110 GiB GTT.'
   cache_type_k:
     value: q8_0
     annotations:
     - type: quality
-      text: 'Q8_0 KV kept: preserves long-context quality, 131k ctx memory ~13.5 GiB
-        (fork README: KV quantization no longer a prefill-speed decision on this stack).'
+      text: 'Q8_0 KV kept: preserves long-context quality, 131k ctx memory ~13.5 GiB (fork README: KV quantization no
+        longer a prefill-speed decision on this stack).'
   cache_type_v:
     value: q8_0
     annotations:
     - type: quality
-      text: 'Q8_0 KV kept: preserves long-context quality, 131k ctx memory ~13.5 GiB
-        (fork README: KV quantization no longer a prefill-speed decision on this stack).'
+      text: 'Q8_0 KV kept: preserves long-context quality, 131k ctx memory ~13.5 GiB (fork README: KV quantization no
+        longer a prefill-speed decision on this stack).'
   ngl:
     value: '999'
     annotations: []
@@ -94,13 +90,12 @@ parameters:
     value: 2048
     annotations:
     - type: recommendation
-      text: -ub 2048 per MoE receipts (reddit 1w6cf5t); measured neutral on Vulkan
-        at long prompts but retained as documented variant.
+      text: -ub 2048 per MoE receipts (reddit 1w6cf5t); measured neutral on Vulkan at long prompts but retained as documented
+        variant.
 annotations:
 - type: evidence
-  text: "First evidence at 131k ctx: tool/agent/context pass (2026-09-08). Real omp\
-    \ decode 14.6-18.4 t/s at 30-51k ctx (llama-swap UI) \u2014 a few t/s below the\
-    \ 32k-ctx recipe because decode slows with depth."
+  text: 'First evidence at 131k ctx: tool/agent/context pass (2026-09-08). Real omp decode 14.6-18.4 t/s at 30-51k ctx
+    (llama-swap UI) — a few t/s below the 32k-ctx recipe because decode slows with depth.'
 harness_compat:
   tested_with:
   - openai-api

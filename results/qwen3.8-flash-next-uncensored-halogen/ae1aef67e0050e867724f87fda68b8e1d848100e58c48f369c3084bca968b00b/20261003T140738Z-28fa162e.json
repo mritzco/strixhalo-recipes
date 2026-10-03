@@ -1,0 +1,66 @@
+{
+  "recipe_id": "qwen3.8-flash-next-uncensored-halogen",
+  "recipe_version": "0.1.0",
+  "content_hash": "sha256:ae1aef67e0050e867724f87fda68b8e1d848100e58c48f369c3084bca968b00b",
+  "run_id": "20261003T140738Z-28fa162e",
+  "contributor_id": "mritzco",
+  "quant": "IQ4_XS",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-10-03T14:07:38Z",
+    "family": "arch",
+    "distro": "CachyOS",
+    "kernel": "7.2.3-1-cachyos (linux-cachyos 7.2.3-1)",
+    "mem": {
+      "total_gb": 124.9,
+      "gtt_gib": 110.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S Graphics",
+      "driver": "radv",
+      "vulkan_version": "1.4.357",
+      "free_mib": 90234.0
+    },
+    "backend": {
+      "version_string": "version: 0.4.0-dev (build 10809, commit 5266f24da7)",
+      "build": "10809",
+      "commit": "5266f24da7",
+      "binary": "/usr/bin/llama-server",
+      "install_method": "distro-package",
+      "pkg_version": "0.4.0-1.1"
+    },
+    "rocm_version": null,
+    "llama_swap_config": "/home/itzco/.config/llama-swap/config.yaml",
+    "raw_hash": "sha256:44ab510c5c1e6c1ee6b8ec54776f744547f684b122ba30dc661eea0b08c4c5fe"
+  },
+  "tests": [
+    {
+      "id": "tool-roundtrip",
+      "result": "pass",
+      "metrics": {
+        "tool_calls": 1,
+        "latency_s": 2.42
+      },
+      "observations": [
+        "1/1 tool call(s) well-formed"
+      ]
+    },
+    {
+      "id": "throughput",
+      "result": "pass",
+      "metrics": {
+        "tokens_per_sec_tg": 11.7,
+        "median_round_s": 11.41,
+        "tokens_per_sec_pp": 9514.6
+      },
+      "observations": [
+        "2 rounds x ~64 out-tokens",
+        "prompt-eval round: ~10983 tokens"
+      ]
+    }
+  ],
+  "metrics": {},
+  "notes": "halogen-flash-server 0.16.2 container, BYO-GGUF: the uncensored IQ4_XS read in place, no conversion. ctx 131072, HALOGEN_MAX_TOK 16384, GPU only (NPU off). Same weights on the llama.cpp fork on the same class of box: prefill 1314/1092 t/s vs 320-383; decode 28.4 t/s thinking-off and 33.3 t/s over a 1304-token thinking turn vs 35.0. Caveat: tokens_per_sec_pp is cache-inflated - the throughput runner divides TOTAL prompt tokens by wall time, so a warm prefix cache inflates it.",
+  "tool_version": "submit_result.py@2.0.0"
+}

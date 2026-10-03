@@ -1,0 +1,481 @@
+{
+  "store_version": 1,
+  "model": {
+    "id": "qwen3.8-flash-next-uncensored-halogen",
+    "recipe": {
+      "id": "qwen3.8-flash-next-uncensored-halogen",
+      "version": "0.3.0",
+      "status": "experimental",
+      "created": "2026-10-03",
+      "author": "mritzco",
+      "license": "CC0",
+      "quant": "IQ4_XS",
+      "lineage": {
+        "parents": [
+          {
+            "id": "qwen3.8-flash-next-uncensored",
+            "version": "0.1.0",
+            "contribution": "Same weights (IQ4_XS single file) and the same 131k agent scale; the ENGINE is the variable. That recipe runs the myhacsint qwen4exp Vulkan fork with the unsloth shared-MTP sidecar; this one runs the halogen-flash-server container (custom gfx1151 kernels, its own .hgn draft head) reading the GGUF in place."
+          }
+        ],
+        "rationale": "Back-end swap on the committed uncensored recipe: the same A/B the stock-side qwen3.8-flash-next pair runs, extended to halogen. Isolates engine + drafter + prefill kernels, since weights, quant class, ctx and KV pool are held constant."
+      },
+      "objectives": {
+        "primary": [
+          "agent_capability"
+        ],
+        "secondary": [
+          "throughput",
+          "long_context"
+        ],
+        "not_optimized": [
+          "vision"
+        ]
+      },
+      "constraints": [
+        "fits_in_available_memory",
+        "single_gpu_one_model_at_a_time"
+      ],
+      "tradeoffs": [
+        "Prefill is the win, decode is parity: 1092-1314 t/s prefill against the fork's 320-383 t/s, while decode (28.4 t/s thinking-off, 33.3 t/s over a 1304-token thinking turn) sits in the same band as the myhacsint+fork number (35.0 t/s). Long-context agent turns pay prefill far more often than they pay decode, which is where this lands.",
+        "Prompt cache default (HALOGEN_PROMPT_CACHE=2) is NOT bitwise against a cold run. Use 1 for byte-identical repeats (evaluation/A-B), 2 for chat/agents. Measured: a 21.7k-context follow-up costs 2.1 s against 20.4 s cold.",
+        "The engine is a compiled binary under a EULA (LICENSE.md): run/benchmark/redistribute-unmodified. There is no source to patch, unlike the Nathan/myhacsint forks.",
+        "NPU deliberately OFF. It needs host XRT (xrt + xrt-plugin-amdxdna - absent on this box) and the GPU fabric clock held (deploy/host/halogen-fabric-clock.service), or GPU+NPU concurrency can hang the host. Note amd_iommu=off - this box's hardening lever for the GTT page-fault hangs - turns the NPU off, and halogen's own published GPU numbers were measured with it off.",
+        "The container is exclusive by design: it pins about 90 GiB (roughly 69 of weights, 7 of KV pool, 13 of working memory at this configuration), and free/MemAvailable over-report by the size of the locked weights because the kernel counts them as reclaimable page cache. Start it on an idle box; stop it before GPU-heavy non-LLM work.",
+        "HALOGEN_MAX_TOK is the PREFILL SCRATCH size (default 32768, about 9 GB), not a token budget; 16384 halves it. The request budget is HALOGEN_MAX_TOKENS_DEFAULT.",
+        "Its own draft head is required. HALOGEN_MTP_HEAD pointed at a llama.cpp MTP GGUF (unsloth/agentionai) is refused at startup; qwen38-flash-next-mtp.hgn is fetched from the weights repo (1.42 GiB) on first start."
+      ],
+      "model": {
+        "name": "Qwen3.8 Flash Next Uncensored",
+        "arch": "qwen4exp",
+        "source": "/home/itzco/models/Qwen3.8-Flash-Next-Uncensored-GGUF/IQ4_XS/Qwen3.8-Flash-Next-Uncensored.IQ4_XS.gguf",
+        "file_sha256": null,
+        "size_gb": 91.7,
+        "mtp": true,
+        "vision": true,
+        "tool_calling": true
+      },
+      "hardware": {
+        "target": "strix-halo-128gb-unified",
+        "gpu_mem_split_gb": null,
+        "min_ram_gb": 124,
+        "mem_total_gb": 124.9,
+        "gtt_gib": 110.0,
+        "vram_mib": 512.0
+      },
+      "backend": {
+        "engine": "other",
+        "commit": "sha256:0c61bf84ac22308a53f5d1ca6b86806702d7039e5ebc51cae4c66621b92fe04a",
+        "build": "0.16.2",
+        "upstream": "https://github.com/peonist-ai/halogen-flash-server",
+        "patches": [],
+        "install_method": "container-image",
+        "pkg_version": "ghcr.io/peonist-ai/halogen-flash-server:0.16.2",
+        "build_flags": [],
+        "os_family": "arch",
+        "kernel": "7.2.3-1-cachyos (linux-cachyos 7.2.3-1)",
+        "vulkan_version": null,
+        "rocm_version": null
+      },
+      "launch": {
+        "command": "podman run -d --name halogen -p 8731:8731 --device /dev/accel/accel0 -v /usr/lib/libxrt_coreutil.so.2.21.75:/opt/xilinx/xrt/lib/libxrt_coreutil.so.2:ro -v /usr/lib/libxrt_coreutil.so.2.21.75:/usr/lib/libxrt_coreutil.so.2:ro -v /usr/lib/libxrt_core.so.2.21.75:/opt/xilinx/xrt/lib/libxrt_core.so.2:ro -v /usr/lib/libxrt_core.so.2.21.75:/usr/lib/libxrt_core.so.2:ro -v /usr/lib/libxrt_driver_xdna.so.2.21.75:/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2:ro -v /usr/lib/libxrt_driver_xdna.so.2.21.75:/usr/lib/libxrt_driver_xdna.so.2:ro --device /dev/kfd --device /dev/dri --group-add keep-groups --ipc=host --ulimit memlock=-1:-1 -e HALOGEN_CHECKPOINT=/models/Qwen3.8-Flash-Next-Uncensored.IQ4_XS.gguf -e HALOGEN_VISION_TOWER=1 -e HALOGEN_NPU_MODELS=decider-0.8b,qwen3-embedding-0.6b,qwen3-reranker-0.6b,qwen3guard-gen-0.6b,qwen3.5-2b -e HALOGEN_CTX=131072 -e HALOGEN_MAX_TOK=16384 -e HALOGEN_MAX_TOKENS_DEFAULT=16384 -e HALOGEN_MODEL_ID=qwen3.8-flash-next-uncensored -v /home/itzco/halogen-models:/models ghcr.io/peonist-ai/halogen-flash-server:0.16.2",
+        "serving": {
+          "fronted_by": "rootless podman, ghcr.io/peonist-ai/halogen-flash-server:0.16.2",
+          "endpoint": "http://127.0.0.1:8731/v1",
+          "note": "Second endpoint beside llama-swap (:1234), which is untouched. One GPU: never leave a llama-swap model resident while driving this. The container speaks OpenAI /v1 plus /v1/responses (Codex) and /v1/messages (Claude Code); /metrics carries llamacpp:* names and every response a llama-server timings object, so llama-swap can front it later. NPU is ON (v0.3.0): five small models served on the Ryzen AI NPU behind the same port while the GPU keeps generating. Requires host XRT + the NPU firmware + IOMMU on, the GPU fabric clock held (deploy/host/halogen-fabric-clock.service), and memlock unlimited for the user manager (see annotations - 8.58 GiB is mlocked for the NPU models)."
+        }
+      },
+      "parameters": {
+        "flash_attn": {
+          "value": false,
+          "annotations": [
+            {
+              "type": "compatibility",
+              "text": "Not a llama.cpp flag here; halogen selects its own kernels at build time."
+            }
+          ]
+        },
+        "jinja": {
+          "value": false,
+          "annotations": [
+            {
+              "type": "compatibility",
+              "text": "Template handling is internal: the engine renders the GGUF tokenizer's own chat_template.jinja (sha256 c3cf9e34abf4f9e3, thinking-control probe passed at startup)."
+            }
+          ]
+        },
+        "ctx_size": {
+          "value": 131072,
+          "annotations": [
+            {
+              "type": "recommendation",
+              "text": "HALOGEN_CTX bounds ONE request, not the allocation; the model's native 262144 is the default, but the KV pool then needs 27 GB. At this box's 110 GiB GTT ceiling with a 92 GB trunk, 131072 is the serving point."
+            }
+          ]
+        },
+        "max_tok": {
+          "value": 16384,
+          "annotations": [
+            {
+              "type": "warning",
+              "text": "HALOGEN_MAX_TOK is the LARGEST SINGLE PREFILL CALL and sizes the prefill scratch (~9 GB at 32768); 16384 halves it. It is NOT a token budget. A prompt is prefilled in pieces of this size, with an admit tick between pieces when other streams are generating."
+            }
+          ]
+        },
+        "max_tokens_default": {
+          "value": 16384,
+          "annotations": [
+            {
+              "type": "recommendation",
+              "text": "The request budget when a client sends none (cap 65536). A thinking model with an agent-sized cap needs headroom above the reasoning block; halogen's answer room (max(1024, 15% of max_tokens)) closes the think block rather than returning empty content."
+            }
+          ]
+        },
+        "kv_pool_positions": {
+          "value": 262144,
+          "annotations": [
+            {
+              "type": "recommendation",
+              "text": "2 x HALOGEN_CTX: two full 131k conversations resident across 4 slots, ~7.2 GiB on the device. This is the memory knob; HALOGEN_KV_POOL_FIT=1 lowers it if it will not fit and prints the pool it settled on."
+            }
+          ]
+        },
+        "model_id": {
+          "value": "qwen3.8-flash-next-uncensored",
+          "annotations": [
+            {
+              "type": "compatibility",
+              "text": "HALOGEN_MODEL_ID is a label only - requests are never rejected for naming a different one. Shortened from the default so this endpoint and llama-swap read alike."
+            }
+          ]
+        },
+        "prompt_cache": {
+          "value": 2,
+          "annotations": [
+            {
+              "type": "performance",
+              "text": "Default resume-anywhere. Makes a follow-up turn cheap (~2.1 s at 21.7k) at the cost of bitwise reproducibility; set 1 when a result must be repeatable."
+            }
+          ]
+        }
+      },
+      "annotations": [
+        {
+          "type": "compatibility",
+          "text": "Weights are read IN PLACE: the engine repacks the GGUF losslessly into its own layouts in RAM (70.6 GiB in 17.8 s) and registers it read-only (device ptr == host ptr), writing nothing to disk. Only the 1.42 GiB draft head and the tokenizer are added to the models volume."
+        },
+        {
+          "type": "evidence",
+          "text": "This file's tensor census: 562 IQ4_XS, 182 IQ4_NL, 54 Q5_K + 12 Q5_1 on DENSE tensors (60 staged to bf16 on the device, 1.84 GiB, read at 16 bits/weight during decode), 24 TQ2_0 (the blk.N.indexer k/v projections - the same 24 the stock UD-IQ4_XS carries), 388 F32, 1 Q6_K, 1 F16. No refused type. Layer counts are qwen4exp 48-layer / 512-expert."
+        },
+        {
+          "type": "evidence",
+          "text": "Measured 2026-10-03 against the myhacsint fork on the same box: prefill 1314 t/s @6.7k and 1092 t/s @26.7k (fork: 320-383 t/s); decode 28.4 t/s thinking-off with 91.7% draft acceptance, 33.3 t/s on a 1304-token turn (1008 reasoning). Same load on the stock UD-IQ4_XS GGUF was 1268/1051 t/s and 26.5/32.8 t/s - the uncensored 4-bit trunk is ~3-4% quicker."
+        },
+        {
+          "type": "evidence",
+          "text": "tokens_per_sec_pp from tests/runners/throughput.py is CACHE-NAIVE and must not be compared across backends: it divides TOTAL prompt_tokens by wall time, so any prefix cache inflates it. Measured here on one recipe and one weight file, only HALOGEN_PROMPT_CACHE differing: cache ON (default) pp=9514.6 t/s, cache OFF pp=976.6 t/s, while the engine's own timings.prompt_per_second for the same cold work was 1092 t/s. Same effect on tokens_per_sec_tg (11.7 with cache, 5.6 without), because the runner reuses one ~11k-token system prompt in every generation round, so a 11.45 s round is almost entirely prefill and 'compilation 64 tokens / 11.45 s' is not a decode rate. True decode from engine timings: 28.4 t/s thinking-off (91.7% draft acceptance), 33.3 t/s over a 1304-token thinking turn. Benchmark this server with HALOGEN_PROMPT_CACHE=0 (its documented cache-off mode); serve it with the default 2."
+        },
+        {
+          "type": "evidence",
+          "text": "Vision verified on this trunk, which was the open risk: halogen's vision tower (qwen38-flash-next-vision.hgn, 0.84 GiB, from peonist-ai/halogen-qwen3.8-flash-next) is fitted to the ORIGINAL trunk, and this checkpoint is an abliterated requant. It works unchanged - the shared harness image reads exactly: {'digits': '4287', 'largest_color': 'red', 'rect_count': 3} in 4.9 s (96 out-tokens, 29.7 t/s decode), the frame costing 2560 context tokens. Enabling it adds 0.84 GiB resident + up to 1.14 GiB scratch (footprint 89.1 -> 90.0 GiB) and no extra compaction pressure (0 stalls during KV reservation on this start). HALOGEN_VISION_TOWER=1 resolves the sidecar next to the checkpoint, which is why no extra mount is needed."
+        },
+        {
+          "type": "compatibility",
+          "text": "v0.2.0 = v0.1.0 plus the vision tower, so the content_hash changes and this is a separate variant: the two v0.1.0 result records describe the text-only config and remain valid under hash ae1aef67."
+        },
+        {
+          "type": "evidence",
+          "text": "NPU verified 2026-10-03, all five models on one engine (npu_api, 127.0.0.1:8740) beside the Flash model: embeddings 1024-dim unit-norm, one 392-token text 107 ms, an 8-text batch of 3,176 tokens at 7,465 tok/s; rerank ranks sensibly (0.0331 / 0.0019 / 0.0004 / 0.0000) and takes 0.42 s; moderation separates Safe 0.998 / Unsafe 0.998 with the right `flagged`; decider-0.8b returns every option's probability from one pass in 0.08 s ('no' p=0.706 vs 'yes' 0.294); qwen3.5-2b answers in 0.91 s. This is capability the llama-swap stack does not have at all - there is no local embeddings or rerank server on this box otherwise."
+        },
+        {
+          "type": "performance",
+          "text": "GPU+NPU concurrency, the case the held fabric clock exists for: Flash decode ALONE 38.4 t/s, and 33.5 t/s (-13%) while 29 embedding batches ran on the NPU in parallel. Zero errors, no hang, results correct. A second run measured -8%. So the documented 'the Flash model runs somewhat slower while the NPU works' is worth about 8-13% of decode here, and the one-watt clock hold is what makes it safe."
+        },
+        {
+          "type": "required",
+          "text": "HOST PREREQUISITES, all three non-obvious on Arch/CachyOS. (1) XRT: pacman -S xrt xrt-plugin-amdxdna; it lands in /usr/lib, so the three libraries must be mounted TWICE (at /opt/xilinx/xrt/lib and at /usr/lib) because they look each other up at their own path - see the launch command. (2) Fabric clock: the GPU and NPU at once can hang this SoC while pp_dpm_fclk changes; install deploy/host/halogen-fabric-clock.service, verify with `halogen-fabric-clock status` -> 'held (manual)'. The server refuses to start without it. (3) memlock: /etc/security/limits.d does NOT work here, because the whole graphical session (niri included, measured) descends from user@.service, which PID 1 spawns outside any PAM session. Fix with a /etc/systemd/system/user@.service.d/ drop-in (LimitMEMLOCK=infinity) and a reboot; without it the NPU refuses with 'this container may lock 8192 KiB of memory, and the NPU needs about 8997531 KiB'."
+        },
+        {
+          "type": "compatibility",
+          "text": "The registry's capability model cannot express this variant: harness_compat.capabilities_confirmed only has tools/mcp/vision, so the NPU's embeddings, reranking, moderating, classifying and 2B generation have no representation, and none of tests/definitions covers them. This recipe is the text/tools/vision record; the NPU capability set lives in this annotation until the schema grows a field for it."
+        }
+      ],
+      "harness_compat": {
+        "tested_with": [
+          "openai-api"
+        ],
+        "exposes_as": "OpenAI-compatible /v1 on 127.0.0.1:8731 (container, not llama-server; llama-swap :1234 untouched)",
+        "capabilities_confirmed": {
+          "tools": true,
+          "mcp": false,
+          "vision": true
+        }
+      },
+      "tests": [
+        {
+          "id": "tool-roundtrip",
+          "expect": "pass"
+        },
+        {
+          "id": "throughput",
+          "expect": "pass"
+        },
+        {
+          "id": "vision-basic",
+          "expect": "pass"
+        }
+      ],
+      "failure_notes": "tools/analyze.py resolves a test's runner as '<test id with - replaced by _>.py' and IGNORES the definition's declared 'runner' field. 'context-recall' therefore looks for context_recall.py, never finds tests/runners/context_needle.py, and prints '[skip] no runner for context-recall'. Every recipe declaring context-recall (including the committed qwen3.8-flash-next-uncensored v0.1.0) is silently under-tested. Fix: read 'runner' from tests/definitions/<id>.json.",
+      "content_hash": "sha256:4f172fc875d2b133b37f0a86850ddb0d935df5511d371562d43898f5d98d8afc"
+    },
+    "variants": [
+      {
+        "content_hash": "sha256:05ebcf8000326bf322c33992425af674255b19dcb10e6a5c1b9364cbc133fad7",
+        "hash": "05ebcf",
+        "version": "0.2.0",
+        "quant": [
+          "IQ4_XS"
+        ],
+        "results": 2,
+        "witnesses": 1,
+        "witness_ids": [
+          "mritzco"
+        ],
+        "pp": 6298.8,
+        "tg": 12.3,
+        "tests": {
+          "throughput": {
+            "pass": 1
+          },
+          "tool-roundtrip": {
+            "pass": 1
+          },
+          "vision-basic": {
+            "pass": 2
+          }
+        },
+        "declared": [
+          "throughput",
+          "tool-roundtrip",
+          "vision-basic"
+        ]
+      },
+      {
+        "content_hash": "sha256:4f172fc875d2b133b37f0a86850ddb0d935df5511d371562d43898f5d98d8afc",
+        "hash": "4f172f",
+        "version": "0.3.0",
+        "quant": [
+          "IQ4_XS"
+        ],
+        "results": 2,
+        "witnesses": 1,
+        "witness_ids": [
+          "mritzco"
+        ],
+        "pp": 4128.8,
+        "tg": 9.0,
+        "tests": {
+          "throughput": {
+            "pass": 1
+          },
+          "tool-roundtrip": {
+            "pass": 1
+          },
+          "vision-basic": {
+            "pass": 2
+          }
+        },
+        "declared": [
+          "throughput",
+          "tool-roundtrip",
+          "vision-basic"
+        ]
+      },
+      {
+        "content_hash": "sha256:ae1aef67e0050e867724f87fda68b8e1d848100e58c48f369c3084bca968b00b",
+        "hash": "ae1aef",
+        "version": "0.1.0",
+        "quant": [
+          "IQ4_XS"
+        ],
+        "results": 2,
+        "witnesses": 1,
+        "witness_ids": [
+          "mritzco"
+        ],
+        "pp": 5245.6,
+        "tg": 8.6,
+        "tests": {
+          "throughput": {
+            "pass": 2
+          },
+          "tool-roundtrip": {
+            "pass": 2
+          }
+        },
+        "declared": [
+          "throughput",
+          "tool-roundtrip"
+        ]
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "20261003T140738Z-28fa162e",
+        "ts": "20261003T1407",
+        "contributor_id": "mritzco",
+        "recipe_version": "0.1.0",
+        "quant": "IQ4_XS",
+        "content_hash": "sha256:ae1aef67e0050e867724f87fda68b8e1d848100e58c48f369c3084bca968b00b",
+        "hash": "ae1aef",
+        "pp": 9514.6,
+        "tg": 11.7,
+        "tests": [
+          {
+            "id": "tool-roundtrip",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "halogen-flash-server 0.16.2 container, BYO-GGUF: the uncensored IQ4_XS read in place, no conversion. ctx 131072, HALOGEN_MAX_TOK 16384, GPU only (NPU off). Same weights on the llama.cpp fork on the same class of box: prefill 1314/1092 t/s vs 320-383; decode 28.4 t/s thinking-off and 33.3 t/s over a 1304-token thinking turn vs 35.0. Caveat: tokens_per_sec_pp is cache-inflated - the throughput runner divides TOTAL prompt tokens by wall time, so a warm prefix cache inflates it.",
+        "model_id": "qwen3.8-flash-next-uncensored-halogen"
+      },
+      {
+        "run_id": "20261003T140930Z-e49c66d7",
+        "ts": "20261003T1409",
+        "contributor_id": "mritzco",
+        "recipe_version": "0.1.0",
+        "quant": "IQ4_XS",
+        "content_hash": "sha256:ae1aef67e0050e867724f87fda68b8e1d848100e58c48f369c3084bca968b00b",
+        "hash": "ae1aef",
+        "pp": 976.6,
+        "tg": 5.6,
+        "tests": [
+          {
+            "id": "tool-roundtrip",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "SECOND RUN, supersedes the cache artifact in the previous record: started with HALOGEN_PROMPT_CACHE=0 so the prompt-eval round cannot be served from a warm prefix cache. In the cache-on run the runner's tokens_per_sec_pp read 9514.6 t/s (full prompt_tokens / resume time) while the engine's own timings.prompt_per_second was 1092 t/s for the same cold work - the throughput runner divides TOTAL prompt tokens by wall time, so any prefix cache inflates it. Engine-reported cold prefill at ctx 131072: 1314 t/s @6.7k, 1092 t/s @26.7k tokens. Decode from engine timings: 28.4 t/s thinking-off (91.7% draft acceptance), 33.3 t/s over a 1304-token thinking turn.",
+        "model_id": "qwen3.8-flash-next-uncensored-halogen"
+      },
+      {
+        "run_id": "20261003T150312Z-8852e316",
+        "ts": "20261003T1503",
+        "contributor_id": "mritzco",
+        "recipe_version": "0.2.0",
+        "quant": "IQ4_XS",
+        "content_hash": "sha256:05ebcf8000326bf322c33992425af674255b19dcb10e6a5c1b9364cbc133fad7",
+        "hash": "05ebcf",
+        "pp": 6298.8,
+        "tg": 12.3,
+        "tests": [
+          {
+            "id": "tool-roundtrip",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "v0.2.0 = v0.1.0 + HALOGEN_VISION_TOWER=1 (vision verified on the abliterated trunk: the tower is fitted to the original trunk and works unchanged). Run against the live serving config (prompt cache at its default 2), so tokens_per_sec_pp is again cache-inflated - 9514-class numbers are an artifact of the runner dividing TOTAL prompt tokens by wall time; the same recipe with HALOGEN_PROMPT_CACHE=0 measured 976.6 t/s, and the engine's own timings.prompt_per_second reports 1092 t/s at 26.7k prompt tokens. True decode: 28.4 t/s thinking-off, 33.3 t/s over a 1304-token thinking turn, 29.7 t/s on the vision request. See the v0.1.0 records for the cache-off arm.",
+        "model_id": "qwen3.8-flash-next-uncensored-halogen"
+      },
+      {
+        "run_id": "20261003T150323Z-a395e8f6",
+        "ts": "20261003T1503",
+        "contributor_id": "mritzco",
+        "recipe_version": "0.2.0",
+        "quant": "IQ4_XS",
+        "content_hash": "sha256:05ebcf8000326bf322c33992425af674255b19dcb10e6a5c1b9364cbc133fad7",
+        "hash": "05ebcf",
+        "pp": null,
+        "tg": null,
+        "tests": [
+          {
+            "id": "vision-basic",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "vision-basic",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "Standalone evidence record for the vision capability declared in v0.2.0's tests[]. Halogen vision tower on an abliterated requant of the same trunk: exact ground truth, 0.84 GiB sidecar, ~5 s per image.",
+        "model_id": "qwen3.8-flash-next-uncensored-halogen"
+      },
+      {
+        "run_id": "20261003T160028Z-5cebc597",
+        "ts": "20261003T1600",
+        "contributor_id": "mritzco",
+        "recipe_version": "0.3.0",
+        "quant": "IQ4_XS",
+        "content_hash": "sha256:4f172fc875d2b133b37f0a86850ddb0d935df5511d371562d43898f5d98d8afc",
+        "hash": "4f172f",
+        "pp": 4128.8,
+        "tg": 9.0,
+        "tests": [
+          {
+            "id": "tool-roundtrip",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "v0.3.0 = v0.2.0 + the NPU: --device /dev/accel/accel0, the host XRT mounts, and HALOGEN_NPU_MODELS (decider-0.8b, qwen3-embedding-0.6b, qwen3-reranker-0.6b, qwen3guard-gen-0.6b, qwen3.5-2b). NPU endpoints verified separately: embeddings 1024-dim unit-norm at 7465 tok/s on an 8-text batch; rerank ordering sane; moderation Safe/Unsafe 0.998; decider-0.8b 0.08 s; qwen3.5-2b 0.91 s. GPU+NPU concurrency: Flash decode 38.4 -> 33.5 t/s with 29 NPU batches in parallel, no errors, no hang. tokens_per_sec_pp is cache-inflated; see the v0.1.0 cache-off record.",
+        "model_id": "qwen3.8-flash-next-uncensored-halogen"
+      },
+      {
+        "run_id": "20261003T160033Z-fa0b45b5",
+        "ts": "20261003T1600",
+        "contributor_id": "mritzco",
+        "recipe_version": "0.3.0",
+        "quant": "IQ4_XS",
+        "content_hash": "sha256:4f172fc875d2b133b37f0a86850ddb0d935df5511d371562d43898f5d98d8afc",
+        "hash": "4f172f",
+        "pp": null,
+        "tg": null,
+        "tests": [
+          {
+            "id": "vision-basic",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "vision-basic",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "v0.3.0 vision arm: tower on (0.84 GiB sidecar) on the abliterated trunk; see the v0.2.0 standalone record for the exact-ground-truth harness result (4.9 s).",
+        "model_id": "qwen3.8-flash-next-uncensored-halogen"
+      }
+    ],
+    "counts": {
+      "results": 6,
+      "witnesses": 1,
+      "cross_validated": false
+    }
+  }
+}

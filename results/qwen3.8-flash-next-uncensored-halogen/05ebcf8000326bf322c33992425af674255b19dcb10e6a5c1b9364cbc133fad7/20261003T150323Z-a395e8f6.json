@@ -1,0 +1,56 @@
+{
+  "recipe_id": "qwen3.8-flash-next-uncensored-halogen",
+  "recipe_version": "0.2.0",
+  "content_hash": "sha256:05ebcf8000326bf322c33992425af674255b19dcb10e6a5c1b9364cbc133fad7",
+  "run_id": "20261003T150323Z-a395e8f6",
+  "contributor_id": "mritzco",
+  "quant": "IQ4_XS",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-10-03T15:03:23Z",
+    "family": "arch",
+    "distro": "CachyOS",
+    "kernel": "7.2.3-1-cachyos (linux-cachyos 7.2.3-1)",
+    "mem": {
+      "total_gb": 124.9,
+      "gtt_gib": 110.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S Graphics",
+      "driver": "radv",
+      "vulkan_version": "1.4.357",
+      "free_mib": 89961.0
+    },
+    "backend": {
+      "version_string": "version: 0.4.0-dev (build 10809, commit 5266f24da7)",
+      "build": "10809",
+      "commit": "5266f24da7",
+      "binary": "/usr/bin/llama-server",
+      "install_method": "distro-package",
+      "pkg_version": "0.4.0-1.1"
+    },
+    "rocm_version": null,
+    "llama_swap_config": "/home/itzco/.config/llama-swap/config.yaml",
+    "raw_hash": "sha256:783a6dc653d90e3da9e59c6849701ca9d5c53c27ff2b9de303cedae7e36ad714"
+  },
+  "tests": [
+    {
+      "id": "vision-basic",
+      "result": "pass"
+    },
+    {
+      "id": "vision-basic",
+      "result": "pass",
+      "metrics": {
+        "latency_s": 2.54
+      },
+      "observations": [
+        "model answer: red"
+      ]
+    }
+  ],
+  "metrics": {},
+  "notes": "Standalone evidence record for the vision capability declared in v0.2.0's tests[]. Halogen vision tower on an abliterated requant of the same trunk: exact ground truth, 0.84 GiB sidecar, ~5 s per image.",
+  "tool_version": "submit_result.py@2.0.0"
+}
