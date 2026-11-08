@@ -388,6 +388,47 @@
       "last_run": "20261003T160033Z-fa0b45b5",
       "cross_validated": false,
       "path": "recipes/qwen3.8-flash-next-uncensored-halogen/qwen3.8-flash-next-uncensored-halogen-v0.3.0.yaml"
+    },
+    {
+      "id": "tiel-coder-35b-strix-lean",
+      "version": "0.1.0",
+      "content_hash": "sha256:07f3a0d158aa9c052002e618a1f5b36e6437d4512f71804bdf6fbd844af86fa9",
+      "status": "experimental",
+      "model_name": "Tiel-Coder-35B-A3B",
+      "arch": "qwen35moe",
+      "source": "https://huggingface.co/charlie12345",
+      "engine": "llama.cpp",
+      "backend": "vulkan",
+      "os_family": "debian",
+      "hardware_target": "strix-halo-32gb-unified",
+      "size_gb": 17.5,
+      "quant": "Q4_0",
+      "quants": [
+        "Q4_0"
+      ],
+      "vision": false,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": false,
+      "objectives_primary": [
+        "tool_calling",
+        "code_generation",
+        "throughput"
+      ],
+      "capabilities_confirmed": {
+        "tools": true,
+        "mcp": true,
+        "vision": false
+      },
+      "witnesses": 1,
+      "distinct_witnesses": 1,
+      "pp": 1002.8,
+      "tg": 66.0,
+      "results": 1,
+      "n_variants": 1,
+      "last_run": "20261108T154225Z-dff300a2",
+      "cross_validated": false,
+      "path": "recipes/tiel-coder-35b-strix-lean/tiel-coder-35b-strix-lean-v0.1.0.yaml"
     }
   ]
 }

@@ -13,7 +13,7 @@ A registry of reproducible, evidence-backed serving recipes for local LLMs on un
 
 ## Models
 
-_10 models · 24 result records · latest activity first_
+_11 models · 25 result records · latest activity first_
 
 | id | model | variants | quant(s) | size | T M V | PP t/s | TG t/s | wit | backend | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -26,6 +26,7 @@ _10 models · 24 result records · latest activity first_
 | [qwen3.8-flash-next-131k](models/qwen3.8-flash-next-131k.md) | Qwen3.8 Flash Next | 1 | IQ4_XS | - | Y-- | 1290.5 | 11.0 | 1 | vulkan | 1 witness |
 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | Qwen3.8 Flash Next Uncensored | 1 | IQ4_XS | 91.7 | Y-Y | 3329.3 | 19.0 | 2 | vulkan | validated* |
 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | Qwen3.8 Flash Next Uncensored | 3 | IQ4_XS | 91.7 | Y-Y | 4128.8 | 9.0 | 1 | vulkan | 1 witness |
+| [tiel-coder-35b-strix-lean](models/tiel-coder-35b-strix-lean.md) | Tiel-Coder-35B-A3B | 1 | Q4_0 | 17.5 | YY- | 1002.8 | 66.0 | 1 | vulkan | 1 witness |
 | [qwen3-instruct](models/qwen3-instruct.md) | Qwen3-30B-A3B-Instruct-2507 | 1 | UD-Q4_K_XL | 16.5 | --- | - | - | 0 | vulkan | no results |
 
 _T=confirmed tool calling, M=confirmed MCP, V=confirmed vision. `validated*` = ≥ 2 contributor ids at the current hash with all declared tests passing — aliases of one person count as one._
@@ -34,6 +35,10 @@ _T=confirmed tool calling, M=confirmed MCP, V=confirmed vision. `validated*` = �
 
 | when (UTC) | model | test | result | PP t/s | TG t/s | who |
 |---|---|---|---|---|---|---|
+| 20261108 T1542 | [tiel-coder-35b-strix-lean](models/tiel-coder-35b-strix-lean.md) | `tool-roundtrip` | pass | 1002.8 | 66.0 | ubermensch |
+| 20261108 T1542 | [tiel-coder-35b-strix-lean](models/tiel-coder-35b-strix-lean.md) | `throughput` | pass | 1002.8 | 66.0 | ubermensch |
+| 20261108 T1542 | [tiel-coder-35b-strix-lean](models/tiel-coder-35b-strix-lean.md) | `agent-coding` | pass | 1002.8 | 66.0 | ubermensch |
+| 20261108 T1542 | [tiel-coder-35b-strix-lean](models/tiel-coder-35b-strix-lean.md) | `context-recall` | pass | 1002.8 | 66.0 | ubermensch |
 | 20261003 T1600 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `vision-basic` | pass | - | - | mritzco |
 | 20261003 T1600 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `vision-basic` | pass | - | - | mritzco |
 | 20261003 T1600 | [qwen3.8-flash-next-uncensored-halogen](models/qwen3.8-flash-next-uncensored-halogen.md) | `tool-roundtrip` | pass | 4128.8 | 9.0 | mritzco |
@@ -49,7 +54,3 @@ _T=confirmed tool calling, M=confirmed MCP, V=confirmed vision. `validated*` = �
 | 20260909 T0750 | [qwen3-vl](models/qwen3-vl.md) | `vision-basic` | pass | - | - | itzco |
 | 20260908 T1734 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `vision-basic` | pass | - | - | itzco |
 | 20260908 T1717 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `harness-tool-use` | pass | - | - | itzco |
-| 20260908 T1703 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `tool-roundtrip` | pass | 3329.3 | 19.0 | myhacsint-pilot |
-| 20260908 T1703 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `throughput` | pass | 3329.3 | 19.0 | myhacsint-pilot |
-| 20260908 T1703 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `agent-coding` | pass | 3329.3 | 19.0 | myhacsint-pilot |
-| 20260908 T1703 | [qwen3.8-flash-next-uncensored](models/qwen3.8-flash-next-uncensored.md) | `context-recall` | pass | 3329.3 | 19.0 | myhacsint-pilot |
