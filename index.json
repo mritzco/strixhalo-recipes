@@ -2,6 +2,43 @@
   "store_version": 1,
   "models": [
     {
+      "id": "davinci-tool-30b",
+      "version": "0.1.0",
+      "content_hash": "sha256:298328c31a462ea35937b91afbb73913860d5c86cdb5c7efd9a98c7fb80a8b7f",
+      "status": "experimental",
+      "model_name": "Davinci Tool 30B",
+      "arch": "qwen3moe",
+      "source": "/home/ubermensch/Desktop/AI/llama/models",
+      "engine": "llama.cpp",
+      "backend": "vulkan",
+      "os_family": "debian",
+      "hardware_target": "strix-halo-32gb-unified",
+      "size_gb": 17.3,
+      "quant": "Q4_K_M",
+      "quants": [
+        "Q4_K_M"
+      ],
+      "vision": false,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": false,
+      "objectives_primary": [],
+      "capabilities_confirmed": {
+        "tools": false,
+        "mcp": false,
+        "vision": false
+      },
+      "witnesses": 1,
+      "distinct_witnesses": 1,
+      "pp": 63695.9,
+      "tg": 50.2,
+      "results": 1,
+      "n_variants": 1,
+      "last_run": "20261108T102734Z-cf6b1a5a",
+      "cross_validated": false,
+      "path": "recipes/davinci-tool-30b/davinci-tool-30b-v0.1.0.yaml"
+    },
+    {
       "id": "glm-4.5-air",
       "version": "0.1.0",
       "content_hash": "sha256:64526052067adf9fcec8e000c9220cf765c8532f3a855f4896687d458f192508",
@@ -37,6 +74,43 @@
       "last_run": "20260907T165526Z-4135164d",
       "cross_validated": false,
       "path": "recipes/glm-4.5-air/glm-4.5-air-v0.1.0.yaml"
+    },
+    {
+      "id": "gpt-oss-20b",
+      "version": "0.1.0",
+      "content_hash": "sha256:c401aa791381ca41912687df0def90156b052dae9c5c24ba8a5e3a5709b38648",
+      "status": "experimental",
+      "model_name": "Gpt Oss 20b Heretic v2",
+      "arch": "gpt-oss",
+      "source": "/home/ubermensch/Desktop/AI/llama/models",
+      "engine": "llama.cpp",
+      "backend": "vulkan",
+      "os_family": "debian",
+      "hardware_target": "strix-halo-32gb-unified",
+      "size_gb": 11.3,
+      "quant": null,
+      "quants": [
+        null
+      ],
+      "vision": false,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": false,
+      "objectives_primary": [],
+      "capabilities_confirmed": {
+        "tools": false,
+        "mcp": false,
+        "vision": false
+      },
+      "witnesses": 1,
+      "distinct_witnesses": 1,
+      "pp": 49711.7,
+      "tg": 116.0,
+      "results": 1,
+      "n_variants": 1,
+      "last_run": "20261108T102622Z-5793beb5",
+      "cross_validated": false,
+      "path": "recipes/gpt-oss-20b/gpt-oss-20b-v0.1.0.yaml"
     },
     {
       "id": "qwen3-coder",
@@ -76,6 +150,43 @@
       "last_run": "20260907T125002Z-5aacbd75",
       "cross_validated": true,
       "path": "recipes/qwen3-coder/qwen3-coder-v0.2.1.yaml"
+    },
+    {
+      "id": "qwen3-coder-30b",
+      "version": "0.1.0",
+      "content_hash": "sha256:b88c6437765f6a1d75747685a3255fe89dcfaf9038dd707ba10fbf0ff6febf46",
+      "status": "experimental",
+      "model_name": "Qwen3 Coder 30B A3B Instruct Heretic",
+      "arch": "qwen3moe",
+      "source": "/home/ubermensch/Desktop/AI/llama/models",
+      "engine": "llama.cpp",
+      "backend": "vulkan",
+      "os_family": "debian",
+      "hardware_target": "strix-halo-32gb-unified",
+      "size_gb": 17.3,
+      "quant": "Q4_K_M",
+      "quants": [
+        "Q4_K_M"
+      ],
+      "vision": false,
+      "tool_calling": true,
+      "tool_model": true,
+      "vision_model": false,
+      "objectives_primary": [],
+      "capabilities_confirmed": {
+        "tools": false,
+        "mcp": false,
+        "vision": false
+      },
+      "witnesses": 1,
+      "distinct_witnesses": 1,
+      "pp": 67830.7,
+      "tg": 62.7,
+      "results": 1,
+      "n_variants": 1,
+      "last_run": "20261108T102843Z-95fb6caa",
+      "cross_validated": false,
+      "path": "recipes/qwen3-coder-30b/qwen3-coder-30b-v0.1.0.yaml"
     },
     {
       "id": "qwen3-instruct",
