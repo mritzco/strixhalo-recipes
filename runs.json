@@ -2,6 +2,81 @@
   "store_version": 1,
   "runs": [
     {
+      "run_id": "20261108T102843Z-95fb6caa",
+      "ts": "20261108T1028",
+      "contributor_id": "ubermensch",
+      "recipe_version": "0.1.0",
+      "quant": "Q4_K_M",
+      "content_hash": "sha256:b88c6437765f6a1d75747685a3255fe89dcfaf9038dd707ba10fbf0ff6febf46",
+      "hash": "b88c64",
+      "pp": 67830.7,
+      "tg": 62.7,
+      "tests": [
+        {
+          "id": "tool-roundtrip",
+          "result": "pass",
+          "score": null
+        },
+        {
+          "id": "throughput",
+          "result": "pass",
+          "score": null
+        }
+      ],
+      "notes": "64k context with Q8_0/Q4_0 Asym KV on Strix Halo Radeon 8060S",
+      "model_id": "qwen3-coder-30b"
+    },
+    {
+      "run_id": "20261108T102734Z-cf6b1a5a",
+      "ts": "20261108T1027",
+      "contributor_id": "ubermensch",
+      "recipe_version": "0.1.0",
+      "quant": "Q4_K_M",
+      "content_hash": "sha256:298328c31a462ea35937b91afbb73913860d5c86cdb5c7efd9a98c7fb80a8b7f",
+      "hash": "298328",
+      "pp": 63695.9,
+      "tg": 50.2,
+      "tests": [
+        {
+          "id": "tool-roundtrip",
+          "result": "pass",
+          "score": null
+        },
+        {
+          "id": "throughput",
+          "result": "pass",
+          "score": null
+        }
+      ],
+      "notes": "64k context with Q8_0/Q4_0 Asym KV on Strix Halo Radeon 8060S",
+      "model_id": "davinci-tool-30b"
+    },
+    {
+      "run_id": "20261108T102622Z-5793beb5",
+      "ts": "20261108T1026",
+      "contributor_id": "ubermensch",
+      "recipe_version": "0.1.0",
+      "quant": null,
+      "content_hash": "sha256:c401aa791381ca41912687df0def90156b052dae9c5c24ba8a5e3a5709b38648",
+      "hash": "c401aa",
+      "pp": 49711.7,
+      "tg": 116.0,
+      "tests": [
+        {
+          "id": "tool-roundtrip",
+          "result": "pass",
+          "score": null
+        },
+        {
+          "id": "throughput",
+          "result": "pass",
+          "score": null
+        }
+      ],
+      "notes": "Unconstrained 128k native context with FP16 KV on Strix Halo Radeon 8060S",
+      "model_id": "gpt-oss-20b"
+    },
+    {
       "run_id": "20261003T160033Z-fa0b45b5",
       "ts": "20261003T1600",
       "contributor_id": "mritzco",

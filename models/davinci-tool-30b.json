@@ -1,0 +1,159 @@
+{
+  "store_version": 1,
+  "model": {
+    "id": "davinci-tool-30b",
+    "recipe": {
+      "id": "davinci-tool-30b",
+      "version": "0.1.0",
+      "content_hash": "sha256:298328c31a462ea35937b91afbb73913860d5c86cdb5c7efd9a98c7fb80a8b7f",
+      "status": "experimental",
+      "created": "2026-11-08",
+      "author": "ubermensch",
+      "license": "CC0",
+      "quant": "Q4_K_M",
+      "lineage": {
+        "parents": [],
+        "rationale": "Auto-collected draft \u2014 fill in if this descends from another recipe."
+      },
+      "objectives": {
+        "primary": [],
+        "secondary": [],
+        "not_optimized": []
+      },
+      "constraints": [],
+      "tradeoffs": [],
+      "model": {
+        "name": "Davinci Tool 30B",
+        "arch": "qwen3moe",
+        "source": "/home/ubermensch/Desktop/AI/llama/models",
+        "file_sha256": null,
+        "size_gb": 17.3,
+        "mtp": false,
+        "vision": false,
+        "tool_calling": true
+      },
+      "hardware": {
+        "target": "strix-halo-32gb-unified",
+        "gpu_mem_split_gb": null,
+        "min_ram_gb": 30,
+        "mem_total_gb": 30.0,
+        "gtt_gib": 26.0,
+        "vram_mib": 512.0
+      },
+      "backend": {
+        "engine": "llama.cpp",
+        "commit": "d8d92973c",
+        "build": "11753",
+        "upstream": null,
+        "patches": [],
+        "install_method": "manual-binary",
+        "pkg_version": null,
+        "build_flags": [],
+        "os_family": "debian",
+        "kernel": "7.2.6-070206-generic",
+        "vulkan_version": "1.4.341",
+        "rocm_version": null
+      },
+      "launch": {
+        "command": "/home/ubermensch/llama.cpp/build/bin/llama-server -m /home/ubermensch/Desktop/AI/llama/models/Davinci-Tool-30B.i1-Q4_K_M.gguf -a Davinci-Tool-30B,davinci-30b,30b -ngl 99 --no-repack --load-mode mmap --cpu-mask 0x3F --cpu-strict 1 -fa on -t 6 -tb 6 -c 65536 -ctk q8_0 -ctv q4_0 -b 2048 -ub 512 --context-shift --cache-reuse 256 --spec-type ngram-mod,ngram-map-k4v --spec-ngram-mod-n-match 16 --spec-ngram-mod-n-max 64 --spec-ngram-mod-n-min 16 --spec-ngram-map-k4v-size-n 8 --spec-ngram-map-k4v-size-m 24 --spec-ngram-map-k4v-min-hits 1 --jinja --temp 0.2 --top-p 0.95 --min-p 0.05 -np 1 --port 8080 --host 127.0.0.1"
+      },
+      "parameters": {
+        "ctx_size": {
+          "value": 65536,
+          "annotations": []
+        },
+        "ubatch": {
+          "value": "512",
+          "annotations": []
+        },
+        "ngl": {
+          "value": "99",
+          "annotations": []
+        },
+        "flash_attn": {
+          "value": true,
+          "annotations": []
+        },
+        "jinja": {
+          "value": true,
+          "annotations": []
+        }
+      },
+      "annotations": [
+        {
+          "type": "experimental",
+          "text": "Auto-collected draft (2026-11-08); capabilities_confirmed are all false until real harness tests run. Add parameter annotations with the 'why', objectives/constraints/tradeoffs, and evidence refs per the v0.3 data model."
+        }
+      ],
+      "harness_compat": {
+        "tested_with": [],
+        "exposes_as": "TODO-fill-in",
+        "capabilities_confirmed": {
+          "tools": false,
+          "mcp": false,
+          "vision": false
+        }
+      },
+      "tests": [],
+      "failure_notes": null
+    },
+    "variants": [
+      {
+        "content_hash": "sha256:298328c31a462ea35937b91afbb73913860d5c86cdb5c7efd9a98c7fb80a8b7f",
+        "hash": "298328",
+        "version": "0.1.0",
+        "quant": [
+          "Q4_K_M"
+        ],
+        "results": 1,
+        "witnesses": 1,
+        "witness_ids": [
+          "ubermensch"
+        ],
+        "pp": 63695.9,
+        "tg": 50.2,
+        "tests": {
+          "throughput": {
+            "pass": 1
+          },
+          "tool-roundtrip": {
+            "pass": 1
+          }
+        },
+        "declared": []
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "20261108T102734Z-cf6b1a5a",
+        "ts": "20261108T1027",
+        "contributor_id": "ubermensch",
+        "recipe_version": "0.1.0",
+        "quant": "Q4_K_M",
+        "content_hash": "sha256:298328c31a462ea35937b91afbb73913860d5c86cdb5c7efd9a98c7fb80a8b7f",
+        "hash": "298328",
+        "pp": 63695.9,
+        "tg": 50.2,
+        "tests": [
+          {
+            "id": "tool-roundtrip",
+            "result": "pass",
+            "score": null
+          },
+          {
+            "id": "throughput",
+            "result": "pass",
+            "score": null
+          }
+        ],
+        "notes": "64k context with Q8_0/Q4_0 Asym KV on Strix Halo Radeon 8060S",
+        "model_id": "davinci-tool-30b"
+      }
+    ],
+    "counts": {
+      "results": 1,
+      "witnesses": 1,
+      "cross_validated": false
+    }
+  }
+}
