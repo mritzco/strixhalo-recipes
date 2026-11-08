@@ -1,0 +1,108 @@
+id: tiel-coder-35b-strix-lean
+version: 0.1.0
+content_hash: sha256:07f3a0d158aa9c052002e618a1f5b36e6437d4512f71804bdf6fbd844af86fa9
+status: experimental
+created: '2026-11-08'
+author: ubermensch
+license: CC0
+quant: Q4_0
+lineage:
+  parents: []
+  rationale: Custom ROCmFP4/FPX quant architecture for Strix Halo 32GB with WMMA Vulkan shaders.
+objectives:
+  primary:
+  - tool_calling
+  - code_generation
+  - throughput
+  secondary:
+  - memory_efficiency
+  not_optimized:
+  - vision
+constraints:
+- Must use Vulkan WMMA with ROCmFPX kernel support (type 100/101).
+- Native Wave64 compute shaders required for full SIMD occupancy.
+tradeoffs:
+- Requires charlie12345/ROCmFPX build rather than vanilla upstream llama.cpp.
+- Flash attention is strictly mandatory for ROCmFP4 compute shaders.
+model:
+  name: Tiel-Coder-35B-A3B
+  arch: qwen35moe
+  source: https://huggingface.co/charlie12345
+  file_sha256: null
+  size_gb: 17.5
+  mtp: false
+  vision: false
+  tool_calling: true
+hardware:
+  target: strix-halo-32gb-unified
+  gpu_mem_split_gb: null
+  min_ram_gb: 30
+  mem_total_gb: 30.0
+  gtt_gib: 26.0
+  vram_mib: 512.0
+backend:
+  engine: llama.cpp
+  commit: fb08d7cdb67082ddda15a25e64dc7ec413afc41c
+  build: '11753'
+  upstream: https://github.com/charlie12345/ROCmFPX.git
+  patches: []
+  install_method: manual-binary
+  pkg_version: null
+  build_flags:
+  - -DGGML_VULKAN=ON
+  - -DGGML_HIP=OFF
+  - -DGGML_NATIVE=ON
+  - -DLLAMA_BUILD_WEBUI=OFF
+  os_family: debian
+  kernel: 7.2.6-070206-generic
+  vulkan_version: 1.4.341
+  rocm_version: null
+launch:
+  command: /home/ubermensch/llama-rocmfpx/build/bin/llama-server -m /home/ubermensch/Desktop/AI/llama/models/Tiel-Coder-35B-A3B-Q4_0-ROCmFP4-STRIX_LEAN.gguf
+    -a tiel-coder-35b-strix-lean,tiel-coder-35b,tiel-coder,35b -ngl 99 --no-repack
+    --mmap --cpu-mask 0x3F --cpu-strict 1 -fa on -t 6 -tb 6 -c 65536 -ctk q8_0 -ctv
+    q4_0 -b 2048 -ub 1024 --jinja --reasoning-format deepseek --temp 0.2 --top-p 0.95
+    --min-p 0.05 -np 1 --port 8080 --host 127.0.0.1
+parameters:
+  ctx_size:
+    value: 65536
+    annotations: []
+  ubatch:
+    value: '1024'
+    annotations: []
+  ngl:
+    value: '99'
+    annotations: []
+  flash_attn:
+    value: true
+    annotations: []
+  jinja:
+    value: true
+    annotations: []
+annotations:
+- type: experimental
+  text: Strix Lean ROCmFP4 kernel running via isolated Vulkan runner on Radeon 8060S.
+    Passes 100% on BFCL (6/6) and 100% on Aider Code Editing (3/3), delivering 1,002
+    t/s prompt prefill and 71.5 t/s generation.
+harness_compat:
+  tested_with:
+  - pi
+  - aider
+  exposes_as: tiel-coder-35b-strix-lean
+  capabilities_confirmed:
+    tools: true
+    mcp: true
+    vision: false
+tests:
+- id: tool-roundtrip
+  expect: pass
+- id: throughput
+  expect: pass
+- id: agent-coding
+  expect: pass
+- id: context-recall
+  expect:
+    min_score: 1.0
+  args:
+    ctx: 4096
+failure_notes: null

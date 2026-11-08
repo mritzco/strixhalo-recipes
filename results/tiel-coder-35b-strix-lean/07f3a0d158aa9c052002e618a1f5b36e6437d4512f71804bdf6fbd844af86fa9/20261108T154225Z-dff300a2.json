@@ -1,0 +1,93 @@
+{
+  "recipe_id": "tiel-coder-35b-strix-lean",
+  "recipe_version": "0.1.0",
+  "content_hash": "sha256:07f3a0d158aa9c052002e618a1f5b36e6437d4512f71804bdf6fbd844af86fa9",
+  "run_id": "20261108T154225Z-dff300a2",
+  "contributor_id": "ubermensch",
+  "quant": "Q4_0",
+  "probe_output": {
+    "schema_version": 2,
+    "timestamp": "2026-11-08T15:42:25Z",
+    "family": "debian",
+    "distro": "Ubuntu 26.04.1 LTS",
+    "kernel": "7.2.6-070206-generic",
+    "mem": {
+      "total_gb": 30.0,
+      "gtt_gib": 26.0,
+      "vram_mib": 512.0
+    },
+    "gpu": {
+      "name": "AMD Radeon 8060S",
+      "driver": "radv",
+      "vulkan_version": "1.4.341",
+      "free_mib": 4753.0
+    },
+    "backend": {
+      "version_string": "version: 0.7.0-dev (build 11753, commit d8d92973c)",
+      "build": "11753",
+      "commit": "d8d92973c",
+      "binary": "/home/ubermensch/llama.cpp/build/bin/llama-server",
+      "install_method": "manual-binary",
+      "pkg_version": null
+    },
+    "rocm_version": null,
+    "llama_swap_config": null,
+    "raw_hash": "sha256:9a47f027eb2f9d361f2cb4d4d6c3f8dd8b91e771fba6927abf4b0901c5022c6a"
+  },
+  "tests": [
+    {
+      "id": "tool-roundtrip",
+      "result": "pass",
+      "metrics": {
+        "tool_calls": 1,
+        "latency_s": 0.84
+      },
+      "observations": [
+        "1/1 tool call(s) well-formed"
+      ]
+    },
+    {
+      "id": "throughput",
+      "result": "pass",
+      "metrics": {
+        "tokens_per_sec_tg": 66.0,
+        "median_round_s": 1.46
+      },
+      "observations": [
+        "3 rounds x ~128 out-tokens"
+      ]
+    },
+    {
+      "id": "agent-coding",
+      "result": "pass",
+      "metrics": {
+        "rounds": 6,
+        "tool_calls": 6,
+        "fixed": true
+      },
+      "observations": [
+        "final reply (round 6): DONE.",
+        "ground truth: main.py prints '5' (want '5')"
+      ]
+    },
+    {
+      "id": "context-recall",
+      "result": "pass",
+      "metrics": {
+        "latency_s": 0.62,
+        "retrieved": true,
+        "context_tokens": 4096
+      },
+      "observations": [
+        "approx 4096 token context, needle at ~50%",
+        "answer: STRIX42"
+      ]
+    }
+  ],
+  "metrics": {
+    "tokens_per_sec_tg": 66.0,
+    "tokens_per_sec_pp": 1002.8
+  },
+  "notes": "Tiel-Coder-35B-A3B Strix Lean ROCmFP4 kernel running via isolated Vulkan runner on AMD Radeon 8060S with native Wave64 compute shaders",
+  "tool_version": "submit_result.py@2.0.0"
+}
